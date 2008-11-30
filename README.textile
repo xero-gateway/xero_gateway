@@ -6,14 +6,15 @@ This library is designed to help ruby based applications communicate with the pu
 
 h2. Prerequisites
 
-To use the Xero API you must have a Xero API Key.  IF you don't know what this is, and don't know how to get one, this library is probably not for you.
+To use the Xero API you must have a Xero API Key.  If you don't know what this is, and don't know how to get one, this library is probably not for you.
 
 h2. Usage
 
 <pre><code>
     gateway = XeroGateway::Gateway.new(
       :customer_key => "THE_CUSTOMER_KEY_GENERATED_FOR_YOUR_APP",
-      :api_key => "YOUR_XERO_API_KEY"
+      :api_key => "YOUR_XERO_API_KEY",
+      :xero_url => "THE URL FOR THE XERO API (test or live)"
     )
 </code></pre>
 
