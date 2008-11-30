@@ -1,0 +1,112 @@
+h1. Xero API wrapper
+
+h2. Introduction
+
+This library is designed to help ruby based applications communicate with the publicly available API for Xero.  If you are unfamiliar with the API, you should first read the documentation, located here "https://network.xero.com/Help/Xero%20API%20Reference%201.0.htm":https://network.xero.com/Help/Xero%20API%20Reference%201.0.htm
+
+h2. Prerequisites
+
+To use the Xero API you must have a Xero API Key.  IF you don't know what this is, and don't know how to get one, this library is probably not for you.
+
+h2. Usage
+
+<pre><code>
+    gateway = XeroGateway::Gateway.new(
+      :customer_key => "THE_CUSTOMER_KEY_GENERATED_FOR_YOUR_APP",
+      :api_key => "YOUR_XERO_API_KEY"
+    )
+</code></pre>
+
+
+h2. Implemented interface methods
+
+h3. GET /api.xro/1.0/contact (get_contact_by_id)
+
+Example:
+<pre><code>
+	result = gateway.get_contact_by_id(contact_id)
+	contact = result.contact if result.success?
+</code></pre>
+
+h3. GET /api.xro/1.0/contact (get_contact_by_number)
+
+Example:
+<pre><code>
+	gateway.get_contact_by_number(contact_number)
+</code></pre>
+
+h3. GET /api.xro/1.0/contacts (get_contacts)
+
+Example:
+<pre><code>
+	gateway.get_contacts(:type => :all, :sort => :name, :direction => :desc)
+</code></pre>
+
+h3. PUT /api.xro/1.0/contact
+
+Example:
+<pre><code>
+    contact = XeroGateway::Contact.new
+	contact.name = "The contacts name"
+    contact.email = "whoever@something.com"
+    contact.phone.number = "555 123 4567"
+    contact.address.line_1 = "LINE 1 OF THE ADDRESS"
+    contact.address.line_2 = "LINE 2 OF THE ADDRESS"
+    contact.address.city = "WELLINGTON"
+    contact.address.region = "WELLINGTON"
+    contact.address.country = "NEW ZEALAND"
+    contact.address.post_code = "6021"
+	
+	gateway.create_contact(contact)
+</code></pre>
+
+h3. GET /api.xro/1.0/invoice (get_invoice_by_id)
+
+Example:
+<pre><code>
+	gateway.get_invoice_by_id(invoice_id)
+</code></pre>
+
+h3. GET /api.xro/1.0/invoice (get_invoice_by_number)
+
+Example:
+<pre><code>
+	gateway.get_invoice_by_number(invoice_number)
+</code></pre>
+
+h3. GET /api.xro/1.0/invoices (get_invoices)
+
+Example:
+<pre><code>
+	gateway.get_invoices(modified_since = nil)
+</code></pre>
+
+h3. PUT /api.xro/1.0/invoice
+
+Example:
+<pre><code>
+    invoice = XeroGateway::Invoice.new({
+      :invoice_type => "ACCREC",
+      :due_date => 1.month.from_now,
+      :invoice_number => "YOUR INVOICE NUMBER",
+      :reference => "YOUR REFERENCE (NOT NECESSARILY UNIQUE!)",
+      :tax_inclusive => true,
+      :includes_tax => false,
+      :sub_total => 1000,
+      :total_tax => 125,
+      :total => 1250
+    })
+    invoice.contact = XeroGateway::Contact.new(:name => "THE NAME OF THE CONTACT")
+    invoice.contact.phone.number = "12345"
+    invoice.contact.address.line_1 = "LINE 1 OF THE ADDRESS"    
+    invoice.line_items << XeroGateway::LineItem.new(
+      :description => "THE DESCRIPTION OF THE LINE ITEM",
+      :unit_amount => 1000,
+      :tax_amount => 125,
+      :line_amount => 1000,
+      :tracking_category => "THE TRACKING CATEGORY FOR THE LINE ITEM",
+      :tracking_option => "THE TRACKING OPTION FOR THE LINE ITEM"
+    )
+	
+	gateway.create_invoice(invoice)
+</code></pre>
