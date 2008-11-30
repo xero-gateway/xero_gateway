@@ -1,11 +1,11 @@
 Gem::Specification.new do |s|
-  s.name     = "xero-gateway"
+  s.name     = "xero_gateway"
   s.version  = "1.0.0"
   s.date     = "2008-11-27"
-  s.summary  = "Enable ruby based applications to communicate with the Xero API"
+  s.summary  = "Enables ruby based applications to communicate with the Xero API"
   s.email    = "tlconnor@gmail.com"
-  s.homepage = "http://github.com/tlconnor/xero-gateway"
-  s.description = "Enable ruby based applications to communicate with the Xero API"
+  s.homepage = "http://github.com/tlconnor/xero_gateway"
+  s.description = "Enables ruby based applications to communicate with the Xero API"
   s.has_rdoc = false
   s.authors  = ["Tim Connor"]
   s.files    = ["README.textile", 
