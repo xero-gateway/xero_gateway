@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Invoice">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="InvoiceType" type="xs:string" />
+        <xs:element name="Contact">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element minOccurs="0" name="ContactID" type="xs:string" />
+              <xs:element name="Name" type="xs:string" />
+              <xs:element minOccurs="0" name="EmailAddress" type="xs:string" />
+              <xs:element name="Addresses">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Address">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="AddressType" type="xs:string" />
+                          <xs:element minOccurs="0" name="AddressLine1" type="xs:string" />
+                          <xs:element minOccurs="0" name="AddressLine2" type="xs:string" />
+                          <xs:element minOccurs="0" name="AddressLine3" type="xs:string" />
+                          <xs:element minOccurs="0" name="AddressLine4" type="xs:string" />
+                          <xs:element minOccurs="0" name="City" type="xs:string" />
+                          <xs:element minOccurs="0" name="Region" type="xs:string" />
+                          <xs:element minOccurs="0" name="PostalCode" type="xs:unsignedShort" />
+                          <xs:element minOccurs="0" name="Country" type="xs:string" />
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element minOccurs="0" name="Phones">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element maxOccurs="unbounded" name="Phone">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="PhoneType" type="xs:string" />
+                          <xs:element minOccurs="0" name="PhoneNumber" type="xs:unsignedInt" />
+                          <xs:element minOccurs="0" name="PhoneAreaCode" type="xs:unsignedByte" />
+                          <xs:element minOccurs="0" name="PhoneCountryCode" type="xs:unsignedByte" />
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="InvoiceDate" type="xs:dateTime" />
+        <xs:element minOccurs="0" name="DueDate" type="xs:dateTime" />
+        <xs:element name="InvoiceNumber" type="xs:string" />
+        <xs:element minOccurs="0" name="Reference" type="xs:string" />
+        <xs:element minOccurs="0" name="TaxInclusive" type="xs:boolean" />
+        <xs:element minOccurs="0" name="IncludesTax" type="xs:boolean" />
+        <xs:element minOccurs="0" name="SubTotal" type="xs:decimal" />
+        <xs:element minOccurs="0" name="TotalTax" type="xs:decimal" />
+        <xs:element minOccurs="0" name="Total" type="xs:decimal" />
+        <xs:element name="LineItems">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="LineItem">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Description" type="xs:string" />
+                    <xs:element minOccurs="0" name="Quantity" type="xs:decimal" />
+                    <xs:element name="UnitAmount" type="xs:decimal" />
+                    <xs:element minOccurs="0" name="TaxType" type="xs:string" />
+                    <xs:element name="TaxAmount" type="xs:decimal" />
+                    <xs:element name="LineAmount" type="xs:decimal" />
+                    <xs:element name="AccountCode" type="xs:string" />
+                    <xs:element name="Tracking">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="TrackingCategory">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="Name" type="xs:string" />
+                                <xs:element name="Option" type="xs:string" />
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
