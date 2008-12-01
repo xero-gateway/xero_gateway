@@ -123,7 +123,7 @@ module XeroGateway
     # Usage : get_invoices
     #         get_invoices(modified_since)
     def get_invoices(modified_since = nil)
-      request_params = modified_since ? {:modifiedSince => modified_since.strftime("%Y%m%d")} : {}
+      request_params = modified_since ? {:modifiedSince => modified_since.strftime("%Y-%m-%d")} : {}
     
       response_xml = http_get("#{@xero_url}/invoices", request_params)
 

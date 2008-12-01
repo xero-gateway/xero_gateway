@@ -21,6 +21,7 @@ class GatewayTest < Test::Unit::TestCase
   # If the requests are not stubbed, enter your API key and you test company customer key here
   API_KEY = "YOUR API KEY"
   CUSTOMER_KEY = "YOUR CUSTOMER KEY"
+
   
   def setup
     @gateway = XeroGateway::Gateway.new(
@@ -140,6 +141,17 @@ class GatewayTest < Test::Unit::TestCase
     
     # Check that it is returned
     result = @gateway.get_invoices
+    assert result.success?
+    assert result.invoices.collect {|response_invoice| response_invoice.invoice_number}.include?(invoice.invoice_number)
+  end
+  
+  def test_get_invoices_with_modified_since_date
+    # Create a test invoice
+    invoice = dummy_invoice
+    @gateway.create_invoice(invoice)
+    
+    # Check that it is returned
+    result = @gateway.get_invoices(Date.today - 1)
     assert result.success?
     assert result.invoices.collect {|response_invoice| response_invoice.invoice_number}.include?(invoice.invoice_number)
   end
