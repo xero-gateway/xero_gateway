@@ -20,31 +20,39 @@ h2. Usage
 
 h2. Implemented interface methods
 
+
+
 h3. GET /api.xro/1.0/contact (get_contact_by_id)
 
-Example:
+Gets a contact record for a specific Xero organisation
 <pre><code>
 	result = gateway.get_contact_by_id(contact_id)
 	contact = result.contact if result.success?
 </code></pre>
 
+
+
 h3. GET /api.xro/1.0/contact (get_contact_by_number)
 
-Example:
+Gets a contact record for a specific Xero organisation
 <pre><code>
 	gateway.get_contact_by_number(contact_number)
 </code></pre>
 
+
+
 h3. GET /api.xro/1.0/contacts (get_contacts)
 
-Example:
+Gets all contact records for a particular Xero customer.
 <pre><code>
 	gateway.get_contacts(:type => :all, :sort => :name, :direction => :desc)
 </code></pre>
 
+
+
 h3. PUT /api.xro/1.0/contact
 
-Example:
+Saves a contact record for a particular Xero customer. If the contact record does not exist (based on either ContactID or ContactNumber) then it’s created, otherwise it’s updated.
 <pre><code>
     contact = XeroGateway::Contact.new
 	contact.name = "The contacts name"
@@ -60,30 +68,38 @@ Example:
 	gateway.create_contact(contact)
 </code></pre>
 
+
+
 h3. GET /api.xro/1.0/invoice (get_invoice_by_id)
 
-Example:
+Gets an invoice record for a specific Xero organisation
 <pre><code>
 	gateway.get_invoice_by_id(invoice_id)
 </code></pre>
 
+
+
 h3. GET /api.xro/1.0/invoice (get_invoice_by_number)
 
-Example:
+Gets an invoice record for a specific Xero organisation
 <pre><code>
 	gateway.get_invoice_by_number(invoice_number)
 </code></pre>
 
+
+
 h3. GET /api.xro/1.0/invoices (get_invoices)
 
-Example:
+Gets all invoice records for a particular Xero customer.
 <pre><code>
 	gateway.get_invoices(modified_since = nil)
 </code></pre>
 
+
+
 h3. PUT /api.xro/1.0/invoice
 
-Example:
+Inserts an invoice for a specific organization in Xero. (Currently only adding new invoices is allowed).
 <pre><code>
     invoice = XeroGateway::Invoice.new({
       :invoice_type => "ACCREC",
@@ -111,9 +127,11 @@ Example:
 	gateway.create_invoice(invoice)
 </code></pre>
 
+
+
 h3. GET /api.xro/1.0/accounts
 
-Example:
+Gets all accounts for a specific organization in Xero.
 <pre><code>
 	gateway.get_accounts
 </code></pre>
