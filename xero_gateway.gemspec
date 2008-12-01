@@ -1,4 +1,4 @@
-1Gem::Specification.new do |s|
+Gem::Specification.new do |s|
   s.name     = "xero_gateway"
   s.version  = "1.0.0"
   s.date     = "2008-12-01"
