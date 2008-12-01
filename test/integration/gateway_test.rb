@@ -19,8 +19,8 @@ class GatewayTest < Test::Unit::TestCase
   STUB_XERO_CALLS = true
   
   # If the requests are not stubbed, enter your API key and you test company customer key here
-  API_KEY = "OWFKZTA4YZNHYWNKNDDJM2JKNZQWOW"
-  CUSTOMER_KEY = "YWZIMZQ3ZGVJMME1NDCWNTK3YWZMNW"
+  API_KEY = "YOUR API KEY"
+  CUSTOMER_KEY = "YOUR CUSTOMER KEY"
   
   def setup
     @gateway = XeroGateway::Gateway.new(
