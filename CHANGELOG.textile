@@ -1,0 +1,14 @@
+h2. 1.0.1, releases 01/12/2008
+
+# Added implementation of GET /api.xro/1.0/accounts
+
+
+h2. 1.0.0, released 01/12/2008
+
+* Initial release, including:
+* PUT /api.xro/1.0/contact
+* GET /api.xro/1.0/contact
+* GET /api.xro/1.0/contacts
+* PUT /api.xro/1.0/invoice
+* GET /api.xro/1.0/invoice
+* GET /api.xro/1.0/invoices

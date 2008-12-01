@@ -110,3 +110,10 @@ Example:
 	
 	gateway.create_invoice(invoice)
 </code></pre>
+
+h3. GET /api.xro/1.0/accounts
+
+Example:
+<pre><code>
+	gateway.get_accounts
+</code></pre>

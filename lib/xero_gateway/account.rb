@@ -13,32 +13,22 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 module XeroGateway
-  class Response
-    attr_accessor :id, :status, :errors, :provider, :date_time, :response_item, :request_params, :request_xml, :response_xml
-    
-    alias_method :invoice, :response_item
-    alias_method :invoices, :response_item
-    alias_method :contact, :response_item
-    alias_method :contacts, :response_item
-    alias_method :accounts, :response_item
-
-
+  class Account
+    attr_accessor :code, :name, :type, :tax_type, :description
     
     def initialize(params = {})
       params.each do |k,v|
         self.instance_variable_set("@#{k}", v)  ## create and initialize an instance variable for this key/value pair
         self.send("#{k}=", v)
       end
-      
-      @errors ||= []
-    end    
-    
-    def success?
-      status == "OK"
     end
     
-    def error
-      errors.blank? ? nil : errors[0]
+    def ==(other)
+      equal = true
+      [:code, :name, :type, :tax_type, :description].each do |field|
+        equal &&= (send(field) == other.send(field))
+      end
+      return equal
     end
   end
 end
