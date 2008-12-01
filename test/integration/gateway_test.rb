@@ -19,8 +19,8 @@ class GatewayTest < Test::Unit::TestCase
   STUB_XERO_CALLS = true
   
   # If the requests are not stubbed, enter your API key and you test company customer key here
-  API_KEY = "YOUR API KEY"
-  CUSTOMER_KEY = "YOUR CUSTOMER KEY"
+  API_KEY = "OWFKZTA4YZNHYWNKNDDJM2JKNZQWOW"
+  CUSTOMER_KEY = "YWZIMZQ3ZGVJMME1NDCWNTK3YWZMNW"
 
   
   def setup
@@ -36,6 +36,7 @@ class GatewayTest < Test::Unit::TestCase
       @gateway.stubs(:http_get).with {|url, params| url =~ /contacts$/ }.returns(get_file_as_string("contacts.xml"))
       @gateway.stubs(:http_get).with {|url, params| url =~ /invoice$/ }.returns(get_file_as_string("invoice.xml"))          
       @gateway.stubs(:http_get).with {|url, params| url =~ /invoices$/ }.returns(get_file_as_string("invoices.xml"))          
+      @gateway.stubs(:http_get).with {|url, params| url =~ /accounts$/ }.returns(get_file_as_string("accounts.xml"))          
       @gateway.stubs(:http_put).with {|url, body, params| url =~ /invoice$/ }.returns(get_file_as_string("invoice.xml"))          
       @gateway.stubs(:http_put).with {|url, body, params| url =~ /contact$/ }.returns(get_file_as_string("contact.xml"))          
 
@@ -156,5 +157,10 @@ class GatewayTest < Test::Unit::TestCase
     assert result.invoices.collect {|response_invoice| response_invoice.invoice_number}.include?(invoice.invoice_number)
   end
   
-  
+  def test_get_accounts
+    result = @gateway.get_accounts
+    assert result.success?
+    assert result.accounts.size > 0
+    assert_equal XeroGateway::Account, result.accounts.first.class
+  end
 end

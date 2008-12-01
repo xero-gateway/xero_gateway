@@ -194,7 +194,27 @@ module XeroGateway
       response
     end
 
+    #
+    # Gets all accounts for a specific organization in Xero.
+    #
+    def get_accounts
+      response_xml = http_get("#{xero_url}/accounts")
+      
+      doc = REXML::Document.new(response_xml)
+    
+      # Create the response object
+      response = build_response(doc)
 
+      # Add the accounts to the response
+      response.response_item = []
+      REXML::XPath.first(doc, "/Response/Accounts").children.each do |account_element|
+        response.response_item << XeroGateway::Messages::AccountMessage.from_xml(account_element)
+      end
+      
+      # Add the request and response XML to the response object
+      response.response_xml = response_xml
+      response
+    end
 
 
 
