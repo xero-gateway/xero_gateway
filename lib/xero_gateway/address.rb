@@ -23,11 +23,10 @@ module XeroGateway
     end
     
     def ==(other)
-      equal = true
       [:address_type, :line_1, :line_2, :line_3, :line_4, :city, :region, :post_code, :country].each do |field|
-        equal &&= (send(field) == other.send(field))
+        return false if send(field) != other.send(field)
       end
-      return equal
+      return true
     end
   end
 end
