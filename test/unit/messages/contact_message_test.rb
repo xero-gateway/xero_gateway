@@ -36,7 +36,7 @@ class ContactMessageTest < Test::Unit::TestCase
   private
   
   def create_test_contact
-    contact = XeroGateway::Contact.new(:id => "55555")
+    contact = XeroGateway::Contact.new(:contact_id => "55555")
     contact.contact_number = "aaa111"
     contact.name = "CONTACT NAME"
     contact.email = "someone@somewhere.com"

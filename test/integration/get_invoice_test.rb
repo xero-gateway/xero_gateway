@@ -21,12 +21,12 @@ class GetInvoiceTest < Test::Unit::TestCase
     # Make sure there is an invoice in Xero to retrieve
     invoice = @gateway.create_invoice(dummy_invoice).invoice
 
-    result = @gateway.get_invoice_by_id(invoice.id)
+    result = @gateway.get_invoice_by_id(invoice.invoice_id)
     assert result.success?
     assert_equal result.invoice.invoice_number, invoice.invoice_number
 
     result = @gateway.get_invoice_by_number(invoice.invoice_number)
     assert result.success?
-    assert_equal result.invoice.id, invoice.id
+    assert_equal result.invoice.invoice_id, invoice.invoice_id
   end
 end

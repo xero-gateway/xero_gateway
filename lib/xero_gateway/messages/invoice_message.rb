@@ -10,7 +10,7 @@ module XeroGateway
         b.Invoice {
           b.InvoiceType invoice.invoice_type
           b.Contact {
-            b.ContactID invoice.contact.id if invoice.contact.id
+            b.ContactID invoice.contact.contact_id if invoice.contact.contact_id
             b.Name invoice.contact.name
             b.EmailAddress invoice.contact.email if invoice.contact.email
             b.Addresses {
@@ -76,7 +76,7 @@ module XeroGateway
         invoice_element.children.each do |element|
           case(element.name)
             when "InvoiceStatus" then invoice.invoice_status = element.text
-            when "InvoiceID" then invoice.id = element.text
+            when "InvoiceID" then invoice.invoice_id = element.text
             when "InvoiceNumber" then invoice.invoice_number = element.text            
             when "InvoiceType" then invoice.invoice_type = element.text
             when "InvoiceDate" then invoice.date = parse_date_time(element.text)
@@ -100,7 +100,7 @@ module XeroGateway
         line_item = LineItem.new
         line_item_element.children.each do |element|
           case(element.name)
-            when "LineItemID" then line_item.id = element.text
+            when "LineItemID" then line_item.line_item_id = element.text
             when "Description" then line_item.description = element.text
             when "Quantity" then line_item.quantity = element.text.to_i
             when "UnitAmount" then line_item.unit_amount = BigDecimal.new(element.text)

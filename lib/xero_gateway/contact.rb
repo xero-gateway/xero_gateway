@@ -1,6 +1,6 @@
 module XeroGateway
   class Contact
-    attr_accessor :id, :contact_number, :status, :name, :email, :addresses, :phones, :updated_at
+    attr_accessor :contact_id, :contact_number, :status, :name, :email, :addresses, :phones, :updated_at
     
     def initialize(params = {})
       params = {}.merge(params)      

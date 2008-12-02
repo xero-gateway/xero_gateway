@@ -1,6 +1,6 @@
 module XeroGateway
   class Response
-    attr_accessor :id, :status, :errors, :provider, :date_time, :response_item, :request_params, :request_xml, :response_xml
+    attr_accessor :response_id, :status, :errors, :provider, :date_time, :response_item, :request_params, :request_xml, :response_xml
     
     alias_method :invoice, :response_item
     alias_method :invoices, :response_item

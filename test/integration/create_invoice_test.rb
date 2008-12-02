@@ -21,7 +21,7 @@ class CreateInvoiceTest < Test::Unit::TestCase
     
     result = @gateway.create_invoice(example_invoice)
     assert result.success?
-    assert !result.invoice.id.nil?
+    assert !result.invoice.invoice_id.nil?
     assert result.invoice.invoice_number == example_invoice.invoice_number
   end
 end

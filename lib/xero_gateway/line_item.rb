@@ -1,7 +1,7 @@
 module XeroGateway
   class LineItem
     # All accessible fields
-    attr_accessor :id, :description, :quantity, :unit_amount, :tax_type, :tax_amount, :line_amount, :account_code, :tracking_category, :tracking_option
+    attr_accessor :line_item_id, :description, :quantity, :unit_amount, :tax_type, :tax_amount, :line_amount, :account_code, :tracking_category, :tracking_option
     
     def initialize(params = {})
       params = {
