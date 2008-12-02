@@ -246,7 +246,7 @@ module XeroGateway
     
     def build_response(response_document)
       response = XeroGateway::Response.new({
-        :id => REXML::XPath.first(response_document, "/Response/ID").text,
+        :response_id => REXML::XPath.first(response_document, "/Response/ID").text,
         :status => REXML::XPath.first(response_document, "/Response/Status").text,
         :provider => REXML::XPath.first(response_document, "/Response/ProviderName").text,
         :date_time => REXML::XPath.first(response_document, "/Response/DateTimeUTC").text,

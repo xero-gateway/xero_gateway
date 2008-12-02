@@ -21,7 +21,7 @@ class CreateContactTest < Test::Unit::TestCase
     
     result = @gateway.create_contact(example_contact)
     assert result.success?
-    assert !result.contact.id.nil?
+    assert !result.contact.contact_id.nil?
     assert_equal result.contact.name, example_contact.name
   end
 end

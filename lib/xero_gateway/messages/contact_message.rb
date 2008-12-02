@@ -7,7 +7,7 @@ module XeroGateway
         b = Builder::XmlMarkup.new
         
         b.Contact {
-          b.ContactID contact.id if contact.id
+          b.ContactID contact.contact_id if contact.contact_id
           b.ContactNumber contact.contact_number if contact.contact_number
           b.Name contact.name
           b.EmailAddress contact.email if contact.email
@@ -44,7 +44,7 @@ module XeroGateway
         contact = Contact.new
         contact_element.children.each do |element|
           case(element.name)
-            when "ContactID" then contact.id = element.text
+            when "ContactID" then contact.contact_id = element.text
             when "ContactNumber" then contact.contact_number = element.text
             when "ContactStatus" then contact.status = element.text
             when "Name" then contact.name = element.text

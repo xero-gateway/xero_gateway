@@ -21,7 +21,7 @@ class GetContactTest < Test::Unit::TestCase
     # Make sure there is a contact in Xero to retrieve
     contact = @gateway.create_contact(dummy_contact).contact
     
-    result = @gateway.get_contact_by_id(contact.id)
+    result = @gateway.get_contact_by_id(contact.contact_id)
     assert result.success?
     assert_equal result.contact.name, contact.name
 

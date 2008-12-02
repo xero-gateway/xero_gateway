@@ -23,7 +23,7 @@ module XeroGateway
         line_item = LineItem.new
         line_item_element.children.each do |element|
           case(element.name)
-            when "LineItemID" then line_item.id = element.text
+            when "LineItemID" then line_item.line_item_id = element.text
             when "Description" then line_item.description = element.text
             when "Quantity" then line_item.quantity = element.text.to_i
             when "UnitAmount" then line_item.unit_amount = BigDecimal.new(element.text)

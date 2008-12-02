@@ -45,7 +45,7 @@ class InvoiceMessageTest < Test::Unit::TestCase
     invoice.total_tax = BigDecimal.new("125")
     invoice.total = BigDecimal.new("1125")
     
-    invoice.contact = XeroGateway::Contact.new(:id => 55555)
+    invoice.contact = XeroGateway::Contact.new(:contact_id => 55555)
     invoice.contact.name = "CONTACT NAME"
     invoice.contact.address.address_type = "THE ADDRESS TYPE FOR THE CONTACT"
     invoice.contact.address.line_1 = "LINE 1 OF THE ADDRESS"

@@ -23,6 +23,6 @@ class GetContactsTest < Test::Unit::TestCase
 
     result = @gateway.get_contacts
     assert result.success?
-    assert result.contacts.collect {|c| c.id}.include?(contact.id)
+    assert result.contacts.collect {|c| c.contact_id}.include?(contact.contact_id)
   end  
 end
