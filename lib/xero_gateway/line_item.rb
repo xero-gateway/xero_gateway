@@ -15,12 +15,11 @@ module XeroGateway
     end    
 
     def ==(other)
-      return true
-      equal = true
       [:description, :quantity, :unit_amount, :tax_type, :tax_amount, :line_amount, :account_code, :tracking_category, :tracking_option].each do |field|
-        equal &&= (send(field) == other.send(field))
+        puts field if send(field) != other.send(field) 
+        return false if send(field) != other.send(field)
       end
-      return equal
+      return true
     end
   end
 end

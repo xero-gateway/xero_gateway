@@ -53,6 +53,7 @@ class InvoiceMessageTest < Test::Unit::TestCase
     
     invoice.line_items << XeroGateway::LineItem.new({
       :description => "A LINE ITEM",
+      :account_code => "200",
       :unit_amount => BigDecimal.new("100"),
       :tax_amount => BigDecimal.new("12.5"),
       :line_amount => BigDecimal.new("125")

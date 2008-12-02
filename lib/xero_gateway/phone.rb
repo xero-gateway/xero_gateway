@@ -14,11 +14,10 @@ module XeroGateway
     end
     
     def ==(other)
-      equal = true
       [:phone_type, :number, :area_code, :country_code].each do |field|
-        equal &&= (send(field) == other.send(field))
+        return false if send(field) != other.send(field)
       end
-      return equal
+      return true
     end    
   end
 end

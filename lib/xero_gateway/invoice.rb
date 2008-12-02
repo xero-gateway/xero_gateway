@@ -20,15 +20,13 @@ module XeroGateway
     end    
 
     def ==(other)
-      equal = true
       ["invoice_number", "invoice_type", "invoice_status", "reference", "tax_inclusive", "includes_tax", "sub_total", "total_tax", "total", "contact", "line_items"].each do |field|
-        equal &&= (send(field) == other.send(field))
+        return false if send(field) != other.send(field)
       end
       ["date", "due_date"].each do |field|
-        equal &&= (send(field).to_s == other.send(field).to_s)
+        return false if send(field).to_s != other.send(field).to_s
       end
-      
-      return equal
+      return true
     end
   end
 end

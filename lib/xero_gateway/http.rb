@@ -1,7 +1,7 @@
 module XeroGateway
   module Http
-    OPEN_TIMEOUT = 10
-    READ_TIMEOUT = 60
+    OPEN_TIMEOUT = 10 unless defined? OPEN_TIMEOUT
+    READ_TIMEOUT = 60 unless defined? READ_TIMEOUT
 
     def http_get(url, extra_params = {})
       params = {:apiKey => @api_key, :xeroKey => @customer_key}
