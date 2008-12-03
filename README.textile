@@ -52,7 +52,7 @@ Gets all contact records for a particular Xero customer.
 
 h3. PUT /api.xro/1.0/contact
 
-Saves a contact record for a particular Xero customer. If the contact record does not exist (based on either ContactID or ContactNumber) then it’s created, otherwise it’s updated.
+Saves a contact record for a particular Xero customer.
 <pre><code>
     contact = XeroGateway::Contact.new
 	contact.name = "The contacts name"
@@ -66,6 +66,16 @@ Saves a contact record for a particular Xero customer. If the contact record doe
     contact.address.post_code = "6021"
 	
 	gateway.create_contact(contact)
+</code></pre>
+
+
+h3. POST /api.xro/1.0/contact
+
+Updates an existing contact record.
+<pre><code>
+    contact_retrieved_from_xero.email = "something_new@something.com"
+	
+	gateway.update_contact(contact)
 </code></pre>
 
 
