@@ -51,7 +51,7 @@ module XeroGateway
       get_contact(nil, contact_number)
     end
     
-    
+    #
     # Creates a contact in Xero
     #
     # Usage : 
@@ -68,7 +68,7 @@ module XeroGateway
     # contact.address.country = "NEW ZEALAND"
     # contact.address.post_code = "6021"
     #
-    #    create_contact(contact)
+    # create_contact(contact)
     def create_contact(contact)
       request_xml = XeroGateway::Messages::ContactMessage.build_xml(contact)      
       response_xml = http_put("#{@xero_url}/contact", request_xml, {})
@@ -86,8 +86,39 @@ module XeroGateway
       # Add the request and response XML to the response object
       response.request_xml = request_xml
       response.response_xml = response_xml
-    
       response      
+    end
+    
+    #
+    # Updates an existing Xero contact
+    #
+    # Usage : 
+    #
+    # contact = xero_gateway.get_contact(some_contact_id)
+    # contact.email = "a_new_email_ddress"
+    #
+    # xero_gateway.update_contact(contact)  
+    def update_contact(contact)
+      raise "contact_id or contact_number is required for updating contacts" if contact.contact_id.nil? and contact.contact_number.nil?
+      
+      request_xml = XeroGateway::Messages::ContactMessage.build_xml(contact)      
+      response_xml = http_post("#{@xero_url}/contact", request_xml, {})
+
+      doc = REXML::Document.new(response_xml)
+    
+      # Create the response object
+      response = build_response(doc)
+
+      # Add the invoice to the response
+      if response.success?
+        response.response_item = XeroGateway::Messages::ContactMessage.from_xml(REXML::XPath.first(doc, "/Response/Contact"))
+      end
+    
+      # Add the request and response XML to the response object
+      response.request_xml = request_xml
+      response.response_xml = response_xml
+    
+      response
     end
 
     # Retrieves an invoice from Xero based on its GUID

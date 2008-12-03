@@ -20,6 +20,7 @@ class GetContactsTest < Test::Unit::TestCase
   def test_get_contacts
     # Make sure there is an contact in Xero to retrieve
     contact = @gateway.create_contact(dummy_contact).contact
+    flunk "get_contacts could not be tested because create_contact failed" if contact.nil?
 
     result = @gateway.get_contacts
     assert result.success?

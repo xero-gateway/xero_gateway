@@ -26,7 +26,11 @@ module XeroGateway
     end
     
     def phone
-      self.phones[0] ||= Phone.new
+      if @phones.size > 1
+        @phones.detect {|p| p.phone_type == 'DEFAULT'} || phones[0]
+      else
+        @phones[0] ||= Phone.new
+      end
     end
     
     def ==(other)

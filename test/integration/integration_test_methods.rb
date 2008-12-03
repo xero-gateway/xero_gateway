@@ -1,17 +1,17 @@
 module IntegrationTestMethods
   # If false, the tests will be run against the Xero test environment
-  STUB_XERO_CALLS = true             unless defined? STUB_XERO_CALLS
+  STUB_XERO_CALLS = ENV["STUB_XERO_CALLS"].nil? ? true : (ENV["STUB_XERO_CALLS"] == "true") unless defined? STUB_XERO_CALLS
   
   # If the requests are not stubbed, enter your API key and you test company customer key here
-  API_KEY = "YOUR_API_KEY"           unless defined? API_KEY
-  CUSTOMER_KEY = "YOUR_CUSTOMER_KEY" unless defined? CUSTOMER_KEY
+  API_KEY = ENV["API_KEY"] unless defined? API_KEY
+  CUSTOMER_KEY = ENV["CUSTOMER_KEY"] unless defined? CUSTOMER_KEY
 
   
   def dummy_invoice
      invoice = XeroGateway::Invoice.new({
        :invoice_type => "ACCREC",
        :due_date => Date.today + 20,
-       :invoice_number => STUB_XERO_CALLS ? "INV-0001" : "#{Time.now.to_i}",
+       :invoice_number => STUB_XERO_CALLS ? "INV-0001" : "#{Time.now.to_f}",
        :reference => "YOUR REFERENCE (NOT NECESSARILY UNIQUE!)",
        :sub_total => 1000,
        :total_tax => 125,
@@ -30,9 +30,9 @@ module IntegrationTestMethods
   end
   
   def dummy_contact
-    contact = XeroGateway::Contact.new(:name => STUB_XERO_CALLS ? "CONTACT NAME" : "THE NAME OF THE CONTACT #{Time.now.to_i}")
-    contact.contact_number = STUB_XERO_CALLS ? "12345" : "#{Time.now.to_i}"
-    contact.email = "bob@example.com"
+    unique_id = Time.now.to_f
+    contact = XeroGateway::Contact.new(:name => STUB_XERO_CALLS ? "CONTACT NAME" : "THE NAME OF THE CONTACT #{unique_id}")
+    contact.email = "bob#{unique_id}@example.com"
     contact.phone.number = "12345"
     contact.address.line_1 = "LINE 1 OF THE ADDRESS"
     contact.address.line_2 = "LINE 2 OF THE ADDRESS"
