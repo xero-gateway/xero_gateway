@@ -7,6 +7,7 @@ module XeroGateway
     alias_method :contact, :response_item
     alias_method :contacts, :response_item
     alias_method :accounts, :response_item
+    alias_method :tracking_categories, :response_item
 
 
     

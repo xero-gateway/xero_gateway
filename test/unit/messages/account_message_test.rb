@@ -3,8 +3,6 @@ require File.join(File.dirname(__FILE__), '../../test_helper.rb')
 class AccountMessageTest < Test::Unit::TestCase
   # Tests that an account can be converted into XML that Xero can understand, and then converted back to an account
   def test_build_and_parse_xml
-    
-    
     account = create_test_account
     
     # Generate the XML message
@@ -16,7 +14,7 @@ class AccountMessageTest < Test::Unit::TestCase
     # Build a new account from the XML
     result_account = XeroGateway::Messages::AccountMessage.from_xml(account_element)
     
-    # Check the contact details
+    # Check the account details
     assert_equal account, result_account
   end
   

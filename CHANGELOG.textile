@@ -1,3 +1,8 @@
+h2. 1.0.2, releases 04/12/2008
+
+* Added implementation of GET /api.xro/1.0/tracking
+
+
 h2. 1.0.1, releases 02/12/2008
 
 * Added implementation of GET /api.xro/1.0/accounts

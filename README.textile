@@ -102,7 +102,8 @@ h3. GET /api.xro/1.0/invoices (get_invoices)
 
 Gets all invoice records for a particular Xero customer.
 <pre><code>
-	gateway.get_invoices(modified_since = nil)
+	gateway.get_invoices
+	gateway.get_invoices(1.month.ago) # modified since 1 month ago
 </code></pre>
 
 
@@ -138,10 +139,17 @@ Inserts an invoice for a specific organization in Xero. (Currently only adding n
 </code></pre>
 
 
-
 h3. GET /api.xro/1.0/accounts
 
 Gets all accounts for a specific organization in Xero.
 <pre><code>
 	gateway.get_accounts
+</code></pre>
+
+
+h3. GET /api.xro/1.0/tracking
+
+Gets all tracking categories and their options for a specific organization in Xero.
+<pre><code>
+	gateway.get_tracking_categories
 </code></pre>

@@ -233,6 +233,27 @@ module XeroGateway
       response
     end
 
+    #
+    # Gets all tracking categories for a specific organization in Xero.
+    #
+    def get_tracking_categories
+      response_xml = http_get("#{xero_url}/tracking")
+      
+      doc = REXML::Document.new(response_xml)
+    
+      # Create the response object
+      response = build_response(doc)
+
+      # Add the accounts to the response
+      response.response_item = []
+      REXML::XPath.first(doc, "/Response/Tracking").children.each do |tracking_category_element|
+        response.response_item << XeroGateway::Messages::TrackingCategoryMessage.from_xml(tracking_category_element)
+      end
+      
+      # Add the request and response XML to the response object
+      response.response_xml = response_xml
+      response
+    end
 
 
     private

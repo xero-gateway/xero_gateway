@@ -1,8 +1,14 @@
 module IntegrationTestMethods
-  # If false, the tests will be run against the Xero test environment
+  # The integration tests can be run against the Xero test environment.  You mush have a company set up in the test
+  # environment, and you must have set up a customer key for that account.
+  #
+  # You can then run the tests against the test environment using the commands (linux or mac):
+  # export STUB_XERO_CALLS=false
+  # export API_KEY=[your_api_key]
+  # export CUSTOMER_KEY=[your_customer_key]
+  # rake test
   STUB_XERO_CALLS = ENV["STUB_XERO_CALLS"].nil? ? true : (ENV["STUB_XERO_CALLS"] == "true") unless defined? STUB_XERO_CALLS
   
-  # If the requests are not stubbed, enter your API key and you test company customer key here
   API_KEY = ENV["API_KEY"] unless defined? API_KEY
   CUSTOMER_KEY = ENV["CUSTOMER_KEY"] unless defined? CUSTOMER_KEY
 
