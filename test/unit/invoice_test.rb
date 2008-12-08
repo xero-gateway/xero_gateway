@@ -1,15 +1,15 @@
-require File.join(File.dirname(__FILE__), '../../test_helper.rb')
+require File.join(File.dirname(__FILE__), '../test_helper.rb')
 
-class InvoiceMessageTest < Test::Unit::TestCase
+class InvoiceTest < Test::Unit::TestCase
   def setup
-    @schema = LibXML::XML::Schema.document(LibXML::XML::Document.file(File.join(File.dirname(__FILE__), '../../xsd/create_invoice.xsd')))
+    @schema = LibXML::XML::Schema.document(LibXML::XML::Document.file(File.join(File.dirname(__FILE__), '../xsd/create_invoice.xsd')))
   end
   
   # Tests that the XML generated from an invoice object validates against the Xero XSD
   def test_build_xml
     invoice = create_test_invoice
     
-    message = XeroGateway::Messages::InvoiceMessage.build_xml(invoice)
+    message = invoice.to_xml
 
     # Check that the document matches the XSD
     assert LibXML::XML::Parser.string(message).parse.validate_schema(@schema), "The XML document generated did not validate against the XSD"
@@ -20,13 +20,13 @@ class InvoiceMessageTest < Test::Unit::TestCase
     invoice = create_test_invoice
     
     # Generate the XML message
-    invoice_as_xml = XeroGateway::Messages::InvoiceMessage.build_xml(invoice)
+    invoice_as_xml = invoice.to_xml
 
     # Parse the XML message and retrieve the invoice element
     invoice_element = REXML::XPath.first(REXML::Document.new(invoice_as_xml), "/Invoice")
 
     # Build a new invoice from the XML
-    result_invoice = XeroGateway::Messages::InvoiceMessage.from_xml(invoice_element)
+    result_invoice = XeroGateway::Invoice.from_xml(invoice_element)
 
     assert_equal(invoice, result_invoice)
   end

@@ -20,23 +20,7 @@ module XeroGateway
     
       response_xml = http_get("#{@xero_url}/contacts", request_params)
     
-      doc = REXML::Document.new(response_xml)
-    
-      # Create the response object
-      response = build_response(doc)
-
-      # Add the contacts to the response
-      if response.success?
-        response.response_item = []
-        REXML::XPath.each(doc, "/Response/Contacts/Contact") do |contact_element|
-          response.response_item << XeroGateway::Messages::ContactMessage.from_xml(contact_element)
-        end
-      end
-    
-      # Add the request and response XML to the response object
-      response.request_params = request_params
-      response.response_xml = response_xml
-      response
+      parse_response(response_xml, :request_params => request_params)
     end
     
     # Retrieve a contact from Xero
@@ -70,23 +54,10 @@ module XeroGateway
     #
     # create_contact(contact)
     def create_contact(contact)
-      request_xml = XeroGateway::Messages::ContactMessage.build_xml(contact)      
+      request_xml = contact.to_xml
       response_xml = http_put("#{@xero_url}/contact", request_xml, {})
 
-      doc = REXML::Document.new(response_xml)
-    
-      # Create the response object
-      response = build_response(doc)
-
-      # Add the invoice to the response
-      if response.success?
-        response.response_item = XeroGateway::Messages::ContactMessage.from_xml(REXML::XPath.first(doc, "/Response/Contact"))
-      end
-    
-      # Add the request and response XML to the response object
-      response.request_xml = request_xml
-      response.response_xml = response_xml
-      response      
+      parse_response(response_xml, :request_xml => request_xml)
     end
     
     #
@@ -101,24 +72,10 @@ module XeroGateway
     def update_contact(contact)
       raise "contact_id or contact_number is required for updating contacts" if contact.contact_id.nil? and contact.contact_number.nil?
       
-      request_xml = XeroGateway::Messages::ContactMessage.build_xml(contact)      
+      request_xml = contact.to_xml
       response_xml = http_post("#{@xero_url}/contact", request_xml, {})
 
-      doc = REXML::Document.new(response_xml)
-    
-      # Create the response object
-      response = build_response(doc)
-
-      # Add the invoice to the response
-      if response.success?
-        response.response_item = XeroGateway::Messages::ContactMessage.from_xml(REXML::XPath.first(doc, "/Response/Contact"))
-      end
-    
-      # Add the request and response XML to the response object
-      response.request_xml = request_xml
-      response.response_xml = response_xml
-    
-      response
+      parse_response(response_xml, :request_xml => request_xml)
     end
 
     # Retrieves an invoice from Xero based on its GUID
@@ -144,23 +101,7 @@ module XeroGateway
     
       response_xml = http_get("#{@xero_url}/invoices", request_params)
 
-      doc = REXML::Document.new(response_xml)
-    
-      # Create the response object
-      response = build_response(doc)
-
-      # Add the invoices to the response
-      if response.success?
-        response.response_item = []
-        REXML::XPath.first(doc, "/Response/Invoices").children.each do |invoice_element|
-          response.response_item << XeroGateway::Messages::InvoiceMessage.from_xml(invoice_element)
-        end
-      end
-    
-      # Add the request and response XML to the response object
-      response.request_params = request_params
-      response.response_xml = response_xml
-      response      
+      parse_response(response_xml, :request_params => request_params)
     end
   
     # Creates an invoice in Xero based on an invoice object
@@ -191,24 +132,10 @@ module XeroGateway
     #
     #    create_invoice(invoice)
     def create_invoice(invoice)
-      request_xml = XeroGateway::Messages::InvoiceMessage.build_xml(invoice)      
+      request_xml = invoice.to_xml
       response_xml = http_put("#{@xero_url}/invoice", request_xml)
 
-      doc = REXML::Document.new(response_xml)
-    
-      # Create the response object
-      response = build_response(doc)
-
-      # Add the invoice to the response
-      if response.success?
-        response.response_item = XeroGateway::Messages::InvoiceMessage.from_xml(REXML::XPath.first(doc, "/Response/Invoice"))
-      end
-    
-      # Add the request and response XML to the response object
-      response.request_xml = request_xml
-      response.response_xml = response_xml
-    
-      response
+      parse_response(response_xml, :request_xml => request_xml)
     end
 
     #
@@ -216,21 +143,7 @@ module XeroGateway
     #
     def get_accounts
       response_xml = http_get("#{xero_url}/accounts")
-      
-      doc = REXML::Document.new(response_xml)
-    
-      # Create the response object
-      response = build_response(doc)
-
-      # Add the accounts to the response
-      response.response_item = []
-      REXML::XPath.first(doc, "/Response/Accounts").children.each do |account_element|
-        response.response_item << XeroGateway::Messages::AccountMessage.from_xml(account_element)
-      end
-      
-      # Add the request and response XML to the response object
-      response.response_xml = response_xml
-      response
+      parse_response(response_xml)
     end
 
     #
@@ -238,21 +151,7 @@ module XeroGateway
     #
     def get_tracking_categories
       response_xml = http_get("#{xero_url}/tracking")
-      
-      doc = REXML::Document.new(response_xml)
-    
-      # Create the response object
-      response = build_response(doc)
-
-      # Add the accounts to the response
-      response.response_item = []
-      REXML::XPath.first(doc, "/Response/Tracking").children.each do |tracking_category_element|
-        response.response_item << XeroGateway::Messages::TrackingCategoryMessage.from_xml(tracking_category_element)
-      end
-      
-      # Add the request and response XML to the response object
-      response.response_xml = response_xml
-      response
+      parse_response(response_xml)      
     end
 
 
@@ -261,61 +160,59 @@ module XeroGateway
     def get_invoice(invoice_id = nil, invoice_number = nil)
       request_params = invoice_id ? {:invoiceID => invoice_id} : {:invoiceNumber => invoice_number}
       response_xml = http_get("#{@xero_url}/invoice", request_params)
-    
-      doc = REXML::Document.new(response_xml)
-    
-      # Create the response object
-      response = build_response(doc)
 
-      # Add the invoice to the response
-      response.response_item = XeroGateway::Messages::InvoiceMessage.from_xml(REXML::XPath.first(doc, "/Response/Invoice")) if response.success?
-    
-      # Add the request and response XML to the response object
-      response.request_params = request_params
-      response.response_xml = response_xml
-      response
+      parse_response(response_xml, :request_params => request_params)
     end
 
     def get_contact(contact_id = nil, contact_number = nil)
       request_params = contact_id ? {:contactID => contact_id} : {:contactNumber => contact_number}
       response_xml = http_get("#{@xero_url}/contact", request_params)
-    
-      doc = REXML::Document.new(response_xml)
-    
-      # Create the response object
-      response = build_response(doc)
 
-      # Add the invoice to the response
-      response.response_item = XeroGateway::Messages::ContactMessage.from_xml(REXML::XPath.first(doc, "/Response/Contact")) if response.success?
-    
-      # Add the request and response XML to the response object
-      response.request_params = request_params
-      response.response_xml = response_xml
-      response
+      parse_response(response_xml, :request_params => request_params)
     end
-    
-    
-    
-    def build_response(response_document)
-      response = XeroGateway::Response.new({
-        :response_id => REXML::XPath.first(response_document, "/Response/ID").text,
-        :status => REXML::XPath.first(response_document, "/Response/Status").text,
-        :provider => REXML::XPath.first(response_document, "/Response/ProviderName").text,
-        :date_time => REXML::XPath.first(response_document, "/Response/DateTimeUTC").text,
-      })
-    
-      # Add any errors to the response object
-      if !response.success?
-        REXML::XPath.each(response_document, "/Response/Error") do |error|
-          response.errors << {
-            :date_time => REXML::XPath.first(error, "/DateTime").text,
-            :type => REXML::XPath.first(error, "/ExceptionType").text,
-            :message => REXML::XPath.first(error, "/Message").text           
-          }          
+
+    def parse_response(response_xml, request = {})
+      doc = REXML::Document.new(response_xml)
+
+      response = XeroGateway::Response.new
+
+      response_element = REXML::XPath.first(doc, "/Response")
+      
+      if response_element.nil?
+        # The Xero API documentation states that it will always return valid XML with
+        # a response element, unless an invalid API key is provided.
+        response.status = "INVALID_API_KEY"
+      else
+        response_element.children.each do |element|
+          case(element.name)
+            when "ID" then response.response_id = element.text
+            when "Status" then response.status = element.text
+            when "ProviderName" then response.provider = element.text
+            when "DateTimeUTC" then response.date_time = element.text
+            when "Contact" then response.response_item = Contact.from_xml(element)
+            when "Invoice" then response.response_item = Invoice.from_xml(element)
+            when "Contacts" then element.children.each {|child| response.response_item << Contact.from_xml(child) }
+            when "Invoices" then element.children.each {|child| response.response_item << Invoice.from_xml(child) }
+            when "Accounts" then element.children.each {|child| response.response_item << Account.from_xml(child) }
+            when "Tracking" then element.children.each {|child| response.response_item << TrackingCategory.from_xml(child) }
+            when "Errors" then element.children.each { |error| parse_error(error, response) }
+          end
         end
       end
-    
-      response      
+      
+      response.request_params = request[:request_params]
+      response.request_xml = request[:request_xml]
+      response.response_xml = response_xml
+      response
+    end    
+
+    def parse_error(error_element, response)
+      response.errors << Error.new(
+          :description => REXML::XPath.first(error_element, "Description").text,
+          :date_time => REXML::XPath.first(error_element, "//DateTime").text,
+          :type => REXML::XPath.first(error_element, "//ExceptionType").text,
+          :message => REXML::XPath.first(error_element, "//Message").text           
+      )
     end
-  end
+  end  
 end

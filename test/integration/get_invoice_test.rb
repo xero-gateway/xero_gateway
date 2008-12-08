@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
 class GetInvoiceTest < Test::Unit::TestCase
-  include IntegrationTestMethods
+  include TestHelper
   
   def setup
     @gateway = XeroGateway::Gateway.new(
@@ -23,10 +23,14 @@ class GetInvoiceTest < Test::Unit::TestCase
 
     result = @gateway.get_invoice_by_id(invoice.invoice_id)
     assert result.success?
+    assert !result.request_params.nil?
+    assert !result.response_xml.nil?    
     assert_equal result.invoice.invoice_number, invoice.invoice_number
 
     result = @gateway.get_invoice_by_number(invoice.invoice_number)
     assert result.success?
+    assert !result.request_params.nil?
+    assert !result.response_xml.nil?    
     assert_equal result.invoice.invoice_id, invoice.invoice_id
   end
 end

@@ -1,12 +1,12 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
 class GetAccountsTest < Test::Unit::TestCase
-  include IntegrationTestMethods
+  include TestHelper
   
   def setup
     @gateway = XeroGateway::Gateway.new(
       :customer_key => CUSTOMER_KEY,
-      :api_key => API_KEY    
+      :api_key => API_KEY
     )
     
     if STUB_XERO_CALLS
@@ -19,6 +19,7 @@ class GetAccountsTest < Test::Unit::TestCase
   def test_get_accounts
     result = @gateway.get_accounts
     assert result.success?
+    assert !result.response_xml.nil?
     assert result.accounts.size > 0
     assert_equal XeroGateway::Account, result.accounts.first.class
   end

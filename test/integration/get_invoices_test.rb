@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
 class GetInvoicesTest < Test::Unit::TestCase
-  include IntegrationTestMethods
+  include TestHelper
   
   def setup
     @gateway = XeroGateway::Gateway.new(
@@ -23,6 +23,8 @@ class GetInvoicesTest < Test::Unit::TestCase
     
     result = @gateway.get_invoices
     assert result.success?
+    assert !result.request_params.nil?
+    assert !result.response_xml.nil?  
     assert result.invoices.collect {|i| i.invoice_number}.include?(invoice.invoice_number)
   end
   
@@ -34,6 +36,8 @@ class GetInvoicesTest < Test::Unit::TestCase
     # Check that it is returned
     result = @gateway.get_invoices(Date.today - 1)
     assert result.success?
+    assert !result.request_params.nil?
+    assert !result.response_xml.nil?    
     assert result.request_params.keys.include?(:modifiedSince) # make sure the flag was sent
     assert result.invoices.collect {|response_invoice| response_invoice.invoice_number}.include?(invoice.invoice_number)
   end  

@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
 class UpdateContactTest < Test::Unit::TestCase
-  include IntegrationTestMethods
+  include TestHelper
   
   def setup
     @gateway = XeroGateway::Gateway.new(
@@ -26,6 +26,8 @@ class UpdateContactTest < Test::Unit::TestCase
     result = @gateway.update_contact(contact)
 
     assert result.success?
+    assert !result.request_xml.nil?
+    assert !result.response_xml.nil?    
     assert_equal contact.contact_id, result.contact.contact_id
     assert_equal "123 4567", result.contact.phone.number if !STUB_XERO_CALLS
   end

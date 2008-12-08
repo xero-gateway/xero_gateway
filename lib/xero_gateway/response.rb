@@ -18,6 +18,7 @@ module XeroGateway
       end
       
       @errors ||= []
+      @response_item ||= []
     end    
     
     def success?
