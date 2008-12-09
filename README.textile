@@ -2,7 +2,7 @@ h1. Xero API wrapper
 
 h2. Introduction
 
-This library is designed to help ruby based applications communicate with the publicly available API for Xero.  If you are unfamiliar with the API, you should first read the documentation, located here "http://blog.xero.com/developer/":http://blog.xero.com/developer/
+This library is designed to help ruby / rails based applications communicate with the publicly available API for Xero.  If you are unfamiliar with the API, you should first read the documentation, located here "http://blog.xero.com/developer/":http://blog.xero.com/developer/
 
 h2. Prerequisites
 
