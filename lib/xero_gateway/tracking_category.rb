@@ -10,16 +10,11 @@ module XeroGateway
       end
     end
     
-    def ==(other)
-      [:name, :options].each do |field|
-        return false if send(field) != other.send(field)
-      end
-      return true
+    def option
+       options[0] if options.size == 1
     end
-    
-    def to_xml
-      b = Builder::XmlMarkup.new
-      
+        
+    def to_xml(b = Builder::XmlMarkup.new)
       b.TrackingCategory {
         b.Name self.name
         b.Options {
@@ -41,6 +36,13 @@ module XeroGateway
         end
       end
       tracking_category              
-    end    
+    end  
+    
+    def ==(other)
+      [:name, :options].each do |field|
+        return false if send(field) != other.send(field)
+      end
+      return true
+    end      
   end
 end
