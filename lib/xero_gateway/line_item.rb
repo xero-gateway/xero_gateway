@@ -22,7 +22,7 @@ module XeroGateway
         b.TaxType tax_type if tax_type
         b.TaxAmount LineItem.format_money(tax_amount) if tax_amount
         b.LineAmount LineItem.format_money(line_amount)
-        b.AccountCode account_code || 200
+        b.AccountCode account_code if account_code
         b.Tracking {
           b.TrackingCategory {
             b.Name tracking_category
