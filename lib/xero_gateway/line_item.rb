@@ -9,7 +9,6 @@ module XeroGateway
       @quantity = 1
       
       params.each do |k,v|
-        self.instance_variable_set("@#{k}", v)  ## create and initialize an instance variable for this key/value pair
         self.send("#{k}=", v)
       end
     end    

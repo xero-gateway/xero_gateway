@@ -8,7 +8,6 @@ module XeroGateway
       }.merge(params)
       
       params.each do |k,v|
-        self.instance_variable_set("@#{k}", v)  ## create and initialize an instance variable for this key/value pair
         self.send("#{k}=", v)
       end
     end
@@ -49,7 +48,7 @@ module XeroGateway
       address = Address.new
       
       string.split("\r\n").each_with_index do |line, index|
-        address.instance_variable_set("@line_#{index+1}", line)
+        address.send("line_#{index+1}=", line)
       end
       address
     end
