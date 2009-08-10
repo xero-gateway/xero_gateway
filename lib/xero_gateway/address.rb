@@ -1,5 +1,11 @@
 module XeroGateway
   class Address
+    
+    ADDRESS_TYPE = {
+      'STREET' =>     'Street',
+      'POBOX' =>      'PO Box'
+    }
+    
     attr_accessor :address_type, :line_1, :line_2, :line_3, :line_4, :city, :region, :post_code, :country
     
     def initialize(params = {})

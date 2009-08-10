@@ -5,6 +5,11 @@ module XeroGateway
     class Error < RuntimeError; end
     class NoGatewayError < Error; end
     
+    CONTACT_STATUS = {
+      'ACTIVE' =>     'Active',
+      'DELETED' =>    'Deleted'
+    }
+            
     # Xero::Gateway associated with this contact.
     attr_accessor :gateway
     

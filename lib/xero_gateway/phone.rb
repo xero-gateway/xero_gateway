@@ -1,5 +1,13 @@
 module XeroGateway
   class Phone
+    
+    PHONE_TYPE = {
+      'DEFAULT' =>    'Default',
+      'DDI' =>        'Direct Dial-In',
+      'MOBILE' =>     'Mobile',
+      'FAX' =>        'Fax'
+    }
+    
     attr_accessor :phone_type, :number, :area_code, :country_code
     
     def initialize(params = {})
