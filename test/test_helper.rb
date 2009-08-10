@@ -46,7 +46,7 @@ module TestHelper
      )
      invoice
   end
-  
+    
   def dummy_contact
     unique_id = Time.now.to_f
     contact = XeroGateway::Contact.new(:name => STUB_XERO_CALLS ? "CONTACT NAME" : "THE NAME OF THE CONTACT #{unique_id}")

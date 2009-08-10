@@ -2,7 +2,13 @@ module XeroGateway
   class Contact
     include Dates
     
-    attr_accessor :contact_id, :contact_number, :status, :name, :email, :addresses, :phones, :updated_at
+    class Error < RuntimeError; end
+    class NoGatewayError < Error; end
+    
+    # Xero::Gateway associated with this contact.
+    attr_accessor :gateway
+    
+    attr_accessor :contact_id, :contact_number, :status, :name, :email, :addresses, :phones, :updated_at    
     
     def initialize(params = {})
       params = {}.merge(params)      
@@ -32,6 +38,30 @@ module XeroGateway
       else
         @phones[0] ||= Phone.new
       end
+    end
+    
+    # General purpose create/save method.
+    # If contact_id and contact_number are nil then create, otherwise, attempt to save.
+    def save
+      if contact_id.nil? && contact_number.nil?
+        create
+      else
+        update
+      end
+    end
+    
+    # Creates this contact record (using gateway.create_contact) with the associated gateway.
+    # If no gateway set, raise a Xero::Contact::NoGatewayError exception.
+    def create
+      raise NoGatewayError unless gateway
+      gateway.create_contact(self)
+    end
+    
+    # Creates this contact record (using gateway.update_contact) with the associated gateway.
+    # If no gateway set, raise a Xero::Contact::NoGatewayError exception.
+    def update
+      raise NoGatewayError unless gateway
+      gateway.update_contact(self)
     end
         
     def to_xml(b = Builder::XmlMarkup.new)
@@ -72,5 +102,6 @@ module XeroGateway
       end
       return true
     end    
+        
   end
 end

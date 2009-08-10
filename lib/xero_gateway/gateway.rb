@@ -35,6 +35,15 @@ module XeroGateway
       get_contact(nil, contact_number)
     end
     
+    # Factory method for building new Contact objects associated with this gateway.
+    def build_contact(contact = {})
+      case contact
+        when Contact then   contact.gateway = self
+        when Hash then      contact = Contact.new(contact.merge({:gateway => self}))
+      end
+      contact
+    end
+    
     #
     # Creates a contact in Xero
     #
@@ -78,7 +87,10 @@ module XeroGateway
       request_xml = contact.to_xml
       response_xml = http_post("#{@xero_url}/contact", request_xml, {})
 
-      parse_response(response_xml, :request_xml => request_xml)
+      response = parse_response(response_xml, :request_xml => request_xml)
+      contact.contact_id = response.contacts.contact_id if response.contacts && response.contacts.contact_id
+      
+      response
     end
 
     # Retrieves an invoice from Xero based on its GUID
@@ -105,6 +117,14 @@ module XeroGateway
       response_xml = http_get("#{@xero_url}/invoices", request_params)
 
       parse_response(response_xml, :request_params => request_params)
+    end
+    
+    def build_invoice(invoice = {})
+      case invoice
+        when Invoice then     invoice.gateway = self
+        when Hash then        invoice = Invoice.new(invoice.merge(:gateway => self))
+      end
+      invoice
     end
   
     # Creates an invoice in Xero based on an invoice object

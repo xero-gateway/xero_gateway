@@ -3,6 +3,12 @@ module XeroGateway
     include Dates
     include Money
     
+    class Error < RuntimeError; end
+    class NoGatewayError < Error; end
+    
+    # Xero::Gateway associated with this invoice.
+    attr_accessor :gateway
+  
     # All accessible fields
     attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :tax_inclusive, :includes_tax, :sub_total, :total_tax, :total, :line_items, :contact
     
@@ -31,6 +37,22 @@ module XeroGateway
       return true
     end
     
+    # General purpose createsave method.
+    # If contact_id and contact_number are nil then create, otherwise, attempt to save.
+    def save
+      create
+    end
+    
+    # Creates this invoice record (using gateway.create_invoice) with the associated gateway.
+    # If no gateway set, raise a Xero::Invoice::NoGatewayError exception.
+    def create
+      raise NoGatewayError unless gateway
+      gateway.create_invoice(self)
+    end
+    
+    # Alias create as save as this is currently the only write action.
+    alias_method :save, :create
+        
     def to_xml
       b = Builder::XmlMarkup.new
       
