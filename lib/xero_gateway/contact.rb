@@ -5,6 +5,8 @@ module XeroGateway
     class Error < RuntimeError; end
     class NoGatewayError < Error; end
     
+    GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+    
     CONTACT_STATUS = {
       'ACTIVE' =>     'Active',
       'DELETED' =>    'Deleted'
@@ -13,9 +15,14 @@ module XeroGateway
     # Xero::Gateway associated with this contact.
     attr_accessor :gateway
     
-    attr_accessor :contact_id, :contact_number, :status, :name, :email, :addresses, :phones, :updated_at    
+    # Any errors that occurred when the #valid? method called.
+    attr_reader :errors
     
+    attr_accessor :contact_id, :contact_number, :status, :name, :email, :addresses, :phones, :updated_at
+        
     def initialize(params = {})
+      @errors ||= []
+
       params = {}.merge(params)      
       params.each do |k,v|
         self.send("#{k}=", v)
@@ -43,6 +50,40 @@ module XeroGateway
       else
         @phones[0] ||= Phone.new
       end
+    end
+    
+    # Validate the Contact record according to what will be valid by the gateway.
+    #
+    # Usage: 
+    #  contact.valid?     # Returns true/false
+    #  
+    #  Additionally sets contact.errors array to an array of field/error.
+    def valid?
+      @errors = []
+      
+      if !contact_id.nil? && contact_id !~ GUID_REGEX
+        @errors << ['contact_id', 'must be blank or a valid Xero GUID']
+      end
+      
+      if status && !CONTACT_STATUS[status]
+        @errors << ['status', "must be one of #{CONTACT_STATUS.keys.join('/')}"]
+      end
+      
+      unless name
+        @errors << ['name', "can't be blank"]
+      end
+      
+      # Make sure all addresses are correct.
+      unless addresses.all? { | address | address.valid? }
+        @errors << ['addresses', 'at least one address is invalid']
+      end
+      
+      # Make sure all phone numbers are correct.
+      unless phones.all? { | phone | phone.valid? }
+        @errors << ['phones', 'at leaset one phone is invalid']
+      end
+      
+      @errors.size == 0
     end
     
     # General purpose create/save method.

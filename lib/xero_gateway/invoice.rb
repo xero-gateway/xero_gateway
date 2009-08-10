@@ -19,24 +19,12 @@ module XeroGateway
       'SUBMITTED' =>        'Invoices entered by an employee awaiting approval',
       'VOID' =>             'Approved invoices that are voided'
     }
-    
-    TAX_TYPE = {
-      'NONE' =>             'No GST',
-      'EXEMPTINPUT' =>      'VAT on expenses exempt from VAT (UK only)',
-      'INPUT' =>            'GST on expenses',
-      'SRINPUT' =>          'VAT on expenses',
-      'ZERORATEDINPUT' =>   'Expense purchased from overseas (UK only)',
-      'RRINPUT' =>          'Reduced rate VAT on expenses (UK Only)', 
-      'EXEMPTOUTPUT' =>     'VAT on sales exempt from VAT (UK only)',
-      'OUTPUT' =>           'OUTPUT',
-      'SROUTPUT' =>         'SROUTPUT',
-      'ZERORATEDOUTPUT' =>  'Sales made from overseas (UK only)',
-      'RROUTPUT' =>         'Reduced rate VAT on sales (UK Only)',
-      'ZERORATED' =>        'Zero-rated supplies/sales from overseas (NZ Only)'
-    }
-    
+        
     # Xero::Gateway associated with this invoice.
     attr_accessor :gateway
+    
+    # Any errors that occurred when the #valid? method called.
+    attr_reader :errors
   
     # All accessible fields
     attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :tax_inclusive, :includes_tax, :sub_total, :total_tax, :total, :line_items, :contact
@@ -55,6 +43,65 @@ module XeroGateway
       
       @line_items ||= []
     end    
+    
+    # Validate the Address record according to what will be valid by the gateway.
+    #
+    # Usage: 
+    #  address.valid?     # Returns true/false
+    #  
+    #  Additionally sets address.errors array to an array of field/error.
+    def valid?
+      @errors = []
+      
+      if !invoice_id.nil? && invoice_id !~ GUID_REGEX
+        @errors << ['invoice_id', 'must be blank or a valid Xero GUID']
+      end
+            
+      if invoice_status && !INVOICE_STATUS[invoice_status]
+        @errors << ['invoice_status', "must be one of #{INVOICE_STATUS.keys.join('/')}"]
+      end
+      
+      unless invoice_number
+        @errors << ['invoice_number', "can't be blank"]
+      end
+      
+      unless date
+        @errors << ['invoice_date', "can't be blank"]
+      end
+      
+      # Make sure contact is valid.
+      unless contact.valid?
+        @errors << ['contact', 'is invalid']
+      end
+      
+      # Make sure all line_items are valid.
+      unless line_items.all? { | line_item | line_item.valid? }
+        @errors << ['line_items', "at least one line item invalid"]
+      end
+      
+      # Make sure totals are correct.
+      if BigDecimal.new(sub_total.to_s) != calculate_sub_total
+        @errors << ['sub_total', "should be equal to the total of all line items"]
+      end
+      
+      if BigDecimal.new(total_tax.to_s) != calculate_total_tax
+        @errors << ['total_tax', "should be equal to the total of all line items"]
+      end
+      
+      if BigDecimal.new(total.to_s) != (BigDecimal.new(sub_total.to_s) + BigDecimal.new(total_tax.to_s))
+        @errors << ['total', "should be equal to sub_total + total_tax"]
+      end
+      
+      @errors.size == 0
+    end    
+    
+    def calculate_sub_total
+      line_items.inject(BigDecimal.new('0')) { | sum, line_item | sum + BigDecimal.new(line_item.line_amount.to_s) }
+    end
+    
+    def calculate_total_tax
+      line_items.inject(BigDecimal.new('0')) { | sum, line_item | sum + BigDecimal.new(line_item.tax_amount.to_s) }
+    end
 
     def ==(other)
       ["invoice_number", "invoice_type", "invoice_status", "reference", "tax_inclusive", "includes_tax", "sub_total", "total_tax", "total", "contact", "line_items"].each do |field|

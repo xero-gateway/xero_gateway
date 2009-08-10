@@ -1,17 +1,65 @@
 module XeroGateway
   class LineItem
     include Money
+    
+    TAX_TYPE = {
+      'NONE' =>             'No GST',
+      'EXEMPTINPUT' =>      'VAT on expenses exempt from VAT (UK only)',
+      'INPUT' =>            'GST on expenses',
+      'SRINPUT' =>          'VAT on expenses',
+      'ZERORATEDINPUT' =>   'Expense purchased from overseas (UK only)',
+      'RRINPUT' =>          'Reduced rate VAT on expenses (UK Only)', 
+      'EXEMPTOUTPUT' =>     'VAT on sales exempt from VAT (UK only)',
+      'OUTPUT' =>           'OUTPUT',
+      'SROUTPUT' =>         'SROUTPUT',
+      'ZERORATEDOUTPUT' =>  'Sales made from overseas (UK only)',
+      'RROUTPUT' =>         'Reduced rate VAT on sales (UK Only)',
+      'ZERORATED' =>        'Zero-rated supplies/sales from overseas (NZ Only)'
+    }
+
+    # Any errors that occurred when the #valid? method called.
+    attr_reader :errors
 
     # All accessible fields
     attr_accessor :line_item_id, :description, :quantity, :unit_amount, :tax_type, :tax_amount, :line_amount, :account_code, :tracking_category, :tracking_option
     
     def initialize(params = {})
+      @errors ||= []
       @quantity = 1
       
       params.each do |k,v|
         self.send("#{k}=", v)
       end
     end    
+    
+    # Validate the LineItem record according to what will be valid by the gateway.
+    #
+    # Usage: 
+    #  line_item.valid?     # Returns true/false
+    #  
+    #  Additionally sets line_item.errors array to an array of field/error.
+    def valid?
+      @errors = []
+      
+      if !line_item_id.nil? && line_item_id !~ GUID_REGEX
+        @errors << ['line_item_id', 'must be blank or a valid Xero GUID']
+      end
+      
+      unless description
+        @errors << ['description', "can't be blank"]
+      end
+      
+      unless (quantity * unit_amount) == line_amount
+        @errors << ['line_amount', "must equal quantity * unit_amount"]
+      end
+      
+      if tax_type && !TAX_TYPE[tax_type]
+        @errors << ['tax_type', "must be one of #{TAX_TYPE.keys.join('/')}"]
+      end
+      
+      @errors.size == 0
+    end
+    
     
     def to_xml(b = Builder::XmlMarkup.new)
       b.LineItem {

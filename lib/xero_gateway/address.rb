@@ -3,12 +3,18 @@ module XeroGateway
     
     ADDRESS_TYPE = {
       'STREET' =>     'Street',
-      'POBOX' =>      'PO Box'
+      'POBOX' =>      'PO Box',
+      'DEFAULT' =>    'Default address type'
     }
+    
+    # Any errors that occurred when the #valid? method called.
+    attr_reader :errors
     
     attr_accessor :address_type, :line_1, :line_2, :line_3, :line_4, :city, :region, :post_code, :country
     
     def initialize(params = {})
+      @errors ||= []
+      
       params = {
         :address_type => "DEFAULT"
       }.merge(params)
@@ -17,6 +23,22 @@ module XeroGateway
         self.send("#{k}=", v)
       end
     end
+    
+    # Validate the Address record according to what will be valid by the gateway.
+    #
+    # Usage: 
+    #  address.valid?     # Returns true/false
+    #  
+    #  Additionally sets address.errors array to an array of field/error.
+    def valid?
+      @errors = []
+            
+      if address_type && !ADDRESS_TYPE[address_type]
+        @errors << ['address_type', "must be one of #{ADDRESS_TYPE.keys.join('/')} and is currently #{address_type}"]
+      end
+      
+      @errors.size == 0
+    end    
     
     def to_xml(b = Builder::XmlMarkup.new)
       b.Address {

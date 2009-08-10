@@ -50,6 +50,11 @@ class CreateContactTest < Test::Unit::TestCase
     assert_valid_contact_save_response(result, example_contact)
   end    
   
+  def test_create_contact_valid
+    example_contact = dummy_contact.dup
+    assert_equal true, example_contact.valid?, "invoice is invalid - errors:\n\t#{example_contact.errors.map { | error | "#{error[0]} #{error[1]}"}.join("\n\t")}"
+  end
+  
   private
   
     def assert_valid_contact_save_response(result, example_contact)

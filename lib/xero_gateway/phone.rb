@@ -8,9 +8,14 @@ module XeroGateway
       'FAX' =>        'Fax'
     }
     
+    # Any errors that occurred when the #valid? method called.
+    attr_reader :errors
+
     attr_accessor :phone_type, :number, :area_code, :country_code
     
     def initialize(params = {})
+      @errors ||= []
+      
       params = {
         :phone_type => "DEFAULT"
       }.merge(params)
@@ -18,6 +23,26 @@ module XeroGateway
       params.each do |k,v|
         self.send("#{k}=", v)
       end
+    end
+    
+    # Validate the Phone record according to what will be valid by the gateway.
+    #
+    # Usage: 
+    #  phone.valid?     # Returns true/false
+    #  
+    #  Additionally sets phone.errors array to an array of field/error.
+    def valid?
+      @errors = []
+            
+      unless number
+        @errors << ['number', "can't be blank"]
+      end
+      
+      if phone_type && !PHONE_TYPE[phone_type]
+        @errors << ['phone_type', "must be one of #{PHONE_TYPE.keys.join('/')}"]
+      end
+      
+      @errors.size == 0
     end
     
     def to_xml(b = Builder::XmlMarkup.new)
