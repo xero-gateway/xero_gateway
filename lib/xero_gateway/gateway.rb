@@ -57,7 +57,10 @@ module XeroGateway
       request_xml = contact.to_xml
       response_xml = http_put("#{@xero_url}/contact", request_xml, {})
 
-      parse_response(response_xml, :request_xml => request_xml)
+      response = parse_response(response_xml, :request_xml => request_xml)
+      contact.contact_id = response.contacts.contact_id if response.contacts && response.contacts.contact_id
+      
+      response
     end
     
     #
@@ -135,7 +138,10 @@ module XeroGateway
       request_xml = invoice.to_xml
       response_xml = http_put("#{@xero_url}/invoice", request_xml)
 
-      parse_response(response_xml, :request_xml => request_xml)
+      response = parse_response(response_xml, :request_xml => request_xml)
+      invoice.invoice_id = response.invoice.invoice_id if response.invoice && response.invoice.invoice_id
+      
+      response
     end
 
     #

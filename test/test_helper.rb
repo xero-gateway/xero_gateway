@@ -20,6 +20,9 @@ module TestHelper
   
   API_KEY = ENV["API_KEY"] unless defined? API_KEY
   CUSTOMER_KEY = ENV["CUSTOMER_KEY"] unless defined? CUSTOMER_KEY
+  
+  # Helper constant for checking regex
+  GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
   
   def dummy_invoice

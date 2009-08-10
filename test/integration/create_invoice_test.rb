@@ -20,10 +20,12 @@ class CreateInvoiceTest < Test::Unit::TestCase
     example_invoice = dummy_invoice
     
     result = @gateway.create_invoice(example_invoice)
+    assert_kind_of XeroGateway::Response, result
     assert result.success?
     assert !result.request_xml.nil?
     assert !result.response_xml.nil?
     assert !result.invoice.invoice_id.nil?
     assert result.invoice.invoice_number == example_invoice.invoice_number
+    assert example_invoice.invoice_id =~ GUID_REGEX
   end
 end
