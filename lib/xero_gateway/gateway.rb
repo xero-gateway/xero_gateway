@@ -63,13 +63,7 @@ module XeroGateway
     #
     # create_contact(contact)
     def create_contact(contact)
-      request_xml = contact.to_xml
-      response_xml = http_put("#{@xero_url}/contact", request_xml, {})
-
-      response = parse_response(response_xml, :request_xml => request_xml)
-      contact.contact_id = response.contacts.contact_id if response.contacts && response.contacts.contact_id
-      
-      response
+      save_contact(contact)
     end
     
     #
@@ -83,16 +77,9 @@ module XeroGateway
     # xero_gateway.update_contact(contact)  
     def update_contact(contact)
       raise "contact_id or contact_number is required for updating contacts" if contact.contact_id.nil? and contact.contact_number.nil?
-      
-      request_xml = contact.to_xml
-      response_xml = http_post("#{@xero_url}/contact", request_xml, {})
-
-      response = parse_response(response_xml, :request_xml => request_xml)
-      contact.contact_id = response.contacts.contact_id if response.contacts && response.contacts.contact_id
-      
-      response
+      save_contact(contact)
     end
-
+    
     # Retrieves an invoice from Xero based on its GUID
     #
     # Usage : get_invoice_by_id("8c69117a-60ae-4d31-9eb4-7f5a76bc4947")
@@ -119,6 +106,7 @@ module XeroGateway
       parse_response(response_xml, :request_params => request_params)
     end
     
+    # Factory method for building new Invoice objects associated with this gateway.
     def build_invoice(invoice = {})
       case invoice
         when Invoice then     invoice.gateway = self
@@ -195,6 +183,24 @@ module XeroGateway
       response_xml = http_get("#{@xero_url}/contact", request_params)
 
       parse_response(response_xml, :request_params => request_params)
+    end
+    
+    # Create or update a contact record based on if it has a contact_id or contact_number.
+    def save_contact(contact)
+      request_xml = contact.to_xml
+      
+      response_xml = nil
+      if contact.contact_id.nil? && contact.contact_number.nil?
+        # Create new contact record.
+        response_xml = http_put("#{@xero_url}/contact", request_xml, {})
+      else
+        # Update existing contact record.
+        response_xml = http_post("#{@xero_url}/contact", request_xml, {})
+      end
+
+      response = parse_response(response_xml, :request_xml => request_xml)
+      contact.contact_id = response.contacts.contact_id if response.contacts && response.contacts.contact_id
+      response
     end
 
     def parse_response(response_xml, request = {})
