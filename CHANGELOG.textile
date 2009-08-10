@@ -1,3 +1,10 @@
+h2. TO BE DEFINED
+
+* [WCR] Auto-assign Contact#contact_id and Invoice#invoice_id on creation of either of these records.
+* [WCR] Add Xero::Gateway#build_contact and Xero::Gateway#build_invoice factory methods to create Contact/Invoice objects associated with the gateway.
+* [WCR] Add Contact#save method to create/update a contact record based on if it has a contact_id or contact_number.
+* [WCR] Add Invoice#save method to create (insert only currently supported by Xero API) the invoice.
+
 h2. 1.0.3, released 09/12/2008
 
 * Major refactorings to DRY out gateway.rb
