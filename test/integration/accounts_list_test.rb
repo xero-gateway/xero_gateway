@@ -68,7 +68,10 @@ class AccountsListTest < Test::Unit::TestCase
     unique_types.each do | account_type, count |
       found_accounts = accounts_list.find_all_by_type(account_type)
       assert_equal(count, found_accounts.size)
-      found_accounts.each { | found_account | assert_kind_of(XeroGateway::Account, found_account) }
+      found_accounts.each do | found_account | 
+        assert_kind_of(XeroGateway::Account, found_account)
+        assert_equal(account_type, found_account.type)
+      end
     end    
   end
 
@@ -91,7 +94,10 @@ class AccountsListTest < Test::Unit::TestCase
     unique_types.each do | tax_type, count |
       found_accounts = accounts_list.find_all_by_tax_type(tax_type)
       assert_equal(count, found_accounts.size)
-      found_accounts.each { | found_account | assert_kind_of(XeroGateway::Account, found_account) }
+      found_accounts.each do | found_account | 
+        assert_kind_of(XeroGateway::Account, found_account)
+        assert_equal(tax_type, found_account.tax_type)
+      end
     end    
   end
   
