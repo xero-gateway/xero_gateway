@@ -1,21 +1,10 @@
+require File.join(File.dirname(__FILE__), 'account')
+
 module XeroGateway
   class LineItem
     include Money
     
-    TAX_TYPE = {
-      'NONE' =>             'No GST',
-      'EXEMPTINPUT' =>      'VAT on expenses exempt from VAT (UK only)',
-      'INPUT' =>            'GST on expenses',
-      'SRINPUT' =>          'VAT on expenses',
-      'ZERORATEDINPUT' =>   'Expense purchased from overseas (UK only)',
-      'RRINPUT' =>          'Reduced rate VAT on expenses (UK Only)', 
-      'EXEMPTOUTPUT' =>     'VAT on sales exempt from VAT (UK only)',
-      'OUTPUT' =>           'OUTPUT',
-      'SROUTPUT' =>         'SROUTPUT',
-      'ZERORATEDOUTPUT' =>  'Sales made from overseas (UK only)',
-      'RROUTPUT' =>         'Reduced rate VAT on sales (UK Only)',
-      'ZERORATED' =>        'Zero-rated supplies/sales from overseas (NZ Only)'
-    } unless defined?(TAX_TYPE)
+    TAX_TYPE = Account::TAX_TYPE unless defined?(TAX_TYPE)
 
     # Any errors that occurred when the #valid? method called.
     attr_reader :errors
