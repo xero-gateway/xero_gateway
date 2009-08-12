@@ -7,6 +7,7 @@ h2. TO BE DEFINED
 * [WCR] Add #valid? method to each model class to validate it's contents with the minimum required by the API (without calling the API).
 * [WCR] Add useful API constants throughout the library.
 * [WCR] Allow Invoice and LineItem to auto-calculate line_amount, sub_total, total_tax and total fields. Existing setters for these fields remain (for backwards compatability) but will be deprecated in the future.
+* [WCR] Create XeroGateway::AccountList class to make working with the accounts response more powerful and faster (as it caches the last result).
 
 h2. 1.0.3, released 09/12/2008
 
