@@ -40,6 +40,21 @@ module XeroGateway
       self.addresses[0] ||= Address.new
     end
     
+    # Helper method to add a new address object to this contact.
+    #
+    # Usage:
+    #  contact.add_address({
+    #    :address_type =>   'STREET',
+    #    :line_1 =>         '100 Queen Street',
+    #    :city =>           'Brisbane',
+    #    :region =>         'QLD',
+    #    :post_code =>      '4000',
+    #    :country =>        'Australia'
+    #  })
+    def add_address(address_params)
+      self.addresses << Address.new(address_params)
+    end
+    
     def phone=(phone)
       self.phones = [phone]
     end
@@ -50,6 +65,17 @@ module XeroGateway
       else
         @phones[0] ||= Phone.new
       end
+    end
+    
+    # Helper method to add a new phone object to this contact.
+    #
+    # Usage:
+    #  contact.add_phone({
+    #    :phone_type =>   'MOBILE',
+    #    :number =>       '0400123123'
+    #  })
+    def add_phone(phone_params = {})
+      self.phones << Phone.new(phone_params)
     end
     
     # Validate the Contact record according to what will be valid by the gateway.

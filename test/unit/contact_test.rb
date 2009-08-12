@@ -32,6 +32,49 @@ class ContactTest < Test::Unit::TestCase
     assert_equal contact, result_contact
   end
   
+  # Test Contact#add_address helper creates a valid XeroGateway::Contact object with the passed in values
+  # and appends it to the Contact#addresses attribute.
+  def test_add_address_helper
+    contact = create_test_contact
+    assert_equal(1, contact.addresses.size)
+    
+    new_values = {
+      :address_type => 'POBOX',
+      :line_1 => 'NEW LINE 1',
+      :line_2 => 'NEW LINE 2',
+      :line_3 => 'NEW LINE 3',
+      :line_4 => 'NEW LINE 4',
+      :city => 'NEW CITY',
+      :region => 'NEW REGION',
+      :post_code => '5555',
+      :country => 'Australia'
+    }
+    contact.add_address(new_values)
+    
+    assert_equal(2, contact.addresses.size)
+    assert_kind_of(XeroGateway::Address, contact.addresses.last)
+    new_values.each { |k,v| assert_equal(v, contact.addresses.last.send("#{k}")) }
+  end
+
+  # Test Contact#add_phone helper creates a valid XeroGateway::Phone object with the passed in values
+  # and appends it to the Contact#phones attribute.
+  def test_add_address_helper
+    contact = create_test_contact
+    assert_equal(1, contact.phones.size)
+    
+    new_values = {
+      :phone_type => 'MOBILE',
+      :country_code => '61',
+      :area_code => '406',
+      :number => '123456'
+    }
+    contact.add_phone(new_values)
+    
+    assert_equal(2, contact.phones.size)
+    assert_kind_of(XeroGateway::Phone, contact.phones.last)
+    new_values.each { |k,v| assert_equal(v, contact.phones.last.send("#{k}")) }
+  end  
+  
   
   private
   
