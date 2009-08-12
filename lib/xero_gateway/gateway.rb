@@ -157,6 +157,14 @@ module XeroGateway
       response_xml = http_get("#{xero_url}/accounts")
       parse_response(response_xml)
     end
+    
+    #
+    # Returns a XeroGateway::AccountsList object that makes working with
+    # the Xero list of accounts easier and allows caching the results.
+    #
+    def get_accounts_list(load_on_init = true)
+      AccountsList.new(self, load_on_init)
+    end
 
     #
     # Gets all tracking categories for a specific organization in Xero.
