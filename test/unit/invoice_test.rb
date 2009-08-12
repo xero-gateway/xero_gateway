@@ -129,28 +129,116 @@ class InvoiceTest < Test::Unit::TestCase
   end
   
   
+  # Make sure that the create_test_invoice method is working correctly
+  # with all the defaults and overrides.
+  def test_create_test_invoice_defaults_working
+    invoice = create_test_invoice
+    
+    # Test invoice defaults.
+    assert_equal('ACCREC', invoice.invoice_type)
+    assert_kind_of(Time, invoice.date)
+    assert_kind_of(Time, invoice.due_date)
+    assert_equal('12345', invoice.invoice_number)
+    assert_equal('MY REFERENCE FOR THIS INVOICE', invoice.reference)
+    assert_equal(false, invoice.includes_tax)
+    
+    # Test the contact defaults.
+    assert_equal('00000000-0000-0000-0000-000000000000', invoice.contact.contact_id)
+    assert_equal('CONTACT NAME', invoice.contact.name)
+    
+    # Test address defaults.
+    assert_equal('DEFAULT', invoice.contact.address.address_type)
+    assert_equal('LINE 1 OF THE ADDRESS', invoice.contact.address.line_1)
+    
+    # Test phone defaults.
+    assert_equal('DEFAULT', invoice.contact.phone.phone_type)
+    assert_equal('12345678', invoice.contact.phone.number)
+    
+    # Test the line_item defaults.
+    assert_equal('A LINE ITEM', invoice.line_items.first.description)
+    assert_equal('200', invoice.line_items.first.account_code)
+    assert_equal(BigDecimal.new('100'), invoice.line_items.first.unit_amount)
+    assert_equal(BigDecimal.new('12.5'), invoice.line_items.first.tax_amount)
+
+    # Test overriding an invoice parameter (assume works for all).
+    invoice = create_test_invoice({:invoice_type => 'ACCPAY'})
+    assert_equal('ACCPAY', invoice.invoice_type)
+    
+    # Test overriding a contact/address/phone parameter (assume works for all).
+    invoice = create_test_invoice({}, {:name => 'OVERRIDDEN NAME', :address => {:line_1 => 'OVERRIDDEN LINE 1'}, :phone => {:number => '999'}})
+    assert_equal('OVERRIDDEN NAME', invoice.contact.name)
+    assert_equal('OVERRIDDEN LINE 1', invoice.contact.address.line_1)
+    assert_equal('999', invoice.contact.phone.number)
+    
+    # Test overriding line_items with hash.
+    invoice = create_test_invoice({}, {}, {:description => 'OVERRIDDEN LINE ITEM'})
+    assert_equal(1, invoice.line_items.size)
+    assert_equal('OVERRIDDEN LINE ITEM', invoice.line_items.first.description)
+    assert_equal(BigDecimal.new('100'), invoice.line_items.first.unit_amount)
+    
+    # Test overriding line_items with array of 2 line_items.
+    invoice = create_test_invoice({}, {}, [
+      {:description => 'OVERRIDDEN ITEM 1'},
+      {:description => 'OVERRIDDEN ITEM 2', :account_code => '200', :unit_amount => BigDecimal.new('200'), :tax_amount => '25.0'}
+    ])
+    assert_equal(2, invoice.line_items.size)
+    assert_equal('OVERRIDDEN ITEM 1', invoice.line_items[0].description)
+    assert_equal(BigDecimal.new('100'), invoice.line_items[0].unit_amount)
+    assert_equal('OVERRIDDEN ITEM 2', invoice.line_items[1].description)
+    assert_equal(BigDecimal.new('200'), invoice.line_items[1].unit_amount)
+  end
+  
   private
     
-  def create_test_invoice
-    invoice = XeroGateway::Invoice.new(:invoice_type => "THE INVOICE TYPE")
-    invoice.date = Time.now
-    invoice.due_date = Time.now + 10
-    invoice.invoice_number = "12345"
-    invoice.reference = "MY REFERENCE FOR THIS INVOICE"
-    invoice.includes_tax = false
+  def create_test_invoice(invoice_params = {}, contact_params = {}, line_item_params = [])
+    invoice_params = {
+      :invoice_type => 'ACCREC',
+      :date => Time.now,
+      :due_date => Time.now + (10 * 24 * 3600), # 10 days in the future
+      :invoice_number => '12345',
+      :reference => "MY REFERENCE FOR THIS INVOICE",
+      :includes_tax => false
+    }.merge(invoice_params)
+    invoice = XeroGateway::Invoice.new(invoice_params)
     
-    invoice.contact = XeroGateway::Contact.new(:contact_id => 55555)
-    invoice.contact.name = "CONTACT NAME"
-    invoice.contact.address.address_type = "THE ADDRESS TYPE FOR THE CONTACT"
-    invoice.contact.address.line_1 = "LINE 1 OF THE ADDRESS"
-    invoice.contact.phone.number = "12345"
+    # Strip out :address key from contact_params to use as the default address.
+    stripped_address = {
+      :address_type => 'DEFAULT',
+      :line_1 => 'LINE 1 OF THE ADDRESS'
+    }.merge(contact_params.delete(:address) || {})
     
-    invoice.line_items << XeroGateway::LineItem.new({
+    # Strip out :phone key from contact_params to use at the default phone.
+    stripped_phone = {
+      :phone_type => 'DEFAULT',
+      :number => '12345678'
+    }.merge(contact_params.delete(:phone) || {})
+    
+    contact_params = {
+      :contact_id => '00000000-0000-0000-0000-000000000000', # Just any valid GUID
+      :name => "CONTACT NAME"
+    }.merge(contact_params)
+    
+    # Create invoice.contact from contact_params.
+    invoice.contact = XeroGateway::Contact.new(contact_params)
+    invoice.contact.address = XeroGateway::Address.new(stripped_address)
+    invoice.contact.phone = XeroGateway::Phone.new(stripped_phone)
+    
+    line_item_params = [line_item_params].flatten # always use an array, even if only a single hash passed in
+    
+    # At least one line item, make first have some defaults.
+    line_item_params << {} if line_item_params.size == 0
+    line_item_params[0] = {
       :description => "A LINE ITEM",
       :account_code => "200",
       :unit_amount => BigDecimal.new("100"),
-      :tax_amount => BigDecimal.new("12.5")
-    })
+      :tax_amount => BigDecimal.new("12.5")        
+    }.merge(line_item_params[0])
+    
+    # Create invoice.line_items from line_item_params
+    line_item_params.each do | line_item |
+      invoice.line_items << XeroGateway::LineItem.new(line_item)
+    end
+    
     invoice
   end
 end
