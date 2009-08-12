@@ -1,4 +1,4 @@
-h2. TO BE DEFINED
+h2. 1.0.4, released 13/08/2009
 
 * [WCR] Auto-assign Contact#contact_id and Invoice#invoice_id on creation of either of these records.
 * [WCR] Add Xero::Gateway#build_contact and Xero::Gateway#build_invoice factory methods to create Contact/Invoice objects associated with the gateway.

@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name     = "xero_gateway"
-  s.version  = "1.0.3"
-  s.date     = "2008-12-09"
+  s.version  = "1.0.4"
+  s.date     = "2009-08-13"
   s.summary  = "Enables ruby based applications to communicate with the Xero API"
   s.email    = "tlconnor@gmail.com"
   s.homepage = "http://github.com/tlconnor/xero_gateway"
@@ -16,7 +16,9 @@ Gem::Specification.new do |s|
     "README.textile", 
     "lib/xero_gateway.rb",
     "lib/xero_gateway/account.rb",
+    "lib/xero_gateway/accounts_list.rb",
     "lib/xero_gateway/address.rb",
+    "lib/xero_gateway/ca-certificates.crt",
     "lib/xero_gateway/contact.rb",
     "lib/xero_gateway/dates.rb",
     "lib/xero_gateway/error.rb",
@@ -29,6 +31,7 @@ Gem::Specification.new do |s|
     "lib/xero_gateway/response.rb",
     "lib/xero_gateway/tracking_category.rb",
     "test/test_helper.rb",
+    "test/integration/accounts_list_test.rb",
     "test/integration/create_contact_test.rb",
     "test/integration/create_invoice_test.rb",
     "test/integration/get_accounts_test.rb",
