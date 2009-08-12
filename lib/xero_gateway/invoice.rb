@@ -9,7 +9,7 @@ module XeroGateway
     INVOICE_TYPE = {
       'ACCREC' =>           'Accounts Receivable',
       'ACCPAY' =>           'Accounts Payable'
-    }
+    } unless defined?(INVOICE_TYPE)
     
     INVOICE_STATUS = {
       'AUTHORISED' =>       'Approved invoices awaiting payment',
@@ -18,7 +18,7 @@ module XeroGateway
       'PAID' =>             'Invoices approved and fully paid',
       'SUBMITTED' =>        'Invoices entered by an employee awaiting approval',
       'VOID' =>             'Approved invoices that are voided'
-    }
+    } unless defined?(INVOICE_STATUS)
         
     # Xero::Gateway associated with this invoice.
     attr_accessor :gateway

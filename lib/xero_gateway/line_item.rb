@@ -15,7 +15,7 @@ module XeroGateway
       'ZERORATEDOUTPUT' =>  'Sales made from overseas (UK only)',
       'RROUTPUT' =>         'Reduced rate VAT on sales (UK Only)',
       'ZERORATED' =>        'Zero-rated supplies/sales from overseas (NZ Only)'
-    }
+    } unless defined?(TAX_TYPE)
 
     # Any errors that occurred when the #valid? method called.
     attr_reader :errors

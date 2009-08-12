@@ -6,7 +6,7 @@ module XeroGateway
       'DDI' =>        'Direct Dial-In',
       'MOBILE' =>     'Mobile',
       'FAX' =>        'Fax'
-    }
+    } unless defined?(PHONE_TYPE)
     
     # Any errors that occurred when the #valid? method called.
     attr_reader :errors

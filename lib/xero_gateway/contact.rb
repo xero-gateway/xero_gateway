@@ -10,7 +10,7 @@ module XeroGateway
     CONTACT_STATUS = {
       'ACTIVE' =>     'Active',
       'DELETED' =>    'Deleted'
-    }
+    } unless defined?(CONTACT_STATUS)
             
     # Xero::Gateway associated with this contact.
     attr_accessor :gateway

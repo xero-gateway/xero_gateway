@@ -5,7 +5,7 @@ module XeroGateway
       'STREET' =>     'Street',
       'POBOX' =>      'PO Box',
       'DEFAULT' =>    'Default address type'
-    }
+    } unless defined?(ADDRESS_TYPE)
     
     # Any errors that occurred when the #valid? method called.
     attr_reader :errors
