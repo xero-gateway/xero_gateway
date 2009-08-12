@@ -27,9 +27,11 @@ module XeroGateway
     attr_reader :errors
   
     # All accessible fields
-    attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :tax_inclusive, :includes_tax, :sub_total, :total_tax, :total, :line_items, :contact
+    attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :tax_inclusive, :includes_tax, :line_items, :contact
     
     def initialize(params = {})
+      @errors ||= []
+      
       params = {
         :contact => Contact.new,
         :date => Time.now,
@@ -79,30 +81,45 @@ module XeroGateway
         @errors << ['line_items', "at least one line item invalid"]
       end
       
-      # Make sure totals are correct.
-      if BigDecimal.new(sub_total.to_s) != calculate_sub_total
-        @errors << ['sub_total', "should be equal to the total of all line items"]
-      end
-      
-      if BigDecimal.new(total_tax.to_s) != calculate_total_tax
-        @errors << ['total_tax', "should be equal to the total of all line items"]
-      end
-      
-      if BigDecimal.new(total.to_s) != (BigDecimal.new(sub_total.to_s) + BigDecimal.new(total_tax.to_s))
-        @errors << ['total', "should be equal to sub_total + total_tax"]
-      end
-      
       @errors.size == 0
-    end    
+    end
     
-    def calculate_sub_total
+    # Deprecated (but API for setter remains).
+    #
+    # As sub_total must equal SUM(line_item.line_amount) for the API call to pass, this is now
+    # automatically calculated in the sub_total method.
+    def sub_total=(value)
+    end
+    
+    # Calculate the sub_total as the SUM(line_item.line_amount).
+    def sub_total
       line_items.inject(BigDecimal.new('0')) { | sum, line_item | sum + BigDecimal.new(line_item.line_amount.to_s) }
     end
     
-    def calculate_total_tax
+    # Deprecated (but API for setter remains).
+    #
+    # As total_tax must equal SUM(line_item.tax_amount) for the API call to pass, this is now
+    # automatically calculated in the total_tax method.
+    def total_tax=(value)
+    end
+    
+    # Calculate the total_tax as the SUM(line_item.tax_amount).
+    def total_tax
       line_items.inject(BigDecimal.new('0')) { | sum, line_item | sum + BigDecimal.new(line_item.tax_amount.to_s) }
     end
-
+    
+    # Deprecated (but API for setter remains).
+    #
+    # As total must equal sub_total + total_tax for the API call to pass, this is now
+    # automatically calculated in the total method.
+    def total=(value)
+    end
+    
+    # Calculate the toal as sub_total + total_tax.
+    def total
+      sub_total + total_tax
+    end
+        
     def ==(other)
       ["invoice_number", "invoice_type", "invoice_status", "reference", "tax_inclusive", "includes_tax", "sub_total", "total_tax", "total", "contact", "line_items"].each do |field|
         return false if send(field) != other.send(field)

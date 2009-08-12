@@ -115,7 +115,9 @@ module XeroGateway
       invoice
     end
   
-    # Creates an invoice in Xero based on an invoice object
+    # Creates an invoice in Xero based on an invoice object.
+    #
+    # Invoice and line item totals are calculated automatically.
     #
     # Usage : 
     #
@@ -124,10 +126,7 @@ module XeroGateway
     #      :due_date => 1.month.from_now,
     #      :invoice_number => "YOUR INVOICE NUMBER",
     #      :reference => "YOUR REFERENCE (NOT NECESSARILY UNIQUE!)",
-    #      :includes_tax => false,
-    #      :sub_total => 1000,
-    #      :total_tax => 125,
-    #      :total => 1125
+    #      :includes_tax => false
     #    })
     #    invoice.contact = XeroGateway::Contact.new(:name => "THE NAME OF THE CONTACT")
     #    invoice.contact.phone.number = "12345"
@@ -136,7 +135,6 @@ module XeroGateway
     #      :description => "THE DESCRIPTION OF THE LINE ITEM",
     #      :unit_amount => 100,
     #      :tax_amount => 12.5,
-    #      :line_amount => 125,
     #      :tracking_category => "THE TRACKING CATEGORY FOR THE LINE ITEM",
     #      :tracking_option => "THE TRACKING OPTION FOR THE LINE ITEM"
     #    )

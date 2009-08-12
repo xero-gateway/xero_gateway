@@ -10,16 +10,18 @@ module XeroGateway
     attr_reader :errors
 
     # All accessible fields
-    attr_accessor :line_item_id, :description, :quantity, :unit_amount, :tax_type, :tax_amount, :line_amount, :account_code, :tracking_category, :tracking_option
-    
+    attr_accessor :line_item_id, :description, :quantity, :unit_amount, :tax_type, :tax_amount, :account_code, :tracking_category, :tracking_option
+        
     def initialize(params = {})
       @errors ||= []
       @quantity = 1
+      @unit_amount = BigDecimal.new('0')
+      @tax_amount = BigDecimal.new('0')
       
       params.each do |k,v|
         self.send("#{k}=", v)
       end
-    end    
+    end
     
     # Validate the LineItem record according to what will be valid by the gateway.
     #
@@ -37,11 +39,7 @@ module XeroGateway
       unless description
         @errors << ['description', "can't be blank"]
       end
-      
-      unless (quantity * unit_amount) == line_amount
-        @errors << ['line_amount', "must equal quantity * unit_amount"]
-      end
-      
+            
       if tax_type && !TAX_TYPE[tax_type]
         @errors << ['tax_type', "must be one of #{TAX_TYPE.keys.join('/')}"]
       end
@@ -49,6 +47,18 @@ module XeroGateway
       @errors.size == 0
     end
     
+    # Deprecated (but API for setter remains).
+    #
+    # As line_amount must equal quantity * unit_amount for the API call to pass, this is now
+    # automatically calculated in the line_amount method.
+    def line_amount=(value)
+    end
+    
+    # Calculate the line_amount as quantity * unit_amount as this value must be correct
+    # for the API call to succeed.
+    def line_amount
+      quantity * unit_amount
+    end
     
     def to_xml(b = Builder::XmlMarkup.new)
       b.LineItem {

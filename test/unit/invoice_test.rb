@@ -31,6 +31,89 @@ class InvoiceTest < Test::Unit::TestCase
     assert_equal(invoice, result_invoice)
   end
   
+  # Tests the sub_total calculation and that setting it manually doesn't modify the data.
+  def test_invoice_sub_total_calculation
+    invoice = create_test_invoice
+    line_item = invoice.line_items.first
+    
+    # Make sure that everything adds up to begin with.
+    expected_sub_total = invoice.line_items.inject(BigDecimal.new('0')) { | sum, line_item | line_item.line_amount }
+    assert_equal(expected_sub_total, invoice.sub_total)
+    
+    # Change the sub_total and check that it doesn't modify anything.
+    invoice.sub_total = expected_sub_total * 10
+    assert_equal(expected_sub_total, invoice.sub_total)
+    
+    # Change the amount of the first line item and make sure that 
+    # everything still continues to add up.
+    line_item.unit_amount = line_item.unit_amount + 10
+    assert_not_equal(expected_sub_total, invoice.sub_total)
+    expected_sub_total = invoice.line_items.inject(BigDecimal.new('0')) { | sum, line_item | line_item.line_amount }
+    assert_equal(expected_sub_total, invoice.sub_total)
+  end
+  
+  # Tests the total_tax calculation and that setting it manually doesn't modify the data.
+  def test_invoice_sub_total_calculation
+    invoice = create_test_invoice
+    line_item = invoice.line_items.first
+    
+    # Make sure that everything adds up to begin with.
+    expected_total_tax = invoice.line_items.inject(BigDecimal.new('0')) { | sum, line_item | line_item.tax_amount }
+    assert_equal(expected_total_tax, invoice.total_tax)
+    
+    # Change the total_tax and check that it doesn't modify anything.
+    invoice.total_tax = expected_total_tax * 10
+    assert_equal(expected_total_tax, invoice.total_tax)
+    
+    # Change the tax_amount of the first line item and make sure that 
+    # everything still continues to add up.
+    line_item.tax_amount = line_item.tax_amount + 10
+    assert_not_equal(expected_total_tax, invoice.total_tax)
+    expected_total_tax = invoice.line_items.inject(BigDecimal.new('0')) { | sum, line_item | line_item.tax_amount }
+    assert_equal(expected_total_tax, invoice.total_tax)
+  end
+
+  # Tests the total calculation and that setting it manually doesn't modify the data.
+  def test_invoice_sub_total_calculation
+    invoice = create_test_invoice
+    line_item = invoice.line_items.first
+    
+    # Make sure that everything adds up to begin with.
+    expected_total = invoice.sub_total + invoice.total_tax
+    assert_equal(expected_total, invoice.total)
+    
+    # Change the total and check that it doesn't modify anything.
+    invoice.total = expected_total * 10
+    assert_equal(expected_total, invoice.total)
+    
+    # Change the quantity of the first line item and make sure that 
+    # everything still continues to add up.
+    line_item.quantity = line_item.quantity + 5
+    assert_not_equal(expected_total, invoice.total)
+    expected_total = invoice.sub_total + invoice.total_tax
+    assert_equal(expected_total, invoice.total)
+  end
+
+  # Tests that the LineItem#line_amount calculation is working correctly.
+  def test_line_amount_calculation
+    invoice = create_test_invoice
+    line_item = invoice.line_items.first
+    
+    # Make sure that everything adds up to begin with.
+    expected_amount = line_item.quantity * line_item.unit_amount
+    assert_equal(expected_amount, line_item.line_amount)
+    
+    # Change the line_amount and check that it doesn't modify anything.
+    line_item.line_amount = expected_amount * 10
+    assert_equal(expected_amount, line_item.line_amount)
+    
+    # Change the quantity and check that the line_amount has been updated.
+    quantity = line_item.quantity + 2
+    line_item.quantity = quantity
+    assert_not_equal(expected_amount, line_item.line_amount)
+    assert_equal(quantity * line_item.unit_amount, line_item.line_amount)
+  end
+  
   
   private
   
@@ -41,9 +124,6 @@ class InvoiceTest < Test::Unit::TestCase
     invoice.invoice_number = "12345"
     invoice.reference = "MY REFERENCE FOR THIS INVOICE"
     invoice.includes_tax = false
-    invoice.sub_total = BigDecimal.new("1000")
-    invoice.total_tax = BigDecimal.new("125")
-    invoice.total = BigDecimal.new("1125")
     
     invoice.contact = XeroGateway::Contact.new(:contact_id => 55555)
     invoice.contact.name = "CONTACT NAME"
@@ -55,8 +135,7 @@ class InvoiceTest < Test::Unit::TestCase
       :description => "A LINE ITEM",
       :account_code => "200",
       :unit_amount => BigDecimal.new("100"),
-      :tax_amount => BigDecimal.new("12.5"),
-      :line_amount => BigDecimal.new("125")
+      :tax_amount => BigDecimal.new("12.5")
     })
     invoice
   end

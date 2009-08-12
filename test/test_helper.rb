@@ -31,16 +31,12 @@ module TestHelper
        :due_date => Date.today + 20,
        :invoice_number => STUB_XERO_CALLS ? "INV-0001" : "#{Time.now.to_f}",
        :reference => "YOUR REFERENCE (NOT NECESSARILY UNIQUE!)",
-       :sub_total => 1000,
-       :total_tax => 125,
-       :total => 1125
      })
      invoice.contact = dummy_contact
      invoice.line_items << XeroGateway::LineItem.new(
        :description => "THE DESCRIPTION OF THE LINE ITEM",
        :unit_amount => 1000,
        :tax_amount => 125,
-       :line_amount => 1000,
        :tracking_category => "THE TRACKING CATEGORY FOR THE LINE ITEM",
        :tracking_option => "THE TRACKING OPTION FOR THE LINE ITEM"
      )
