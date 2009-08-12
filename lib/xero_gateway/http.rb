@@ -2,7 +2,7 @@ module XeroGateway
   module Http
     OPEN_TIMEOUT = 10 unless defined? OPEN_TIMEOUT
     READ_TIMEOUT = 60 unless defined? READ_TIMEOUT
-    ROOT_CA_FILE = File.join(File.dirname(__FILE__), 'ca-certificates.crt')
+    ROOT_CA_FILE = File.join(File.dirname(__FILE__), 'ca-certificates.crt') unless defined? ROOT_CA_FILE
     
     def http_get(url, extra_params = {})
       http_request(:get, url, nil, extra_params)
