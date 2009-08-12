@@ -5,7 +5,7 @@ module XeroGateway
     class Error < RuntimeError; end
     class NoGatewayError < Error; end
     
-    GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+    GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ unless defined?(GUID_REGEX)
     
     CONTACT_STATUS = {
       'ACTIVE' =>     'Active',
