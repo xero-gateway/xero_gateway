@@ -145,7 +145,8 @@ Gets all accounts for a specific organization in Xero.
 </code></pre>
 
 For more advanced (and cached) access to the accounts list, use the following.
-<notextile><pre><code>
+<pre>
+<code>
 	accounts_list = gateway.get_accounts_list
 	
 	# Finds account with code of '200'
@@ -157,7 +158,8 @@ For more advanced (and cached) access to the accounts list, use the following.
 	# Finds all accounts with tax_type == 'OUTPUT'
 	# For a list of valid tax types see XeroGateway::Account::TAX_TYPE
 	all_output_tax_accounts = accounts_list.find_all_by_tax_type('OUTPUT')
-</code></pre></notextile>
+</code>
+</pre>
 
 
 h3. GET /api.xro/1.0/tracking
