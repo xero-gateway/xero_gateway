@@ -44,7 +44,7 @@ module XeroGateway
       end
       
       @line_items ||= []
-    end    
+    end
     
     # Validate the Address record according to what will be valid by the gateway.
     #
@@ -119,7 +119,17 @@ module XeroGateway
     def total
       sub_total + total_tax
     end
-        
+    
+    # Helper method to check if the invoice is accounts payable.
+    def accounts_payable?
+      invoice_type == 'ACCPAY'
+    end
+    
+    # Helper method to check if the invoice is accounts receivable.
+    def accounts_receivable?
+      invoice_type == 'ACCREC'
+    end
+    
     def ==(other)
       ["invoice_number", "invoice_type", "invoice_status", "reference", "tax_inclusive", "includes_tax", "sub_total", "total_tax", "total", "contact", "line_items"].each do |field|
         return false if send(field) != other.send(field)

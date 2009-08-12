@@ -128,6 +128,18 @@ class InvoiceTest < Test::Unit::TestCase
     }
   end
   
+  def test_invoice_type_helper_methods
+    # Test accounts receivable invoices.
+    invoice = create_test_invoice({:invoice_type => 'ACCREC'})
+    assert_equal(true,  invoice.accounts_receivable?, "Accounts RECEIVABLE invoice doesn't think it is.")
+    assert_equal(false, invoice.accounts_payable?,    "Accounts RECEIVABLE invoice thinks it's payable.")
+    
+    # Test accounts payable invoices.
+    invoice = create_test_invoice({:invoice_type => 'ACCPAY'})
+    assert_equal(false, invoice.accounts_receivable?, "Accounts PAYABLE invoice doesn't think it is.")
+    assert_equal(true,  invoice.accounts_payable?,    "Accounts PAYABLE invoice thinks it's receivable.")
+  end
+  
   
   # Make sure that the create_test_invoice method is working correctly
   # with all the defaults and overrides.
