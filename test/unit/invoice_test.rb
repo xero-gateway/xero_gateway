@@ -1,6 +1,9 @@
 require File.join(File.dirname(__FILE__), '../test_helper.rb')
 
 class InvoiceTest < Test::Unit::TestCase
+  
+  BD_ZERO = BigDecimal.new('0') unless defined?(BD_ZERO)
+    
   def setup
     @schema = LibXML::XML::Schema.document(LibXML::XML::Document.file(File.join(File.dirname(__FILE__), '../xsd/create_invoice.xsd')))
   end
@@ -37,7 +40,7 @@ class InvoiceTest < Test::Unit::TestCase
     line_item = invoice.line_items.first
     
     # Make sure that everything adds up to begin with.
-    expected_sub_total = invoice.line_items.inject(BigDecimal.new('0')) { | sum, line_item | line_item.line_amount }
+    expected_sub_total = invoice.line_items.inject(BD_ZERO) { | sum, line_item | line_item.line_amount }
     assert_equal(expected_sub_total, invoice.sub_total)
     
     # Change the sub_total and check that it doesn't modify anything.
@@ -48,7 +51,7 @@ class InvoiceTest < Test::Unit::TestCase
     # everything still continues to add up.
     line_item.unit_amount = line_item.unit_amount + 10
     assert_not_equal(expected_sub_total, invoice.sub_total)
-    expected_sub_total = invoice.line_items.inject(BigDecimal.new('0')) { | sum, line_item | line_item.line_amount }
+    expected_sub_total = invoice.line_items.inject(BD_ZERO) { | sum, line_item | line_item.line_amount }
     assert_equal(expected_sub_total, invoice.sub_total)
   end
   
@@ -58,7 +61,7 @@ class InvoiceTest < Test::Unit::TestCase
     line_item = invoice.line_items.first
     
     # Make sure that everything adds up to begin with.
-    expected_total_tax = invoice.line_items.inject(BigDecimal.new('0')) { | sum, line_item | line_item.tax_amount }
+    expected_total_tax = invoice.line_items.inject(BD_ZERO) { | sum, line_item | line_item.tax_amount }
     assert_equal(expected_total_tax, invoice.total_tax)
     
     # Change the total_tax and check that it doesn't modify anything.
@@ -69,7 +72,7 @@ class InvoiceTest < Test::Unit::TestCase
     # everything still continues to add up.
     line_item.tax_amount = line_item.tax_amount + 10
     assert_not_equal(expected_total_tax, invoice.total_tax)
-    expected_total_tax = invoice.line_items.inject(BigDecimal.new('0')) { | sum, line_item | line_item.tax_amount }
+    expected_total_tax = invoice.line_items.inject(BD_ZERO) { | sum, line_item | line_item.tax_amount }
     assert_equal(expected_total_tax, invoice.total_tax)
   end
 
@@ -114,9 +117,22 @@ class InvoiceTest < Test::Unit::TestCase
     assert_equal(quantity * line_item.unit_amount, line_item.line_amount)
   end
   
+  # Ensure that the totalling methods don't raise exceptions, even when
+  # invoice.line_items is empty.
+  def test_totalling_methods_when_line_items_empty
+    invoice = create_test_invoice
+    invoice.line_items = []
+    
+    assert_nothing_raised(Exception) {
+      assert_equal(BD_ZERO, invoice.sub_total)
+      assert_equal(BD_ZERO, invoice.total_tax)
+      assert_equal(BD_ZERO, invoice.total)
+    }
+  end
+  
   
   private
-  
+    
   def create_test_invoice
     invoice = XeroGateway::Invoice.new(:invoice_type => "THE INVOICE TYPE")
     invoice.date = Time.now
