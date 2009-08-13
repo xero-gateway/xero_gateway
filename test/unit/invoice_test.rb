@@ -200,55 +200,69 @@ class InvoiceTest < Test::Unit::TestCase
     assert_equal(BigDecimal.new('200'), invoice.line_items[1].unit_amount)
   end
   
+  def test_auto_creation_of_associated_contact
+    invoice = create_test_invoice({}, nil)
+    assert_nil(invoice.instance_variable_get("@contact"))
+    
+    new_contact = invoice.contact
+    assert_kind_of(XeroGateway::Contact, new_contact)
+  end
+  
   private
     
   def create_test_invoice(invoice_params = {}, contact_params = {}, line_item_params = [])
-    invoice_params = {
-      :invoice_type => 'ACCREC',
-      :date => Time.now,
-      :due_date => Time.now + (10 * 24 * 3600), # 10 days in the future
-      :invoice_number => '12345',
-      :reference => "MY REFERENCE FOR THIS INVOICE",
-      :includes_tax => false
-    }.merge(invoice_params)
-    invoice = XeroGateway::Invoice.new(invoice_params)
+    unless invoice_params.nil?
+      invoice_params = {
+        :invoice_type => 'ACCREC',
+        :date => Time.now,
+        :due_date => Time.now + (10 * 24 * 3600), # 10 days in the future
+        :invoice_number => '12345',
+        :reference => "MY REFERENCE FOR THIS INVOICE",
+        :includes_tax => false
+      }.merge(invoice_params)
+    end
+    invoice = XeroGateway::Invoice.new(invoice_params || {})
     
-    # Strip out :address key from contact_params to use as the default address.
-    stripped_address = {
-      :address_type => 'DEFAULT',
-      :line_1 => 'LINE 1 OF THE ADDRESS'
-    }.merge(contact_params.delete(:address) || {})
+    unless contact_params.nil?
+      # Strip out :address key from contact_params to use as the default address.
+      stripped_address = {
+        :address_type => 'DEFAULT',
+        :line_1 => 'LINE 1 OF THE ADDRESS'
+      }.merge(contact_params.delete(:address) || {})
     
-    # Strip out :phone key from contact_params to use at the default phone.
-    stripped_phone = {
-      :phone_type => 'DEFAULT',
-      :number => '12345678'
-    }.merge(contact_params.delete(:phone) || {})
+      # Strip out :phone key from contact_params to use at the default phone.
+      stripped_phone = {
+        :phone_type => 'DEFAULT',
+        :number => '12345678'
+      }.merge(contact_params.delete(:phone) || {})
     
-    contact_params = {
-      :contact_id => '00000000-0000-0000-0000-000000000000', # Just any valid GUID
-      :name => "CONTACT NAME"
-    }.merge(contact_params)
+      contact_params = {
+        :contact_id => '00000000-0000-0000-0000-000000000000', # Just any valid GUID
+        :name => "CONTACT NAME"
+      }.merge(contact_params)
     
-    # Create invoice.contact from contact_params.
-    invoice.contact = XeroGateway::Contact.new(contact_params)
-    invoice.contact.address = XeroGateway::Address.new(stripped_address)
-    invoice.contact.phone = XeroGateway::Phone.new(stripped_phone)
+      # Create invoice.contact from contact_params.
+      invoice.contact = XeroGateway::Contact.new(contact_params)
+      invoice.contact.address = XeroGateway::Address.new(stripped_address)
+      invoice.contact.phone = XeroGateway::Phone.new(stripped_phone)
+    end
     
-    line_item_params = [line_item_params].flatten # always use an array, even if only a single hash passed in
+    unless line_item_params.nil?
+      line_item_params = [line_item_params].flatten # always use an array, even if only a single hash passed in
     
-    # At least one line item, make first have some defaults.
-    line_item_params << {} if line_item_params.size == 0
-    line_item_params[0] = {
-      :description => "A LINE ITEM",
-      :account_code => "200",
-      :unit_amount => BigDecimal.new("100"),
-      :tax_amount => BigDecimal.new("12.5")        
-    }.merge(line_item_params[0])
+      # At least one line item, make first have some defaults.
+      line_item_params << {} if line_item_params.size == 0
+      line_item_params[0] = {
+        :description => "A LINE ITEM",
+        :account_code => "200",
+        :unit_amount => BigDecimal.new("100"),
+        :tax_amount => BigDecimal.new("12.5")        
+      }.merge(line_item_params[0])
     
-    # Create invoice.line_items from line_item_params
-    line_item_params.each do | line_item |
-      invoice.line_items << XeroGateway::LineItem.new(line_item)
+      # Create invoice.line_items from line_item_params
+      line_item_params.each do | line_item |
+        invoice.line_items << XeroGateway::LineItem.new(line_item)
+      end
     end
     
     invoice

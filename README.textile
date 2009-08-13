@@ -107,7 +107,7 @@ Invoice and line item totals are calculated automatically.
       :tax_inclusive => true,
       :includes_tax => false
     })
-    invoice.contact = gateway.build_contact(:name => "THE NAME OF THE CONTACT")
+    invoice.contact.name = "THE NAME OF THE CONTACT"
     invoice.contact.phone.number = "12345"
     invoice.contact.address.line_1 = "LINE 1 OF THE ADDRESS"    
     invoice.line_items << XeroGateway::LineItem.new(

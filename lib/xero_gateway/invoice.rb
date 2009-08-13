@@ -33,7 +33,6 @@ module XeroGateway
       @errors ||= []
       
       params = {
-        :contact => Contact.new,
         :date => Time.now,
         :includes_tax => true,
         :tax_inclusive => true
@@ -72,7 +71,7 @@ module XeroGateway
       end
       
       # Make sure contact is valid.
-      unless contact.valid?
+      unless @contact && @contact.valid?
         @errors << ['contact', 'is invalid']
       end
       
@@ -82,6 +81,15 @@ module XeroGateway
       end
       
       @errors.size == 0
+    end
+    
+    # Helper method to create the associated contact object.
+    def build_contact(params = {})
+      self.contact = gateway ? gateway.build_contact(params) : Contact.new(params)
+    end
+    
+    def contact
+      @contact ||= build_contact
     end
     
     # Deprecated (but API for setter remains).
