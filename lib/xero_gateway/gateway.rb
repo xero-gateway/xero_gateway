@@ -1,6 +1,7 @@
 module XeroGateway
   class Gateway
     include Http
+    include Dates
       
     attr_accessor :xero_url, :customer_key, :api_key
   
@@ -11,12 +12,14 @@ module XeroGateway
     end
   
     # Retrieve all contacts from Xero
-    # Usage get_contacts(:type => :all, :sort => :name, :direction => :desc)
+    # Usage : get_contacts(:type => :all, :sort => :name, :direction => :desc)
+    #         get_contacts(:type => :all, :updated_after => Time)
     def get_contacts(options = {})
       request_params = {}
       request_params[:type] = options[:type] if options[:type]
       request_params[:sortBy] = options[:sort] if options[:sort]      
-      request_params[:direction] = options[:direction] if options[:direction]            
+      request_params[:direction] = options[:direction] if options[:direction]
+      request_params[:updatedAfter] = Gateway.format_date_time(options[:updated_after]) if options[:updated_after]
     
       response_xml = http_get("#{@xero_url}/contacts", request_params)
     

@@ -46,6 +46,7 @@ h3. GET /api.xro/1.0/contacts (get_contacts)
 Gets all contact records for a particular Xero customer.
 <pre><code>
 	gateway.get_contacts(:type => :all, :sort => :name, :direction => :desc)
+	gateway.get_contacts(:type => :all, :update_after => 1.month.ago) # modified since 1 month ago
 </code></pre>
 
 
