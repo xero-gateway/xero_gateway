@@ -55,8 +55,8 @@ h3. PUT /api.xro/1.0/contact
 
 Saves a contact record for a particular Xero customer.
 <pre><code>
-    contact = XeroGateway::Contact.new
-	contact.name = "The contacts name"
+    contact = gateway.build_contact
+		contact.name = "The contacts name"
     contact.email = "whoever@something.com"
     contact.phone.number = "555 123 4567"
     contact.address.line_1 = "LINE 1 OF THE ADDRESS"
@@ -65,8 +65,8 @@ Saves a contact record for a particular Xero customer.
     contact.address.region = "WELLINGTON"
     contact.address.country = "NEW ZEALAND"
     contact.address.post_code = "6021"
-	
-	gateway.create_contact(contact)
+
+		contact.save
 </code></pre>
 
 
@@ -75,8 +75,7 @@ h3. POST /api.xro/1.0/contact
 Updates an existing contact record.
 <pre><code>
   contact_retrieved_from_xero.email = "something_new@something.com"
-	
-	gateway.update_contact(contact)
+	contact_retrieved_from_xero.save
 </code></pre>
 
 
@@ -124,7 +123,7 @@ Inserts an invoice for a specific organization in Xero (Currently only adding ne
 
 Invoice and line item totals are calculated automatically.
 <pre><code>
-    invoice = XeroGateway::Invoice.new({
+    invoice = gateway.build_invoice({
       :invoice_type => "ACCREC",
       :due_date => 1.month.from_now,
       :invoice_number => "YOUR INVOICE NUMBER",
@@ -143,7 +142,7 @@ Invoice and line item totals are calculated automatically.
       :tracking_option => "THE TRACKING OPTION FOR THE LINE ITEM"
     )
 	
-	gateway.create_invoice(invoice)
+		invoice.create
 </code></pre>
 
 
