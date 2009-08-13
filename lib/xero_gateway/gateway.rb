@@ -172,9 +172,11 @@ module XeroGateway
     def create_invoice(invoice)
       request_xml = invoice.to_xml
       response_xml = http_put("#{@xero_url}/invoice", request_xml)
-
       response = parse_response(response_xml, :request_xml => request_xml)
-      invoice.invoice_id = response.invoice.invoice_id if response.invoice && response.invoice.invoice_id
+      
+      if response.success? && response.invoice && response.invoice.invoice_id
+        invoice.invoice_id = response.invoice.invoice_id 
+      end
       
       response
     end
