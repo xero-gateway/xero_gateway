@@ -41,4 +41,16 @@ class GetInvoicesTest < Test::Unit::TestCase
     assert result.request_params.keys.include?(:modifiedSince) # make sure the flag was sent
     assert result.invoices.collect {|response_invoice| response_invoice.invoice_number}.include?(invoice.invoice_number)
   end  
+  
+  # Make sure that a reference to gateway is passed when the get_invoices response is parsed.
+  def test_get_contacts_gateway_reference
+    result = @gateway.get_invoices
+    assert(result.success?)
+    assert_not_equal(0, result.invoices.size)
+    
+    result.invoices.each do | invoice |
+      assert(invoice.gateway === @gateway)
+    end
+  end
+  
 end

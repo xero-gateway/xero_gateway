@@ -28,4 +28,16 @@ class GetContactsTest < Test::Unit::TestCase
     assert !result.response_xml.nil?
     assert result.contacts.collect {|c| c.contact_id}.include?(contact.contact_id)
   end  
+  
+  # Make sure that a reference to gateway is passed when the get_contacts response is parsed.
+  def test_get_contacts_gateway_reference
+    result = @gateway.get_contacts
+    assert(result.success?)
+    assert_not_equal(0, result.contacts.size)
+    
+    result.contacts.each do | contact |
+      assert(contact.gateway === @gateway)
+    end
+  end
+  
 end
