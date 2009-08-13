@@ -8,6 +8,8 @@ h2. 1.0.4, released 13/08/2009
 * [WCR] Add useful API constants throughout the library.
 * [WCR] Allow Invoice and LineItem to auto-calculate line_amount, sub_total, total_tax and total fields. Existing setters for these fields remain (for backwards compatability) but will be deprecated in the future.
 * [WCR] Create XeroGateway::AccountList class to make working with the accounts response more powerful and faster (as it caches the last result).
+* [WCR] Add :updated_after parameter to XeroGateway::Gateway#get_contacts
+* [WCR] Add XeroGateway::Gateway#update_contacts
 
 h2. 1.0.3, released 09/12/2008
 

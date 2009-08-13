@@ -83,6 +83,31 @@ module XeroGateway
       save_contact(contact)
     end
     
+    #
+    # Updates an array of contacts in a single API operation.
+    # 
+    # Usage :
+    #  contacts = [XeroGateway::Contact.new(:name => 'Joe Bloggs'), XeroGateway::Contact.new(:name => 'Jane Doe')]
+    #  result = gateway.update_contacts(contacts)
+    #
+    # Will update contacts with matching contact_id, contact_number or name or create if they don't exist.
+    def update_contacts(contacts)
+      b = Builder::XmlMarkup.new
+      request_xml = b.Contacts {
+        contacts.each do | contact |
+          contact.to_xml(b)
+        end
+      }
+      
+      response_xml = http_post("#{@xero_url}/contacts", request_xml, {})
+
+      response = parse_response(response_xml, :request_xml => request_xml)
+      response.contacts.each_with_index do | response_contact, index |
+        contacts[index].contact_id = response_contact.contact_id if response_contact && response_contact.contact_id
+      end
+      response
+    end
+    
     # Retrieves an invoice from Xero based on its GUID
     #
     # Usage : get_invoice_by_id("8c69117a-60ae-4d31-9eb4-7f5a76bc4947")

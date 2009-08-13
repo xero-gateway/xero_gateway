@@ -74,11 +74,20 @@ h3. POST /api.xro/1.0/contact
 
 Updates an existing contact record.
 <pre><code>
-    contact_retrieved_from_xero.email = "something_new@something.com"
+  contact_retrieved_from_xero.email = "something_new@something.com"
 	
 	gateway.update_contact(contact)
 </code></pre>
 
+
+h3. POST /api.xro/1.0/contacts
+
+Creates a list of contacts or updates them if they have a matching contact_id, contact_number or name.
+This method uses only a single API request to create/update multiple contacts.
+<pre><code>
+	contacts = [XeroGateway::Contact.new(:name => 'Joe Bloggs'), XeroGateway::Contact.new(:name => 'Jane Doe')]
+  result = gateway.update_contacts(contacts)
+</code></pre>
 
 
 h3. GET /api.xro/1.0/invoice (get_invoice_by_id)
