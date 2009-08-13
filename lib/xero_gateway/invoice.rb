@@ -92,6 +92,14 @@ module XeroGateway
       @contact ||= build_contact
     end
     
+    # Helper method to create a new associated line_item.
+    def add_line_item(params = {})
+      line_item = LineItem.new(params)
+      @line_items << line_item
+      
+      line_item
+    end
+    
     # Deprecated (but API for setter remains).
     #
     # As sub_total must equal SUM(line_item.line_amount) for the API call to pass, this is now

@@ -261,7 +261,7 @@ class InvoiceTest < Test::Unit::TestCase
     
       # Create invoice.line_items from line_item_params
       line_item_params.each do | line_item |
-        invoice.line_items << XeroGateway::LineItem.new(line_item)
+        invoice.add_line_item(line_item)
       end
     end
     

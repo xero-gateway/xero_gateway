@@ -110,13 +110,13 @@ Invoice and line item totals are calculated automatically.
     invoice.contact.name = "THE NAME OF THE CONTACT"
     invoice.contact.phone.number = "12345"
     invoice.contact.address.line_1 = "LINE 1 OF THE ADDRESS"    
-    invoice.line_items << XeroGateway::LineItem.new(
+    invoice.add_line_item({
       :description => "THE DESCRIPTION OF THE LINE ITEM",
       :unit_amount => 1000,
       :tax_amount => 125,
       :tracking_category => "THE TRACKING CATEGORY FOR THE LINE ITEM",
       :tracking_option => "THE TRACKING OPTION FOR THE LINE ITEM"
-    )
+    })
 	
 		invoice.create</code></pre>
 
