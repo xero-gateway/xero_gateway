@@ -1,6 +1,23 @@
 module XeroGateway
   class Account
     
+    TYPE = {
+      'CURRENT' =>        '',
+      'FIXED' =>          '',
+      'PREPAYMENT' =>     '',
+      'EQUITY' =>         '',
+      'DEPRECIATN' =>     '',
+      'DIRECTCOSTS' =>    '',
+      'EXPENSE' =>        '',
+      'OVERHEADS' =>      '',
+      'CURRLIAB' =>       '',
+      'LIABILITY' =>      '',
+      'TERMLIAB' =>       '',
+      'OTHERINCOME' =>    '',
+      'REVENUE' =>        '',
+      'SALES' =>          ''
+    } unless defined?(TYPE)
+    
     TAX_TYPE = {
       'NONE' =>             'No GST',
       'EXEMPTINPUT' =>      'VAT on expenses exempt from VAT (UK only)',
