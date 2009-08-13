@@ -156,9 +156,7 @@ module XeroGateway
     # Alias create as save as this is currently the only write action.
     alias_method :save, :create
         
-    def to_xml
-      b = Builder::XmlMarkup.new
-      
+    def to_xml(b = Builder::XmlMarkup.new)
       b.Invoice {
         b.InvoiceType self.invoice_type
         contact.to_xml(b)

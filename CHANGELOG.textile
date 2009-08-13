@@ -10,6 +10,7 @@ h2. 1.0.4, released 13/08/2009
 * [WCR] Create XeroGateway::AccountList class to make working with the accounts response more powerful and faster (as it caches the last result).
 * [WCR] Add :updated_after parameter to XeroGateway::Gateway#get_contacts
 * [WCR] Add XeroGateway::Gateway#update_contacts
+* [WCR] Add XeroGateway::Gateway#create_invoices
 
 h2. 1.0.3, released 09/12/2008
 

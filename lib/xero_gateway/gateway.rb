@@ -91,6 +91,7 @@ module XeroGateway
     #  result = gateway.update_contacts(contacts)
     #
     # Will update contacts with matching contact_id, contact_number or name or create if they don't exist.
+    #
     def update_contacts(contacts)
       b = Builder::XmlMarkup.new
       request_xml = b.Contacts {
@@ -175,6 +176,30 @@ module XeroGateway
       response = parse_response(response_xml, :request_xml => request_xml)
       invoice.invoice_id = response.invoice.invoice_id if response.invoice && response.invoice.invoice_id
       
+      response
+    end
+    
+    #
+    # Creates an array of invoices with a single API request.
+    # 
+    # Usage :
+    #  invoices = [XeroGateway::Invoice.new(...), XeroGateway::Invoice.new(...)]
+    #  result = gateway.create_invoices(invoices)
+    #
+    def create_invoices(invoices)
+      b = Builder::XmlMarkup.new
+      request_xml = b.Invoices {
+        invoices.each do | invoice |
+          invoice.to_xml(b)
+        end
+      }
+      
+      response_xml = http_put("#{@xero_url}/invoices", request_xml, {})
+
+      response = parse_response(response_xml, :request_xml => request_xml)
+      response.invoices.each_with_index do | response_invoice, index |
+        invoices[index].invoice_id = response_invoice.invoice_id if response_invoice && response_invoice.invoice_id
+      end
       response
     end
 

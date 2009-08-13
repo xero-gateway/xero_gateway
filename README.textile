@@ -147,6 +147,15 @@ Invoice and line item totals are calculated automatically.
 </code></pre>
 
 
+h3. PUT /api.xro/1.0/invoices
+
+Inserts multiple invoices for a specific organization in Xero (currently only adding new invoices is allowed).
+This method uses only a single API request to create/update multiple contacts.
+<pre><code>
+	invoices = [XeroGateway::Invoice.new(...), XeroGateway::Invoice.new(...)]
+  result = gateway.create_invoices(invoices)
+</code></pre>
+
 h3. GET /api.xro/1.0/accounts
 
 Gets all accounts for a specific organization in Xero.
