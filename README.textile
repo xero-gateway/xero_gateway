@@ -21,42 +21,31 @@ h2. Usage
 h2. Implemented interface methods
 
 
-
 h3. GET /api.xro/1.0/contact (get_contact_by_id)
 
 Gets a contact record for a specific Xero organisation
-<pre><code>
-	result = gateway.get_contact_by_id(contact_id)
-	contact = result.contact if result.success?
-</code></pre>
-
-
+<pre><code>    result = gateway.get_contact_by_id(contact_id)
+    contact = result.contact if result.success?</code></pre>
 
 h3. GET /api.xro/1.0/contact (get_contact_by_number)
 
 Gets a contact record for a specific Xero organisation
-<pre><code>
-	gateway.get_contact_by_number(contact_number)
-</code></pre>
-
+<pre><code>    gateway.get_contact_by_number(contact_number)</code></pre>
 
 
 h3. GET /api.xro/1.0/contacts (get_contacts)
 
 Gets all contact records for a particular Xero customer.
-<pre><code>
-	gateway.get_contacts(:type => :all, :sort => :name, :direction => :desc)
-	gateway.get_contacts(:type => :all, :update_after => 1.month.ago) # modified since 1 month ago
-</code></pre>
+<pre><code>    gateway.get_contacts(:type => :all, :sort => :name, :direction => :desc)
+    gateway.get_contacts(:type => :all, :update_after => 1.month.ago) # modified since 1 month ago</code></pre>
 
 
 
 h3. PUT /api.xro/1.0/contact
 
 Saves a contact record for a particular Xero customer.
-<pre><code>
-    contact = gateway.build_contact
-		contact.name = "The contacts name"
+<pre><code>    contact = gateway.build_contact
+    contact.name = "The contacts name"
     contact.email = "whoever@something.com"
     contact.phone.number = "555 123 4567"
     contact.address.line_1 = "LINE 1 OF THE ADDRESS"
@@ -66,54 +55,42 @@ Saves a contact record for a particular Xero customer.
     contact.address.country = "NEW ZEALAND"
     contact.address.post_code = "6021"
 
-		contact.save
-</code></pre>
+    contact.save</code></pre>
 
 
 h3. POST /api.xro/1.0/contact
 
 Updates an existing contact record.
-<pre><code>
-  contact_retrieved_from_xero.email = "something_new@something.com"
-	contact_retrieved_from_xero.save
-</code></pre>
+<pre><code>    contact_retrieved_from_xero.email = "something_new@something.com"
+	  contact_retrieved_from_xero.save</code></pre>
 
 
 h3. POST /api.xro/1.0/contacts
 
 Creates a list of contacts or updates them if they have a matching contact_id, contact_number or name.
 This method uses only a single API request to create/update multiple contacts.
-<pre><code>
-	contacts = [XeroGateway::Contact.new(:name => 'Joe Bloggs'), XeroGateway::Contact.new(:name => 'Jane Doe')]
-  result = gateway.update_contacts(contacts)
-</code></pre>
+<pre><code>    contacts = [XeroGateway::Contact.new(:name => 'Joe Bloggs'), XeroGateway::Contact.new(:name => 'Jane Doe')]
+    result = gateway.update_contacts(contacts)</code></pre>
 
 
 h3. GET /api.xro/1.0/invoice (get_invoice_by_id)
 
 Gets an invoice record for a specific Xero organisation
-<pre><code>
-	gateway.get_invoice_by_id(invoice_id)
-</code></pre>
-
+<pre><code>    gateway.get_invoice_by_id(invoice_id)</code></pre>
 
 
 h3. GET /api.xro/1.0/invoice (get_invoice_by_number)
 
 Gets an invoice record for a specific Xero organisation
-<pre><code>
-	gateway.get_invoice_by_number(invoice_number)
-</code></pre>
+<pre><code>    gateway.get_invoice_by_number(invoice_number)</code></pre>
 
 
 
 h3. GET /api.xro/1.0/invoices (get_invoices)
 
 Gets all invoice records for a particular Xero customer.
-<pre><code>
-	gateway.get_invoices
-	gateway.get_invoices(1.month.ago) # modified since 1 month ago
-</code></pre>
+<pre><code>    gateway.get_invoices
+    gateway.get_invoices(1.month.ago) # modified since 1 month ago</code></pre>
 
 
 
@@ -122,8 +99,7 @@ h3. PUT /api.xro/1.0/invoice
 Inserts an invoice for a specific organization in Xero (Currently only adding new invoices is allowed).
 
 Invoice and line item totals are calculated automatically.
-<pre><code>
-    invoice = gateway.build_invoice({
+<pre><code>    invoice = gateway.build_invoice({
       :invoice_type => "ACCREC",
       :due_date => 1.month.from_now,
       :invoice_number => "YOUR INVOICE NUMBER",
@@ -142,45 +118,36 @@ Invoice and line item totals are calculated automatically.
       :tracking_option => "THE TRACKING OPTION FOR THE LINE ITEM"
     )
 	
-		invoice.create
-</code></pre>
+		invoice.create</code></pre>
 
 
 h3. PUT /api.xro/1.0/invoices
 
 Inserts multiple invoices for a specific organization in Xero (currently only adding new invoices is allowed).
 This method uses only a single API request to create/update multiple contacts.
-<pre><code>
-	invoices = [XeroGateway::Invoice.new(...), XeroGateway::Invoice.new(...)]
-  result = gateway.create_invoices(invoices)
-</code></pre>
+<pre><code>    invoices = [XeroGateway::Invoice.new(...), XeroGateway::Invoice.new(...)]
+    result = gateway.create_invoices(invoices)</code></pre>
 
 h3. GET /api.xro/1.0/accounts
 
 Gets all accounts for a specific organization in Xero.
-<pre><code>
-	gateway.get_accounts
-</code></pre>
+<pre><code>    gateway.get_accounts</code></pre>
 
 For more advanced (and cached) access to the accounts list, use the following.
-<pre><code>
-	accounts_list = gateway.get_accounts_list
-	
-	# Finds account with code of '200'
-	sales_account = accounts_list.find_by_code(200)
-	
-	# Finds all EXPENSE accounts
-	all_expense_accounts = accounts_list.find_all_by_type('EXPENSE') 
-	
-	# Finds all accounts with tax_type == 'OUTPUT'
-	# For a list of valid tax types see XeroGateway::Account::TAX_TYPE
-	all_output_tax_accounts = accounts_list.find_all_by_tax_type('OUTPUT')
-</code></pre>
+<pre><code>    accounts_list = gateway.get_accounts_list
+
+    # Finds account with code of '200'
+    sales_account = accounts_list.find_by_code(200)
+
+    # Finds all EXPENSE accounts
+    all_expense_accounts = accounts_list.find_all_by_type('EXPENSE') 
+
+    # Finds all accounts with tax_type == 'OUTPUT'
+    # For a list of valid tax types see XeroGateway::Account::TAX_TYPE
+    all_output_tax_accounts = accounts_list.find_all_by_tax_type('OUTPUT')</code></pre>
 
 
 h3. GET /api.xro/1.0/tracking
 
 Gets all tracking categories and their options for a specific organization in Xero.
-<pre><code>
-	gateway.get_tracking_categories
-</code></pre>
+<pre><code>    gateway.get_tracking_categories</code></pre>
