@@ -62,7 +62,7 @@ h3. POST /api.xro/1.0/contact
 
 Updates an existing contact record.
 <pre><code>    contact_retrieved_from_xero.email = "something_new@something.com"
-	  contact_retrieved_from_xero.save</code></pre>
+    contact_retrieved_from_xero.save</code></pre>
 
 
 h3. POST /api.xro/1.0/contacts
@@ -134,17 +134,16 @@ Gets all accounts for a specific organization in Xero.
 <pre><code>    gateway.get_accounts</code></pre>
 
 For more advanced (and cached) access to the accounts list, use the following.
-<pre><code>    accounts_list = gateway.get_accounts_list
+<pre><code>    accounts_list = gateway.get_accounts_list</code></pre>
 
-    # Finds account with code of '200'
-    sales_account = accounts_list.find_by_code(200)
+Finds account with code of '200'
+<pre><code>    sales_account = accounts_list.find_by_code(200)</code></pre>
 
-    # Finds all EXPENSE accounts
-    all_expense_accounts = accounts_list.find_all_by_type('EXPENSE') 
+Finds all EXPENSE accounts. For a list of valid account types see <code>XeroGateway::Account::TYPE</code>
+<pre><code>   all_expense_accounts = accounts_list.find_all_by_type('EXPENSE')</code></pre>
 
-    # Finds all accounts with tax_type == 'OUTPUT'
-    # For a list of valid tax types see XeroGateway::Account::TAX_TYPE
-    all_output_tax_accounts = accounts_list.find_all_by_tax_type('OUTPUT')</code></pre>
+Finds all accounts with tax_type == 'OUTPUT'. For a list of valid tax types see <code>XeroGateway::Account::TAX_TYPE</code>
+<pre><code>   all_output_tax_accounts = accounts_list.find_all_by_tax_type('OUTPUT')</code></pre>
 
 
 h3. GET /api.xro/1.0/tracking
