@@ -152,8 +152,8 @@ module XeroGateway
     end
     
     # Take a Contact element and convert it into an Contact object
-    def self.from_xml(contact_element)
-      contact = Contact.new
+    def self.from_xml(contact_element, gateway = nil)
+      contact = Contact.new(:gateway => gateway)
       contact_element.children.each do |element|
         case(element.name)
           when "ContactID" then contact.contact_id = element.text

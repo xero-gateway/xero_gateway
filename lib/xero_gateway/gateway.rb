@@ -232,8 +232,8 @@ module XeroGateway
             when "DateTimeUTC" then response.date_time = element.text
             when "Contact" then response.response_item = Contact.from_xml(element)
             when "Invoice" then response.response_item = Invoice.from_xml(element)
-            when "Contacts" then element.children.each {|child| response.response_item << Contact.from_xml(child) }
-            when "Invoices" then element.children.each {|child| response.response_item << Invoice.from_xml(child) }
+            when "Contacts" then element.children.each {|child| response.response_item << Contact.from_xml(child, self) }
+            when "Invoices" then element.children.each {|child| response.response_item << Invoice.from_xml(child, self) }
             when "Accounts" then element.children.each {|child| response.response_item << Account.from_xml(child) }
             when "Tracking" then element.children.each {|child| response.response_item << TrackingCategory.from_xml(child) }
             when "Errors" then element.children.each { |error| parse_error(error, response) }

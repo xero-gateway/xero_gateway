@@ -179,8 +179,8 @@ module XeroGateway
       }
     end
     
-    def self.from_xml(invoice_element)        
-      invoice = Invoice.new
+    def self.from_xml(invoice_element, gateway = nil)
+      invoice = Invoice.new(:gateway => gateway)
       invoice_element.children.each do |element|
         case(element.name)
           when "InvoiceStatus" then invoice.invoice_status = element.text
