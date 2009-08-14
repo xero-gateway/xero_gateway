@@ -5,6 +5,7 @@ module XeroGateway
     
     class Error < RuntimeError; end
     class NoGatewayError < Error; end
+    class InvalidLineItemError < Error; end
     
     INVOICE_TYPE = {
       'ACCREC' =>           'Accounts Receivable',
@@ -93,8 +94,16 @@ module XeroGateway
     end
     
     # Helper method to create a new associated line_item.
+    # Usage:
+    #   invoice.add_line_item({:description => "Bob's Widgets", :quantity => 1, :unit_amount => 120})
     def add_line_item(params = {})
-      line_item = LineItem.new(params)
+      line_item = nil
+      case params
+        when Hash then      line_item = LineItem.new(params)
+        when LineItem then  line_item = params
+        else                raise InvalidLineItemError
+      end
+      
       @line_items << line_item
       
       line_item

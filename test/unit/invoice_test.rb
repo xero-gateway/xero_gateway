@@ -201,11 +201,38 @@ class InvoiceTest < Test::Unit::TestCase
   end
   
   def test_auto_creation_of_associated_contact
-    invoice = create_test_invoice({}, nil)
+    invoice = create_test_invoice({}, nil) # no contact
     assert_nil(invoice.instance_variable_get("@contact"))
     
     new_contact = invoice.contact
     assert_kind_of(XeroGateway::Contact, new_contact)
+  end
+  
+  def test_add_line_item
+    invoice = create_test_invoice({}, {}, nil) # no line_items
+    assert_equal(0, invoice.line_items.size)
+    
+    line_item_params = {:description => "Test Item 1", :unit_amount => 100}
+    
+    # Test adding line item by hash
+    line_item = invoice.add_line_item(line_item_params)
+    assert_kind_of(XeroGateway::LineItem, line_item)
+    assert_equal(line_item_params[:description], line_item.description)
+    assert_equal(line_item_params[:unit_amount], line_item.unit_amount)
+    assert_equal(1, invoice.line_items.size)
+    
+    # Test adding line item by XeroGateway::LineItem
+    line_item = invoice.add_line_item(line_item_params)
+    assert_kind_of(XeroGateway::LineItem, line_item)
+    assert_equal(line_item_params[:description], line_item.description)
+    assert_equal(line_item_params[:unit_amount], line_item.unit_amount)
+    assert_equal(2, invoice.line_items.size)
+
+    # Test that pushing anything else into add_line_item fails.
+    ["invalid", 100, nil, []].each do | invalid_object |
+      assert_raise(XeroGateway::Invoice::InvalidLineItemError) { invoice.add_line_item(invalid_object) }
+      assert_equal(2, invoice.line_items.size)
+    end
   end
   
   private
