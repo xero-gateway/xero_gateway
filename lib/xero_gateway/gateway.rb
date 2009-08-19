@@ -11,9 +11,13 @@ module XeroGateway
       @api_key = params[:api_key]
     end
   
+    #
     # Retrieve all contacts from Xero
+    #
     # Usage : get_contacts(:type => :all, :sort => :name, :direction => :desc)
     #         get_contacts(:type => :all, :updated_after => Time)
+    #
+    # Note  : modified_since is in UTC format (i.e. Brisbane is UTC+10)
     def get_contacts(options = {})
       request_params = {}
       request_params[:type] = options[:type] if options[:type]
@@ -127,8 +131,10 @@ module XeroGateway
     #
     # Usage : get_invoices
     #         get_invoices(modified_since)
+    #
+    # Note  : modified_since is in UTC format (i.e. Brisbane is UTC+10)
     def get_invoices(modified_since = nil)
-      request_params = modified_since ? {:modifiedSince => modified_since.strftime("%Y-%m-%d")} : {}
+      request_params = modified_since ? {:modifiedSince => Gateway.format_date_time(modified_since)} : {}
     
       response_xml = http_get("#{@xero_url}/invoices", request_params)
 

@@ -10,10 +10,11 @@ module XeroGateway
     attr_reader :errors
 
     # All accessible fields
-    attr_accessor :line_item_id, :description, :quantity, :unit_amount, :tax_type, :tax_amount, :account_code, :tracking_category, :tracking_option
+    attr_accessor :line_item_id, :description, :quantity, :unit_amount, :tax_type, :tax_amount, :account_code, :tracking
         
     def initialize(params = {})
       @errors ||= []
+      @tracking = []
       @quantity = 1
       @unit_amount = BigDecimal.new('0')
       @tax_amount = BigDecimal.new('0')
@@ -60,6 +61,18 @@ module XeroGateway
       quantity * unit_amount
     end
     
+    # Deprecated: Use tracking array.
+    # Returns first (if found) tracking category.
+    def tracking_category
+      tracking[0][0] if tracking && tracking[0]
+    end
+    
+    # Deprecated: Use tracking array.
+    # Returns first (if found) tracking option.
+    def tracking_option
+      tracking[0][1] if tracking && tracking[0]
+    end
+    
     def to_xml(b = Builder::XmlMarkup.new)
       b.LineItem {
         b.Description description
@@ -91,10 +104,11 @@ module XeroGateway
           when "LineAmount" then line_item.line_amount = BigDecimal.new(element.text)
           when "AccountCode" then line_item.account_code = element.text
           when "Tracking" then
-          if element.elements['TrackingCategory']
-            line_item.tracking_category = element.elements['TrackingCategory/Name'].text
-            line_item.tracking_option = element.elements['TrackingCategory/Option'].text
-          end
+            element.children.each do | tracking_element |
+              tracking_category = tracking_element.elements['Name'].text
+              tracking_option = tracking_element.elements['Option'].text
+              line_item.tracking << [tracking_category, tracking_option]
+            end
         end
       end
       line_item
