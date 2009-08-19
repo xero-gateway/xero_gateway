@@ -1,3 +1,9 @@
+h2. Upcoming
+
+* [WCR] As get_invoices doesn't download the attached line items, add code to automatically request line items from Xero the first time XeroGateway::Invoice#line_items is accessed. *
+* [WCR] Populate XeroGateway::Payment class with results from invoice/s including new invoice fields for payment status. *
+* [WCR] Modify XeroGateway::LineItem to store multiple tracking items.
+
 h2. 1.0.4, released 13/08/2009
 
 * [WCR] Auto-assign Contact#contact_id and Invoice#invoice_id on creation of either of these records.
