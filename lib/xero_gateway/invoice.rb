@@ -28,7 +28,7 @@ module XeroGateway
     attr_reader :errors
   
     # All accessible fields
-    attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :tax_inclusive, :includes_tax, :line_items, :contact, :payments
+    attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :tax_inclusive, :includes_tax, :line_items, :contact, :payments, :fully_paid_on, :amount_due, :amount_paid, :amount_credited
     
     def initialize(params = {})
       @errors ||= []
@@ -222,6 +222,10 @@ module XeroGateway
           when "Contact" then invoice.contact = Contact.from_xml(element)
           when "LineItems" then element.children.each {|line_item| invoice.line_items << LineItem.from_xml(line_item)}
           when "Payments" then element.children.each { | payment | invoice.payments << Payment.from_xml(payment) }
+          when "FullyPaidOn" then invoice.fully_paid_on = parse_date_time(element.text)
+          when "AmountDue" then invoice.amount_due = BigDecimal.new(element.text)
+          when "AmountPaid" then invoice.amount_paid = BigDecimal.new(element.text)
+          when "AmountCredited" then invoice.amount_credited = BigDecimal.new(element.text)
         end
       end      
       invoice
