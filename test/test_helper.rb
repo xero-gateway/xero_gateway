@@ -25,20 +25,23 @@ module TestHelper
   GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ unless defined?(GUID_REGEX)
 
   
-  def dummy_invoice
+  def dummy_invoice(with_line_items = true)
      invoice = XeroGateway::Invoice.new({
        :invoice_type => "ACCREC",
        :due_date => Date.today + 20,
        :invoice_number => STUB_XERO_CALLS ? "INV-0001" : "#{Time.now.to_f}",
        :reference => "YOUR REFERENCE (NOT NECESSARILY UNIQUE!)",
+       :line_items_downloaded => with_line_items
      })
      invoice.contact = dummy_contact
-     invoice.line_items << XeroGateway::LineItem.new(
-       :description => "THE DESCRIPTION OF THE LINE ITEM",
-       :unit_amount => 1000,
-       :tax_amount => 125,
-       :tracking => ["THE TRACKING CATEGORY FOR THE LINE ITEM", "THE TRACKING OPTION FOR THE LINE ITEM"]
-     )
+     if with_line_items
+       invoice.line_items << XeroGateway::LineItem.new(
+         :description => "THE DESCRIPTION OF THE LINE ITEM",
+         :unit_amount => 1000,
+         :tax_amount => 125,
+         :tracking => ["THE TRACKING CATEGORY FOR THE LINE ITEM", "THE TRACKING OPTION FOR THE LINE ITEM"]
+       )
+     end
      invoice
   end
       

@@ -6,6 +6,7 @@ module XeroGateway
     class Error < RuntimeError; end
     class NoGatewayError < Error; end
     class InvalidLineItemError < Error; end
+    class InvoiceNotFoundError < Error; end
     
     INVOICE_TYPE = {
       'ACCREC' =>           'Accounts Receivable',
@@ -20,12 +21,17 @@ module XeroGateway
       'SUBMITTED' =>        'Invoices entered by an employee awaiting approval',
       'VOID' =>             'Approved invoices that are voided'
     } unless defined?(INVOICE_STATUS)
+    
+    GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ unless defined?(GUID_REGEX)
         
     # Xero::Gateway associated with this invoice.
     attr_accessor :gateway
     
     # Any errors that occurred when the #valid? method called.
     attr_reader :errors
+
+    # Represents whether the line_items have been downloaded when getting from GET /API.XRO/1.0/INVOICES
+    attr_accessor :line_items_downloaded
   
     # All accessible fields
     attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :tax_inclusive, :includes_tax, :line_items, :contact, :payments, :fully_paid_on, :amount_due, :amount_paid, :amount_credited
@@ -33,6 +39,9 @@ module XeroGateway
     def initialize(params = {})
       @errors ||= []
       @payments ||= []
+      
+      # Check if the line items have been downloaded.
+      @line_items_downloaded = (params.delete(:line_items_downloaded) == true)
       
       params = {
         :date => Time.now,
@@ -156,6 +165,33 @@ module XeroGateway
       invoice_type == 'ACCREC'
     end
     
+    # Whether or not the line_items have been downloaded (GET/invoices does not download line items).
+    def line_items_downloaded?
+      @line_items_downloaded
+    end
+    
+    # If line items are not downloaded, then attempt a download now (if this record was found to begin with).
+    def line_items
+      if line_items_downloaded?
+        @line_items
+        
+      # There is an invoice_is so we can assume this record was loaded from Xero.
+      # attempt to download the line_item records.
+      elsif invoice_id =~ GUID_REGEX
+        raise NoGatewayError unless @gateway
+        
+        response = @gateway.get_invoice_by_id(invoice_id)
+        raise InvoiceNotFoundError, "Invoice with ID #{invoice_id} not found in Xero." unless response.success? && response.invoice.is_a?(XeroGateway::Invoice)
+        
+        @line_items = response.invoice.line_items
+        @line_items_downloaded = true
+        
+      # Otherwise, this is a new invoice, so return the line_items reference.
+      else
+        @line_items
+      end
+    end
+    
     def ==(other)
       ["invoice_number", "invoice_type", "invoice_status", "reference", "tax_inclusive", "includes_tax", "sub_total", "total_tax", "total", "contact", "line_items"].each do |field|
         return false if send(field) != other.send(field)
@@ -203,8 +239,8 @@ module XeroGateway
       }
     end
     
-    def self.from_xml(invoice_element, gateway = nil)
-      invoice = Invoice.new(:gateway => gateway)
+    def self.from_xml(invoice_element, gateway = nil, options = {})
+      invoice = Invoice.new(options.merge({:gateway => gateway}))
       invoice_element.children.each do |element|
         case(element.name)
           when "InvoiceStatus" then invoice.invoice_status = element.text
@@ -220,7 +256,7 @@ module XeroGateway
           when "TotalTax" then invoice.total_tax = BigDecimal.new(element.text)
           when "Total" then invoice.total = BigDecimal.new(element.text)
           when "Contact" then invoice.contact = Contact.from_xml(element)
-          when "LineItems" then element.children.each {|line_item| invoice.line_items << LineItem.from_xml(line_item)}
+          when "LineItems" then element.children.each {|line_item| invoice.line_items_downloaded = true; invoice.line_items << LineItem.from_xml(line_item) }
           when "Payments" then element.children.each { | payment | invoice.payments << Payment.from_xml(payment) }
           when "FullyPaidOn" then invoice.fully_paid_on = parse_date_time(element.text)
           when "AmountDue" then invoice.amount_due = BigDecimal.new(element.text)

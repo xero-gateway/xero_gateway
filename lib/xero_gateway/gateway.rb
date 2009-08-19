@@ -291,10 +291,10 @@ module XeroGateway
             when "Status" then response.status = element.text
             when "ProviderName" then response.provider = element.text
             when "DateTimeUTC" then response.date_time = element.text
-            when "Contact" then response.response_item = Contact.from_xml(element)
-            when "Invoice" then response.response_item = Invoice.from_xml(element)
+            when "Contact" then response.response_item = Contact.from_xml(element, self)
+            when "Invoice" then response.response_item = Invoice.from_xml(element, self, {:line_items_downloaded => options[:request_signature] != "GET/invoices"})
             when "Contacts" then element.children.each {|child| response.response_item << Contact.from_xml(child, self) }
-            when "Invoices" then element.children.each {|child| response.response_item << Invoice.from_xml(child, self) }
+            when "Invoices" then element.children.each {|child| response.response_item << Invoice.from_xml(child, self, {:line_items_downloaded => options[:request_signature] != "GET/invoices"}) }
             when "Accounts" then element.children.each {|child| response.response_item << Account.from_xml(child) }
             when "Tracking" then element.children.each {|child| response.response_item << TrackingCategory.from_xml(child) }
             when "Errors" then element.children.each { |error| parse_error(error, response) }

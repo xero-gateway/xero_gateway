@@ -33,4 +33,19 @@ class GetInvoiceTest < Test::Unit::TestCase
     assert !result.response_xml.nil?    
     assert_equal result.invoice.invoice_id, invoice.invoice_id
   end
+  
+  def test_line_items_downloaded_set_correctly
+    # Make sure there is an invoice in Xero to retrieve.
+    example_invoice = @gateway.create_invoice(dummy_invoice).invoice
+    
+    # No line items.
+    response = @gateway.get_invoice_by_id(example_invoice.invoice_id)
+    assert_equal(true, response.success?)
+    
+    invoice = response.invoice
+    assert_kind_of(XeroGateway::LineItem, invoice.line_items.first)
+    assert_kind_of(XeroGateway::Invoice, invoice)
+    assert_equal(true, invoice.line_items_downloaded?)
+  end
+  
 end
