@@ -28,10 +28,11 @@ module XeroGateway
     attr_reader :errors
   
     # All accessible fields
-    attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :tax_inclusive, :includes_tax, :line_items, :contact
+    attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :tax_inclusive, :includes_tax, :line_items, :contact, :payments
     
     def initialize(params = {})
       @errors ||= []
+      @payments ||= []
       
       params = {
         :date => Time.now,
@@ -220,6 +221,7 @@ module XeroGateway
           when "Total" then invoice.total = BigDecimal.new(element.text)
           when "Contact" then invoice.contact = Contact.from_xml(element)
           when "LineItems" then element.children.each {|line_item| invoice.line_items << LineItem.from_xml(line_item)}
+          when "Payments" then element.children.each { | payment | invoice.payments << Payment.from_xml(payment) }
         end
       end      
       invoice
