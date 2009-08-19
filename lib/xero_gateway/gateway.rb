@@ -27,7 +27,7 @@ module XeroGateway
     
       response_xml = http_get("#{@xero_url}/contacts", request_params)
     
-      parse_response(response_xml, :request_params => request_params)
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/contacts'})
     end
     
     # Retrieve a contact from Xero
@@ -106,7 +106,7 @@ module XeroGateway
       
       response_xml = http_post("#{@xero_url}/contacts", request_xml, {})
 
-      response = parse_response(response_xml, :request_xml => request_xml)
+      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'POST/contacts'})
       response.contacts.each_with_index do | response_contact, index |
         contacts[index].contact_id = response_contact.contact_id if response_contact && response_contact.contact_id
       end
@@ -138,7 +138,7 @@ module XeroGateway
     
       response_xml = http_get("#{@xero_url}/invoices", request_params)
 
-      parse_response(response_xml, :request_params => request_params)
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/invoices'})
     end
     
     # Factory method for building new Invoice objects associated with this gateway.
@@ -178,7 +178,7 @@ module XeroGateway
     def create_invoice(invoice)
       request_xml = invoice.to_xml
       response_xml = http_put("#{@xero_url}/invoice", request_xml)
-      response = parse_response(response_xml, :request_xml => request_xml)
+      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/invoice'})
       
       if response.success? && response.invoice && response.invoice.invoice_id
         invoice.invoice_id = response.invoice.invoice_id 
@@ -204,7 +204,7 @@ module XeroGateway
       
       response_xml = http_put("#{@xero_url}/invoices", request_xml, {})
 
-      response = parse_response(response_xml, :request_xml => request_xml)
+      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/invoices'})
       response.invoices.each_with_index do | response_invoice, index |
         invoices[index].invoice_id = response_invoice.invoice_id if response_invoice && response_invoice.invoice_id
       end
@@ -216,7 +216,7 @@ module XeroGateway
     #
     def get_accounts
       response_xml = http_get("#{xero_url}/accounts")
-      parse_response(response_xml)
+      parse_response(response_xml, {}, {:request_signature => 'GET/accounts'})
     end
     
     #
@@ -232,7 +232,7 @@ module XeroGateway
     #
     def get_tracking_categories
       response_xml = http_get("#{xero_url}/tracking")
-      parse_response(response_xml)      
+      parse_response(response_xml, {}, {:request_signature => 'GET/tracking'})
     end
 
 
@@ -242,14 +242,14 @@ module XeroGateway
       request_params = invoice_id ? {:invoiceID => invoice_id} : {:invoiceNumber => invoice_number}
       response_xml = http_get("#{@xero_url}/invoice", request_params)
 
-      parse_response(response_xml, :request_params => request_params)
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/invoice'})
     end
 
     def get_contact(contact_id = nil, contact_number = nil)
       request_params = contact_id ? {:contactID => contact_id} : {:contactNumber => contact_number}
       response_xml = http_get("#{@xero_url}/contact", request_params)
 
-      parse_response(response_xml, :request_params => request_params)
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/contact'})
     end
     
     # Create or update a contact record based on if it has a contact_id or contact_number.
@@ -257,20 +257,23 @@ module XeroGateway
       request_xml = contact.to_xml
       
       response_xml = nil
+      create_or_save = nil
       if contact.contact_id.nil? && contact.contact_number.nil?
         # Create new contact record.
         response_xml = http_put("#{@xero_url}/contact", request_xml, {})
+        create_or_save = :create
       else
         # Update existing contact record.
         response_xml = http_post("#{@xero_url}/contact", request_xml, {})
+        create_or_save = :save
       end
 
-      response = parse_response(response_xml, :request_xml => request_xml)
+      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => "#{create_or_save == :create ? 'PUT' : 'POST'}/contact"})
       contact.contact_id = response.contacts.contact_id if response.contacts && response.contacts.contact_id
       response
     end
 
-    def parse_response(response_xml, request = {})
+    def parse_response(response_xml, request = {}, options = {})
       doc = REXML::Document.new(response_xml)
 
       response = XeroGateway::Response.new
