@@ -37,8 +37,7 @@ module TestHelper
        :description => "THE DESCRIPTION OF THE LINE ITEM",
        :unit_amount => 1000,
        :tax_amount => 125,
-       :tracking_category => "THE TRACKING CATEGORY FOR THE LINE ITEM",
-       :tracking_option => "THE TRACKING OPTION FOR THE LINE ITEM"
+       :tracking => ["THE TRACKING CATEGORY FOR THE LINE ITEM", "THE TRACKING OPTION FOR THE LINE ITEM"]
      )
      invoice
   end
