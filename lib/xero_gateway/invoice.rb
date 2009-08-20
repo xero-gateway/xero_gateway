@@ -186,6 +186,8 @@ module XeroGateway
         @line_items = response.invoice.line_items
         @line_items_downloaded = true
         
+        @line_items
+        
       # Otherwise, this is a new invoice, so return the line_items reference.
       else
         @line_items
