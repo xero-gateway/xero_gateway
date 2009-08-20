@@ -28,6 +28,7 @@ module TestHelper
   def dummy_invoice(with_line_items = true)
      invoice = XeroGateway::Invoice.new({
        :invoice_type => "ACCREC",
+       :date => Time.now,
        :due_date => Date.today + 20,
        :invoice_number => STUB_XERO_CALLS ? "INV-0001" : "#{Time.now.to_f}",
        :reference => "YOUR REFERENCE (NOT NECESSARILY UNIQUE!)",
