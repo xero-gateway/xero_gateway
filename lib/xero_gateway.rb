@@ -5,6 +5,7 @@ require "rexml/document"
 require "builder"
 require "bigdecimal"
 
+require File.join(File.dirname(__FILE__), 'xero_gateway', 'http_encoding_helper')
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'http')
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'dates')
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'money')

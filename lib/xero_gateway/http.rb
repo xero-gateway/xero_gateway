@@ -19,12 +19,12 @@ module XeroGateway
     private
     
       def http_request(method, url, body, extra_params = {})
-        headers = {} 
+        headers = {'Accept-Encoding' => 'gzip, deflate'}
 
         if method != :get
          headers['Content-Type'] ||= "application/x-www-form-urlencoded"
         end
-
+        
         params = {:apiKey => @api_key, :xeroKey => @customer_key}
         params = params.merge(extra_params).map {|key,value| "#{CGI.escape(key.to_s)}=#{CGI.escape(value.to_s)}"}.join("&")
 
@@ -43,11 +43,11 @@ module XeroGateway
           @cached_http.verify_mode    = OpenSSL::SSL::VERIFY_PEER
           @cached_http.verify_depth   = 5
         end
-
+        
         case method
-          when :get   then    @cached_http.get(uri.request_uri, headers).body
-          when :post  then    @cached_http.post(uri.request_uri, body, headers).body
-          when :put   then    @cached_http.put(uri.request_uri, body, headers).body
+          when :get   then    @cached_http.get(uri.request_uri, headers).plain_body
+          when :post  then    @cached_http.post(uri.request_uri, body, headers).plain_body
+          when :put   then    @cached_http.put(uri.request_uri, body, headers).plain_body
         end
       end
        
