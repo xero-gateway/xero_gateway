@@ -44,7 +44,6 @@ module XeroGateway
       @line_items_downloaded = (params.delete(:line_items_downloaded) == true)
       
       params = {
-        :date => Time.now,
         :includes_tax => true,
         :tax_inclusive => true
       }.merge(params)
