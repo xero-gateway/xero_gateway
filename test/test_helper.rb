@@ -40,7 +40,10 @@ module TestHelper
          :description => "THE DESCRIPTION OF THE LINE ITEM",
          :unit_amount => 1000,
          :tax_amount => 125,
-         :tracking => ["THE TRACKING CATEGORY FOR THE LINE ITEM", "THE TRACKING OPTION FOR THE LINE ITEM"]
+         :tracking => [
+            XeroGateway::TrackingCategory.new(:name => "THE FIRST  TRACKING CATEGORY FOR THE LINE ITEM", :options => ["a", "b"]),
+            XeroGateway::TrackingCategory.new(:name => "THE SECOND TRACKING CATEGORY FOR THE LINE ITEM", :options => ["c"])
+         ]
        )
      end
      invoice

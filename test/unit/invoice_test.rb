@@ -9,7 +9,7 @@ class InvoiceTest < Test::Unit::TestCase
   # Tests that the XML generated from an invoice object validates against the Xero XSD
   def test_build_xml
     invoice = create_test_invoice
-    
+
     message = invoice.to_xml
 
     # Check that the document matches the XSD

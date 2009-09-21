@@ -14,7 +14,7 @@ module XeroGateway
         
     def initialize(params = {})
       @errors ||= []
-      @tracking = []
+      @tracking ||= []
       @quantity = 1
       @unit_amount = BigDecimal.new('0')
       @tax_amount = BigDecimal.new('0')
@@ -48,6 +48,16 @@ module XeroGateway
       @errors.size == 0
     end
     
+    def has_tracking?
+      return false if tracking.nil?
+      
+      if tracking.is_a?(Array)
+        return tracking.any?
+      else
+        return tracking.is_a?(TrackingCategory)
+      end
+    end
+    
     # Deprecated (but API for setter remains).
     #
     # As line_amount must equal quantity * unit_amount for the API call to pass, this is now
@@ -61,18 +71,6 @@ module XeroGateway
       quantity * unit_amount
     end
     
-    # Deprecated: Use tracking array.
-    # Returns first (if found) tracking category.
-    def tracking_category
-      tracking[0][0] if tracking && tracking[0]
-    end
-    
-    # Deprecated: Use tracking array.
-    # Returns first (if found) tracking option.
-    def tracking_option
-      tracking[0][1] if tracking && tracking[0]
-    end
-    
     def to_xml(b = Builder::XmlMarkup.new)
       b.LineItem {
         b.Description description
@@ -82,12 +80,13 @@ module XeroGateway
         b.TaxAmount LineItem.format_money(tax_amount) if tax_amount
         b.LineAmount LineItem.format_money(line_amount)
         b.AccountCode account_code if account_code
-        b.Tracking {
-          b.TrackingCategory {
-            b.Name tracking_category
-            b.Option tracking_option
+        if has_tracking?
+          b.Tracking {
+            (tracking.is_a?(TrackingCategory) ? [tracking] : tracking).each do |category|
+              category.to_xml(b)
+            end
           }
-        }      
+        end
       }
     end
     
@@ -105,9 +104,7 @@ module XeroGateway
           when "AccountCode" then line_item.account_code = element.text
           when "Tracking" then
             element.children.each do | tracking_element |
-              tracking_category = tracking_element.elements['Name'].text
-              tracking_option = tracking_element.elements['Option'].text
-              line_item.tracking << [tracking_category, tracking_option]
+              line_item.tracking << TrackingCategory.from_xml(tracking_element)
             end
         end
       end
@@ -115,8 +112,7 @@ module XeroGateway
     end    
 
     def ==(other)
-      [:description, :quantity, :unit_amount, :tax_type, :tax_amount, :line_amount, :account_code, :tracking_category, :tracking_option].each do |field|
-        puts field if send(field) != other.send(field) 
+      [:description, :quantity, :unit_amount, :tax_type, :tax_amount, :line_amount, :account_code].each do |field|
         return false if send(field) != other.send(field)
       end
       return true

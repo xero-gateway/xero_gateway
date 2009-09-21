@@ -72,7 +72,7 @@
                     <xs:element name="TaxAmount" type="xs:decimal" />
                     <xs:element name="LineAmount" type="xs:decimal" />
                     <xs:element name="AccountCode" type="xs:string" />
-                    <xs:element name="Tracking">
+                    <xs:element minOccurs="0" name="Tracking">
                       <xs:complexType>
                         <xs:sequence>
                           <xs:element name="TrackingCategory">

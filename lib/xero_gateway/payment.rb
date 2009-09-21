@@ -30,7 +30,6 @@ module XeroGateway
     
     def ==(other)
       [:date, :amount].each do |field|
-        puts field if send(field) != other.send(field) 
         return false if send(field) != other.send(field)
       end
       return true
