@@ -17,10 +17,16 @@ module XeroGateway
       b.TrackingCategory {
         b.Name self.name
         b.Options {
-          self.options.each do |option|
+          if self.options.is_a?(Array)
+            self.options.each do |option|
+              b.Option {
+                b.Name option
+              }
+            end
+          else
             b.Option {
-              b.Name option
-            }
+              b.Name self.options.to_s
+            }            
           end
         }
       }
