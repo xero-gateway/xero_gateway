@@ -1,22 +1,27 @@
 h2. Upcoming
 
-* [WCR] As get_invoices doesn't download the attached line items, add code to automatically request line items from Xero the first time XeroGateway::Invoice#line_items is accessed. *
-* [WCR] Populate XeroGateway::Payment class with results from invoice/s including new invoice fields for payment status. *
-* [WCR] Modify XeroGateway::LineItem to store multiple tracking items.
+* Xero Api version 2.0
+* As get_invoices doesn't download the attached line items, add code to automatically request line items from Xero the first time XeroGateway::Invoice#line_items is accessed. *
+* Populate XeroGateway::Payment class with results from invoice/s including new invoice fields for payment status. *
+
+h2. 1.0.5, released 25/09/2009
+
+* This will be the final release before switching to the Xero API version 2.0
+* Allow multiple tracking options per line item
 
 h2. 1.0.4, released 13/08/2009
 
-* [WCR] Auto-assign Contact#contact_id and Invoice#invoice_id on creation of either of these records.
-* [WCR] Add Xero::Gateway#build_contact and Xero::Gateway#build_invoice factory methods to create Contact/Invoice objects associated with the gateway.
-* [WCR] Add Contact#save method to create/update a contact record based on if it has a contact_id or contact_number.
-* [WCR] Add Invoice#save method to create (insert only currently supported by Xero API) the invoice.
-* [WCR] Add #valid? method to each model class to validate it's contents with the minimum required by the API (without calling the API).
-* [WCR] Add useful API constants throughout the library.
-* [WCR] Allow Invoice and LineItem to auto-calculate line_amount, sub_total, total_tax and total fields. Existing setters for these fields remain (for backwards compatability) but will be deprecated in the future.
-* [WCR] Create XeroGateway::AccountList class to make working with the accounts response more powerful and faster (as it caches the last result).
-* [WCR] Add :updated_after parameter to XeroGateway::Gateway#get_contacts
-* [WCR] Add XeroGateway::Gateway#update_contacts
-* [WCR] Add XeroGateway::Gateway#create_invoices
+* Auto-assign Contact#contact_id and Invoice#invoice_id on creation of either of these records.
+* Add Xero::Gateway#build_contact and Xero::Gateway#build_invoice factory methods to create Contact/Invoice objects associated with the gateway.
+* Add Contact#save method to create/update a contact record based on if it has a contact_id or contact_number.
+* Add Invoice#save method to create (insert only currently supported by Xero API) the invoice.
+* Add #valid? method to each model class to validate it's contents with the minimum required by the API (without calling the API).
+* Add useful API constants throughout the library.
+* Allow Invoice and LineItem to auto-calculate line_amount, sub_total, total_tax and total fields. Existing setters for these fields remain (for backwards compatability) but will be deprecated in the future.
+* Create XeroGateway::AccountList class to make working with the accounts response more powerful and faster (as it caches the last result).
+* Add :updated_after parameter to XeroGateway::Gateway#get_contacts
+* Add XeroGateway::Gateway#update_contacts
+* Add XeroGateway::Gateway#create_invoices
 
 h2. 1.0.3, released 09/12/2008
 
