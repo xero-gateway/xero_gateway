@@ -82,8 +82,11 @@ module XeroGateway
         b.AccountCode account_code if account_code
         if has_tracking?
           b.Tracking {
+            # Due to strange retardness in the Xero API, the XML structure for a tracking category within
+            # an invoice is different to a standalone tracking category.
+            # This means rather than going category.to_xml we need to call the special category.to_xml_for_invoice_messages
             (tracking.is_a?(TrackingCategory) ? [tracking] : tracking).each do |category|
-              category.to_xml(b)
+              category.to_xml_for_invoice_messages(b)
             end
           }
         end

@@ -32,6 +32,15 @@ module XeroGateway
       }
     end
     
+    # When a tracking category is serialized as part of an invoice it may only have a single
+    # option, and the Options tag is omitted
+    def to_xml_for_invoice_messages(b = Builder::XmlMarkup.new)
+      b.TrackingCategory {
+        b.Name self.name
+        b.Option self.options.is_a?(Array) ? self.options.first : self.options.to_s 
+      }      
+    end
+    
     def self.from_xml(tracking_category_element)
       tracking_category = TrackingCategory.new
       tracking_category_element.children.each do |element|
