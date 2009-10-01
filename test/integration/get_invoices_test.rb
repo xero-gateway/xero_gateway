@@ -6,19 +6,16 @@ class GetInvoicesTest < Test::Unit::TestCase
   INVALID_INVOICE_ID = "99999999-9999-9999-9999-999999999999" unless defined?(INVALID_INVOICE_ID)
   
   def setup
-    @gateway = XeroGateway::Gateway.new(
-      :customer_key => CUSTOMER_KEY,
-      :api_key => API_KEY    
-    )
+    @gateway = XeroGateway::Gateway.new(CONSUMER_KEY, CONSUMER_SECRET)
     
     if STUB_XERO_CALLS
       @gateway.xero_url = "DUMMY_URL"
       
-      @gateway.stubs(:http_get).with {|url, params| url =~ /invoices$/ }.returns(get_file_as_string("invoices.xml"))
-      @gateway.stubs(:http_put).with {|url, body, params| url =~ /invoice$/ }.returns(get_file_as_string("invoice.xml"))
+      @gateway.stubs(:http_get).with {|client, url, params| url =~ /invoices$/ }.returns(get_file_as_string("invoices.xml"))
+      @gateway.stubs(:http_put).with {|client, url, body, params| url =~ /invoice$/ }.returns(get_file_as_string("invoice.xml"))
 
       # Get an invoice with an invalid ID number.
-      @gateway.stubs(:http_get).with {|url, params| url =~ /invoice$/ && params[:invoiceID] == "99999999-9999-9999-9999-999999999999" }.returns(get_file_as_string("invoice_not_found_error.xml"))
+      @gateway.stubs(:http_get).with {|client, url, params| url =~ /invoice$/ && params[:invoiceID] == "99999999-9999-9999-9999-999999999999" }.returns(get_file_as_string("invoice_not_found_error.xml"))
     end
   end
   

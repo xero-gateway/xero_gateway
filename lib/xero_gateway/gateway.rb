@@ -3,12 +3,17 @@ module XeroGateway
     include Http
     include Dates
       
-    attr_accessor :xero_url, :customer_key, :api_key
-  
-    def initialize(params)
-      @xero_url = params[:xero_url] || "https://networktest.xero.com/api.xro/1.0"
-      @customer_key = params[:customer_key]
-      @api_key = params[:api_key]
+    attr_accessor :client, :xero_url
+    
+    extend Forwardable
+    def_delegators :client, :request_token, :access_token, :authorize_from_request, :authorize_from_access
+
+    #
+    # The consumer key and secret here correspond to those provided
+    # to you by Xero inside the API Previewer. 
+    def initialize(consumer_key, consumer_secret, options = {})
+      @xero_url = options[:xero_url] || "https://api.xero.com/api.xro/2.0"
+      @client   = OAuth.new(consumer_key, consumer_secret, options)
     end
   
     #
@@ -25,7 +30,7 @@ module XeroGateway
       request_params[:direction] = options[:direction] if options[:direction]
       request_params[:updatedAfter] = Gateway.format_date_time(options[:updated_after]) if options[:updated_after]
     
-      response_xml = http_get("#{@xero_url}/contacts", request_params)
+      response_xml = http_get(@client, "#{@xero_url}/contacts", request_params)
     
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/contacts'})
     end
@@ -104,7 +109,7 @@ module XeroGateway
         end
       }
       
-      response_xml = http_post("#{@xero_url}/contacts", request_xml, {})
+      response_xml = http_post(@client, "#{@xero_url}/contacts", request_xml, {})
 
       response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'POST/contacts'})
       response.contacts.each_with_index do | response_contact, index |
@@ -136,7 +141,7 @@ module XeroGateway
     def get_invoices(modified_since = nil)
       request_params = modified_since ? {:modifiedSince => Gateway.format_date_time(modified_since)} : {}
     
-      response_xml = http_get("#{@xero_url}/invoices", request_params)
+      response_xml = http_get(@client, "#{@xero_url}/invoices", request_params)
 
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/invoices'})
     end
@@ -177,7 +182,7 @@ module XeroGateway
     #    create_invoice(invoice)
     def create_invoice(invoice)
       request_xml = invoice.to_xml
-      response_xml = http_put("#{@xero_url}/invoice", request_xml)
+      response_xml = http_put(@client, "#{@xero_url}/invoice", request_xml)
       response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/invoice'})
       
       if response.success? && response.invoice && response.invoice.invoice_id
@@ -202,7 +207,7 @@ module XeroGateway
         end
       }
       
-      response_xml = http_put("#{@xero_url}/invoices", request_xml, {})
+      response_xml = http_put(@client, "#{@xero_url}/invoices", request_xml, {})
 
       response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/invoices'})
       response.invoices.each_with_index do | response_invoice, index |
@@ -215,7 +220,7 @@ module XeroGateway
     # Gets all accounts for a specific organization in Xero.
     #
     def get_accounts
-      response_xml = http_get("#{xero_url}/accounts")
+      response_xml = http_get(@client, "#{xero_url}/accounts")
       parse_response(response_xml, {}, {:request_signature => 'GET/accounts'})
     end
     
@@ -231,7 +236,7 @@ module XeroGateway
     # Gets all tracking categories for a specific organization in Xero.
     #
     def get_tracking_categories
-      response_xml = http_get("#{xero_url}/tracking")
+      response_xml = http_get(@client, "#{xero_url}/tracking")
       parse_response(response_xml, {}, {:request_signature => 'GET/tracking'})
     end
 
@@ -240,14 +245,14 @@ module XeroGateway
 
     def get_invoice(invoice_id = nil, invoice_number = nil)
       request_params = invoice_id ? {:invoiceID => invoice_id} : {:invoiceNumber => invoice_number}
-      response_xml = http_get("#{@xero_url}/invoice", request_params)
+      response_xml = http_get(@client, "#{@xero_url}/invoice", request_params)
 
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/invoice'})
     end
 
     def get_contact(contact_id = nil, contact_number = nil)
       request_params = contact_id ? {:contactID => contact_id} : {:contactNumber => contact_number}
-      response_xml = http_get("#{@xero_url}/contact", request_params)
+      response_xml = http_get(@client, "#{@xero_url}/contact", request_params)
 
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/contact'})
     end
@@ -260,11 +265,11 @@ module XeroGateway
       create_or_save = nil
       if contact.contact_id.nil? && contact.contact_number.nil?
         # Create new contact record.
-        response_xml = http_put("#{@xero_url}/contact", request_xml, {})
+        response_xml = http_put(@client, "#{@xero_url}/contact", request_xml, {})
         create_or_save = :create
       else
         # Update existing contact record.
-        response_xml = http_post("#{@xero_url}/contact", request_xml, {})
+        response_xml = http_post(@client, "#{@xero_url}/contact", request_xml, {})
         create_or_save = :save
       end
 
@@ -273,38 +278,46 @@ module XeroGateway
       response
     end
 
-    def parse_response(response_xml, request = {}, options = {})
-      doc = REXML::Document.new(response_xml)
-
-      response = XeroGateway::Response.new
-
-      response_element = REXML::XPath.first(doc, "/Response")
+    def parse_response(raw_response, request = {}, options = {})
       
-      if response_element.nil?
-        # The Xero API documentation states that it will always return valid XML with
-        # a response element, unless an invalid API key is provided.
-        response.status = "INVALID_API_KEY"
-      else
-        response_element.children.each do |element|
-          case(element.name)
-            when "ID" then response.response_id = element.text
-            when "Status" then response.status = element.text
-            when "ProviderName" then response.provider = element.text
-            when "DateTimeUTC" then response.date_time = element.text
-            when "Contact" then response.response_item = Contact.from_xml(element, self)
-            when "Invoice" then response.response_item = Invoice.from_xml(element, self, {:line_items_downloaded => options[:request_signature] != "GET/invoices"})
-            when "Contacts" then element.children.each {|child| response.response_item << Contact.from_xml(child, self) }
-            when "Invoices" then element.children.each {|child| response.response_item << Invoice.from_xml(child, self, {:line_items_downloaded => options[:request_signature] != "GET/invoices"}) }
-            when "Accounts" then element.children.each {|child| response.response_item << Account.from_xml(child) }
-            when "Tracking" then element.children.each {|child| response.response_item << TrackingCategory.from_xml(child) }
-            when "Errors" then element.children.each { |error| parse_error(error, response) }
-          end
+      # check for oauth errors
+      if raw_response =~ /oauth_problem/
+        error_details = CGI.parse(raw_response)
+        description   = error_details["oauth_problem_advice"].first
+        
+        # see http://oauth.pbworks.com/ProblemReporting
+        # Xero only appears to return either token_expired or token_rejected
+        case (error_details["oauth_problem"].first)
+          when "token_expired"        then raise OAuth::TokenExpired.new(description)
+          when "token_rejected"       then raise OAuth::TokenInvalid.new(description)
+        end
+      end
+      
+      response = XeroGateway::Response.new
+      
+      doc = REXML::Document.new(raw_response, :ignore_whitespace_nodes => :all)
+      
+      response_element = REXML::XPath.first(doc, "/Response")
+            
+      response_element.children.reject { |e| e.is_a? REXML::Text }.each do |element|
+        case(element.name)
+          when "ID" then response.response_id = element.text
+          when "Status" then response.status = element.text
+          when "ProviderName" then response.provider = element.text
+          when "DateTimeUTC" then response.date_time = element.text
+          when "Contact" then response.response_item = Contact.from_xml(element, self)
+          when "Invoice" then response.response_item = Invoice.from_xml(element, self, {:line_items_downloaded => options[:request_signature] != "GET/invoices"})
+          when "Contacts" then element.children.each {|child| response.response_item << Contact.from_xml(child, self) }
+          when "Invoices" then element.children.each {|child| response.response_item << Invoice.from_xml(child, self, {:line_items_downloaded => options[:request_signature] != "GET/invoices"}) }
+          when "Accounts" then element.children.each {|child| response.response_item << Account.from_xml(child) }
+          when "Tracking" then element.children.each {|child| response.response_item << TrackingCategory.from_xml(child) }
+          when "Errors" then element.children.each { |error| parse_error(error, response) }
         end
       end
       
       response.request_params = request[:request_params]
-      response.request_xml = request[:request_xml]
-      response.response_xml = response_xml
+      response.request_xml    = request[:request_xml]
+      response.response_xml   = raw_response
       response
     end    
 

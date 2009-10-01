@@ -2,6 +2,7 @@ require "rubygems"
 
 require 'test/unit'
 require 'mocha'
+require 'shoulda'
 
 require 'libxml'
 
@@ -12,14 +13,15 @@ module TestHelper
   # environment, and you must have set up a customer key for that account.
   #
   # You can then run the tests against the test environment using the commands (linux or mac):
-  # export STUB_XERO_CALLS=false
-  # export API_KEY=[your_api_key]
-  # export CUSTOMER_KEY=[your_customer_key]
+  # export STUB_XERO_CALLS=false  
   # rake test
+  # (this probably won't work under OAuth?)
+  #
+  
   STUB_XERO_CALLS = ENV["STUB_XERO_CALLS"].nil? ? true : (ENV["STUB_XERO_CALLS"] == "true") unless defined? STUB_XERO_CALLS
   
-  API_KEY = ENV["API_KEY"] unless defined? API_KEY
-  CUSTOMER_KEY = ENV["CUSTOMER_KEY"] unless defined? CUSTOMER_KEY
+  CONSUMER_KEY    = ENV["CONSUMER_KEY"]    || "fake_key"    unless defined?(CONSUMER_KEY)
+  CONSUMER_SECRET = ENV["CONSUMER_SECRET"] || "fake_secret" unless defined?(CONSUMER_SECRET)
   
   # Helper constant for checking regex
   GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ unless defined?(GUID_REGEX)
@@ -75,4 +77,5 @@ module TestHelper
     f.close
     return data
   end
+  
 end

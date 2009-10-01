@@ -4,16 +4,13 @@ class UpdateContactTest < Test::Unit::TestCase
   include TestHelper
   
   def setup
-    @gateway = XeroGateway::Gateway.new(
-      :customer_key => CUSTOMER_KEY,
-      :api_key => API_KEY    
-    )
+    @gateway = XeroGateway::Gateway.new(CONSUMER_KEY, CONSUMER_SECRET)
     
     if STUB_XERO_CALLS
       @gateway.xero_url = "DUMMY_URL"
       
-      @gateway.stubs(:http_put).with {|url, body, params| url =~ /contact$/ }.returns(get_file_as_string("contact.xml"))          
-      @gateway.stubs(:http_post).with {|url, body, params| url =~ /contact$/ }.returns(get_file_as_string("contact.xml"))          
+      @gateway.stubs(:http_put).with {|client, url, body, params| url =~ /contact$/ }.returns(get_file_as_string("contact.xml"))          
+      @gateway.stubs(:http_post).with {|client, url, body, params| url =~ /contact$/ }.returns(get_file_as_string("contact.xml"))          
     end
   end
   
