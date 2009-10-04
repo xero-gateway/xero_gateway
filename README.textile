@@ -4,36 +4,131 @@ h2. Introduction
 
 This library is designed to help ruby / rails based applications communicate with the publicly available API for Xero.  If you are unfamiliar with the API, you should first read the documentation, located here "http://blog.xero.com/developer/":http://blog.xero.com/developer/
 
-h2. Prerequisites
-
-To use the Xero API you must have a Xero API Key.  If you don't know what this is, and don't know how to get one, this library is probably not for you.
-
 h2. Usage
 
 <pre><code>    require 'xero_gateway'
-    gateway = XeroGateway::Gateway.new(
-      :customer_key => "THE_CUSTOMER_KEY_GENERATED_FOR_YOUR_APP",
-      :api_key => "YOUR_XERO_API_KEY",
-      :xero_url => "THE URL FOR THE XERO API (test or live)"
-    )</code></pre>
+    gateway = XeroGateway::Gateway.new(YOUR_OAUTH_CONSUMER_KEY, YOUR_OAUTH_CONSUMER_SECRET)
+</code></pre>
 
+h2. Authenticating with OAuth
+
+OAuth is built into this library in a very similar manner to the Twitter gem by John Nunemaker ("http://github.com/jnunemaker/twitter":http://github.com/jnunemaker/twitter). So if you've used that before this will all seem familiar.
+
+h3. Consumer Key & Secret
+
+First off, you'll need to get a Consumer Key/Secret pair for your application from Xero. 
+Head to "http://api.xero.com":http://api.xero.com, log in and then click My Applications > Add Application. 
+
+(If you're unsure about the Callback URL, specify nothing - it will become clear a bit later)
+
+On the right-hand-side of your application's page there's a box titled "OAuth Credentials". Use the Key and Secret from this box in order to set up a new Gateway instance.
+
+<pre><code>    require 'xero_gateway'
+    gateway = XeroGateway::Gateway.new(YOUR_OAUTH_CONSUMER_KEY, YOUR_OAUTH_CONSUMER_SECRET)
+</code></pre>
+
+h3. Request Token
+
+You'll then need to get a Request Token from Xero.
+
+<pre><code>
+    request_token = gateway.request_token
+</code></pre>
+
+You should keep this around - you'll need it to exchange for an Access Token later. (If you're using Rails, this means storing it in the session or something similar)
+
+Next, you need to redirect your user to the authorisation url for this request token. In Rails, that looks something like this:
+
+<pre><code>
+    redirect_to request_token.authorize_url
+</code></pre>
+
+(Note that Xero doesn't support the OAuth Callback parameter here)
+
+h3. Retrieving an Access Token
+
+If you've specified a Callback URL when setting up your application, your user will be redirected to that URL with an OAuth Verifier as a GET parameter. You can then exchange your Request Token for an Access Token like this (assuming Rails, once again):
+
+<pre><code>
+    gateway.authorize_from_request(request_token.token, request_token.secret, :oauth_verifier => params[:oauth_verifier])
+</code></pre>
+
+(If you haven't specified a Callback URL, the user will be presented with a numeric verifier which they must copy+paste into your application; see examples/oauth.rb for an example)
+
+Now you can access Xero API methods:
+
+<pre><code>
+    gateway.get_contacts
+</code></pre>
+
+h3. Storing Access Tokens
+
+You can also store the Access Token/Secret pair so that you can access the API without user intervention. Currently, these access tokens are only valid for 30 minutes, and will raise a XeroGateway::OAuth::TokenExpired exception if you attempt to access the API beyond the token's expiry time.
+
+<pre><code>
+    access_token, access_secret = gateway.access_token
+</code></pre>
+
+h3. Examples
+
+Open examples/oauth.rb and change CONSUMER_KEY and CONSUMER_SECRET to the values for a Test OAuth Application in order to see an example of OAuth at work.
+
+If you're working with Rails, a controller similar to this might come in handy:
+
+<pre><code>
+  
+  class XeroSessionsController < ApplicationController
+  
+    before_filter :get_xero_gateway
+
+    def new
+      session[:request_token]  = @xero_gateway.request_token.token
+      session[:request_secret] = @xero_gateway.request_token.secret
+
+      redirect_to @xero_gateway.request_token.authorize_url
+    end
+
+    def create
+      @xero_gateway.authorize_from_request(session[:request_token], session[:request_secret],
+                                           :oauth_verifier => params[:oauth_verifier])
+
+      session[:xero_auth] = { :access_token  => @xero_gateway.access_token.token, 
+                              :access_secret => @xero_gateway.access_token.secret }
+
+      session.data.delete(:request_token); session.data.delete(:request_secret)
+    end
+
+    def destroy
+      session.data.delete(:xero_auth)
+    end
+    
+    private
+    
+      def get_xero_gateway
+        @xero_gateway = XeroGateway::Gateway.new(YOUR_OAUTH_CONSUMER_KEY, YOUR_OAUTH_CONSUMER_SECRET)
+      end
+
+  end
+  
+</code></pre>
+
+Note that I'm just storing the Access Token + Secret in the session here - you could equally store them in the database if you felt like refreshing them every 30 minutes ;)
 
 h2. Implemented interface methods
 
-
-h3. GET /api.xro/1.0/contact (get_contact_by_id)
+h3. GET /api.xro/2.0/contact (get_contact_by_id)
 
 Gets a contact record for a specific Xero organisation
 <pre><code>    result = gateway.get_contact_by_id(contact_id)
     contact = result.contact if result.success?</code></pre>
 
-h3. GET /api.xro/1.0/contact (get_contact_by_number)
+h3. GET /api.xro/2.0/contact (get_contact_by_number)
 
 Gets a contact record for a specific Xero organisation
 <pre><code>    gateway.get_contact_by_number(contact_number)</code></pre>
 
 
-h3. GET /api.xro/1.0/contacts (get_contacts)
+h3. GET /api.xro/2.0/contacts (get_contacts)
 
 Gets all contact records for a particular Xero customer.
 <pre><code>    gateway.get_contacts(:type => :all, :sort => :name, :direction => :desc)
@@ -41,7 +136,7 @@ Gets all contact records for a particular Xero customer.
 
 
 
-h3. PUT /api.xro/1.0/contact
+h3. PUT /api.xro/2.0/contact
 
 Saves a contact record for a particular Xero customer.
 <pre><code>    contact = gateway.build_contact
@@ -58,14 +153,14 @@ Saves a contact record for a particular Xero customer.
     contact.save</code></pre>
 
 
-h3. POST /api.xro/1.0/contact
+h3. POST /api.xro/2.0/contact
 
 Updates an existing contact record.
 <pre><code>    contact_retrieved_from_xero.email = "something_new@something.com"
     contact_retrieved_from_xero.save</code></pre>
 
 
-h3. POST /api.xro/1.0/contacts
+h3. POST /api.xro/2.0/contacts
 
 Creates a list of contacts or updates them if they have a matching contact_id, contact_number or name.
 This method uses only a single API request to create/update multiple contacts.
@@ -73,20 +168,20 @@ This method uses only a single API request to create/update multiple contacts.
     result = gateway.update_contacts(contacts)</code></pre>
 
 
-h3. GET /api.xro/1.0/invoice (get_invoice_by_id)
+h3. GET /api.xro/2.0/invoice (get_invoice_by_id)
 
 Gets an invoice record for a specific Xero organisation
 <pre><code>    gateway.get_invoice_by_id(invoice_id)</code></pre>
 
 
-h3. GET /api.xro/1.0/invoice (get_invoice_by_number)
+h3. GET /api.xro/2.0/invoice (get_invoice_by_number)
 
 Gets an invoice record for a specific Xero organisation
 <pre><code>    gateway.get_invoice_by_number(invoice_number)</code></pre>
 
 
 
-h3. GET /api.xro/1.0/invoices (get_invoices)
+h3. GET /api.xro/2.0/invoices (get_invoices)
 
 Gets all invoice records for a particular Xero customer.
 <pre><code>    gateway.get_invoices
@@ -94,7 +189,7 @@ Gets all invoice records for a particular Xero customer.
 
 
 
-h3. PUT /api.xro/1.0/invoice
+h3. PUT /api.xro/2.0/invoice
 
 Inserts an invoice for a specific organization in Xero (Currently only adding new invoices is allowed).
 
@@ -121,14 +216,14 @@ Invoice and line item totals are calculated automatically.
 		invoice.create</code></pre>
 
 
-h3. PUT /api.xro/1.0/invoices
+h3. PUT /api.xro/2.0/invoices
 
 Inserts multiple invoices for a specific organization in Xero (currently only adding new invoices is allowed).
 This method uses only a single API request to create/update multiple contacts.
 <pre><code>    invoices = [XeroGateway::Invoice.new(...), XeroGateway::Invoice.new(...)]
     result = gateway.create_invoices(invoices)</code></pre>
 
-h3. GET /api.xro/1.0/accounts
+h3. GET /api.xro/2.0/accounts
 
 Gets all accounts for a specific organization in Xero.
 <pre><code>    gateway.get_accounts</code></pre>
@@ -146,7 +241,24 @@ Finds all accounts with tax_type == 'OUTPUT'. For a list of valid tax types see 
 <pre><code>   all_output_tax_accounts = accounts_list.find_all_by_tax_type('OUTPUT')</code></pre>
 
 
-h3. GET /api.xro/1.0/tracking
+h3. GET /api.xro/2.0/tracking
 
 Gets all tracking categories and their options for a specific organization in Xero.
 <pre><code>    gateway.get_tracking_categories</code></pre>
+
+h3. GET /api.xero/2.0/Organisation
+
+Retrieves organisation details for the authorised application.
+<pre><code>    gateway.get_organisation.organisation</code></pre>
+
+
+h3. GET /api.xero/2.0/Currencies
+
+Retrieves currencies in use for the authorised application.
+<pre><code>    gateway.get_currencies.currencies</code></pre>
+
+
+h3. GET /api.xero/2.0/TaxRates
+
+Retrieves Tax Rates in use for the authorised application.
+<pre><code>    gateway.get_tax_rates.tax_rates</code></pre>
