@@ -6,6 +6,7 @@ require "builder"
 require "bigdecimal"
 require "oauth"
 require "forwardable"
+require "activesupport"
 
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'http_encoding_helper')
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'http')
@@ -21,6 +22,9 @@ require File.join(File.dirname(__FILE__), 'xero_gateway', 'payment')
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'invoice')
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'address')
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'phone')
+require File.join(File.dirname(__FILE__), 'xero_gateway', 'organisation')
+require File.join(File.dirname(__FILE__), 'xero_gateway', 'tax_rate')
+require File.join(File.dirname(__FILE__), 'xero_gateway', 'currency')
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'error')
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'oauth')
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'gateway')

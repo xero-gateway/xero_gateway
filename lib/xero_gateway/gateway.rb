@@ -240,6 +240,29 @@ module XeroGateway
       parse_response(response_xml, {}, {:request_signature => 'GET/tracking'})
     end
 
+    #
+    # Gets Organisation details
+    #
+    def get_organisation
+      response_xml = http_get(@client, "#{xero_url}/Organisation")
+      parse_response(response_xml, {}, {:request_signature => 'GET/organisation'})
+    end
+    
+    #
+    # Gets all currencies for a specific organisation in Xero
+    #
+    def get_currencies
+      response_xml = http_get(@client, "#{xero_url}/Currencies")
+      parse_response(response_xml, {}, {:request_signature => 'GET/currencies'})
+    end
+    
+    #
+    # Gets all Tax Rates for a specific organisation in Xero
+    #
+    def get_tax_rates
+      response_xml = http_get(@client, "#{xero_url}/TaxRates")
+      parse_response(response_xml, {}, {:request_signature => 'GET/tax_rates'})
+    end
 
     private
 
@@ -310,6 +333,9 @@ module XeroGateway
           when "Contacts" then element.children.each {|child| response.response_item << Contact.from_xml(child, self) }
           when "Invoices" then element.children.each {|child| response.response_item << Invoice.from_xml(child, self, {:line_items_downloaded => options[:request_signature] != "GET/invoices"}) }
           when "Accounts" then element.children.each {|child| response.response_item << Account.from_xml(child) }
+          when "TaxRates" then element.children.each {|child| response.response_item << TaxRate.from_xml(child) }
+          when "Currencies" then element.children.each {|child| response.response_item << Currency.from_xml(child) }
+          when "Organisations" then response.response_item = Organisation.from_xml(element.children.first) # Xero only returns the Authorized Organisation
           when "Tracking" then element.children.each {|child| response.response_item << TrackingCategory.from_xml(child) }
           when "Errors" then element.children.each { |error| parse_error(error, response) }
         end

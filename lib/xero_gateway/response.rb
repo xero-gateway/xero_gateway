@@ -8,8 +8,9 @@ module XeroGateway
     alias_method :contacts, :response_item
     alias_method :accounts, :response_item
     alias_method :tracking_categories, :response_item
-
-
+    alias_method :organisation,  :response_item
+    alias_method :tax_rates,     :response_item
+    alias_method :currencies,    :response_item
     
     def initialize(params = {})
       params.each do |k,v|
