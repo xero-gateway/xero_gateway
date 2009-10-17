@@ -3,18 +3,20 @@ require File.join(File.dirname(__FILE__), '../test_helper.rb')
 class InvoiceTest < Test::Unit::TestCase
   
   def setup
-    @schema = LibXML::XML::Schema.document(LibXML::XML::Document.file(File.join(File.dirname(__FILE__), '../xsd/create_invoice.xsd')))
+    # @schema = LibXML::XML::Schema.document(LibXML::XML::Document.file(File.join(File.dirname(__FILE__), '../xsd/create_invoice.xsd')))
   end
-  
+
+  # NB: Xero no longer appears to provide XSDs for their api, check http://blog.xero.com/developer/api/invoices/
+  #
   # Tests that the XML generated from an invoice object validates against the Xero XSD
-  def test_build_xml
-    invoice = create_test_invoice
-
-    message = invoice.to_xml
-
-    # Check that the document matches the XSD
-    assert LibXML::XML::Parser.string(message).parse.validate_schema(@schema), "The XML document generated did not validate against the XSD"
-  end
+  # def test_build_xml
+  #   invoice = create_test_invoice
+  # 
+  #   message = invoice.to_xml
+  # 
+  #   # Check that the document matches the XSD
+  #   assert LibXML::XML::Parser.string(message).parse.validate_schema(@schema), "The XML document generated did not validate against the XSD"
+  # end
   
   # Tests that an invoice can be converted into XML that Xero can understand, and then converted back to an invoice
   def test_build_and_parse_xml
@@ -152,7 +154,7 @@ class InvoiceTest < Test::Unit::TestCase
     assert_kind_of(Time, invoice.due_date)
     assert_equal('12345', invoice.invoice_number)
     assert_equal('MY REFERENCE FOR THIS INVOICE', invoice.reference)
-    assert_equal(false, invoice.includes_tax)
+    assert_equal("Exclusive", invoice.line_amount_types)
     
     # Test the contact defaults.
     assert_equal('00000000-0000-0000-0000-000000000000', invoice.contact.contact_id)
@@ -244,8 +246,7 @@ class InvoiceTest < Test::Unit::TestCase
         :date => Time.now,
         :due_date => Time.now + (10 * 24 * 3600), # 10 days in the future
         :invoice_number => '12345',
-        :reference => "MY REFERENCE FOR THIS INVOICE",
-        :includes_tax => false
+        :reference => "MY REFERENCE FOR THIS INVOICE"
       }.merge(invoice_params)
     end
     invoice = XeroGateway::Invoice.new(invoice_params || {})

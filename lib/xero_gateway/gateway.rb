@@ -165,8 +165,7 @@ module XeroGateway
     #      :invoice_type => "ACCREC",
     #      :due_date => 1.month.from_now,
     #      :invoice_number => "YOUR INVOICE NUMBER",
-    #      :reference => "YOUR REFERENCE (NOT NECESSARILY UNIQUE!)",
-    #      :includes_tax => false
+    #      :reference => "YOUR REFERENCE (NOT NECESSARILY UNIQUE!)"
     #    })
     #    invoice.contact = XeroGateway::Contact.new(:name => "THE NAME OF THE CONTACT")
     #    invoice.contact.phone.number = "12345"
