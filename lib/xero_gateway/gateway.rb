@@ -184,7 +184,11 @@ module XeroGateway
       response_xml = http_put(@client, "#{@xero_url}/invoice", request_xml)
       response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/invoice'})
       
-      if response.success? && response.invoice && response.invoice.invoice_id
+      # Xero returns invoices inside an <Invoices> tag, even though there's only ever
+      # one for this request
+      response.response_item = response.invoices.first
+      
+      if response.success? && response.invoices && response.invoice.invoice_id
         invoice.invoice_id = response.invoice.invoice_id 
       end
       
