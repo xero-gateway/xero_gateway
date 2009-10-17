@@ -223,7 +223,7 @@ module XeroGateway
         
     def to_xml(b = Builder::XmlMarkup.new)
       b.Invoice {
-        b.InvoiceType self.invoice_type
+        b.Type self.invoice_type
         contact.to_xml(b)
         b.InvoiceDate Invoice.format_date_time(self.date || Date.today)
         b.DueDate Invoice.format_date_time(self.due_date) if self.due_date
@@ -249,7 +249,7 @@ module XeroGateway
           when "InvoiceStatus" then invoice.invoice_status = element.text
           when "InvoiceID" then invoice.invoice_id = element.text
           when "InvoiceNumber" then invoice.invoice_number = element.text            
-          when "InvoiceType" then invoice.invoice_type = element.text
+          when "Type" then invoice.invoice_type = element.text
           when "InvoiceDate" then invoice.date = parse_date_time(element.text)
           when "DueDate" then invoice.due_date = parse_date_time(element.text)
           when "Reference" then invoice.reference = element.text
