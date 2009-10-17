@@ -6,7 +6,7 @@ require "builder"
 require "bigdecimal"
 require "oauth"
 require "forwardable"
-require "activesupport"
+require "active_support"
 
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'http_encoding_helper')
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'http')
