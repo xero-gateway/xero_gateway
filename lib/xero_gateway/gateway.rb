@@ -31,7 +31,7 @@ module XeroGateway
       request_params[:OrderBy]       = options[:order] if options[:order]      
       request_params[:ModifiedAfter] = Gateway.format_date_time(options[:updated_after]) if options[:updated_after]
       
-      request_params[:where]         = CGI.escape(options[:where]) if options[:where]
+      request_params[:where]         = options[:where] if options[:where]
     
       response_xml = http_get(@client, "#{@xero_url}/contacts", request_params)
     
