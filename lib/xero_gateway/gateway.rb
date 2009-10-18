@@ -19,16 +19,19 @@ module XeroGateway
     #
     # Retrieve all contacts from Xero
     #
-    # Usage : get_contacts(:type => :all, :sort => :name, :direction => :desc)
-    #         get_contacts(:type => :all, :updated_after => Time)
+    # Usage : get_contacts(:order => :name)
+    #         get_contacts(:updated_after => Time)
     #
     # Note  : modified_since is in UTC format (i.e. Brisbane is UTC+10)
     def get_contacts(options = {})
       request_params = {}
-      request_params[:type] = options[:type] if options[:type]
-      request_params[:sortBy] = options[:sort] if options[:sort]      
-      request_params[:direction] = options[:direction] if options[:direction]
-      request_params[:updatedAfter] = Gateway.format_date_time(options[:updated_after]) if options[:updated_after]
+      
+      request_params[:ContactID]     = options[:contact_id] if options[:contact_id]
+      request_params[:ContactNumber] = options[:contact_number] if options[:contact_number]
+      request_params[:OrderBy]       = options[:order] if options[:order]      
+      request_params[:ModifiedAfter] = Gateway.format_date_time(options[:updated_after]) if options[:updated_after]
+      
+      request_params[:where]         = CGI.escape(options[:where]) if options[:where]
     
       response_xml = http_get(@client, "#{@xero_url}/contacts", request_params)
     
