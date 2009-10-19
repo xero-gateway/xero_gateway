@@ -11,7 +11,7 @@ class GetInvoicesTest < Test::Unit::TestCase
     if STUB_XERO_CALLS
       @gateway.xero_url = "DUMMY_URL"
       
-      @gateway.stubs(:http_get).with {|client, url, params| url =~ /invoices$/ }.returns(get_file_as_string("invoices.xml"))
+      @gateway.stubs(:http_get).with {|client, url, params| url =~ /Invoices$/ }.returns(get_file_as_string("invoices.xml"))
       @gateway.stubs(:http_put).with {|client, url, body, params| url =~ /invoice$/ }.returns(get_file_as_string("create_invoice.xml"))
 
       # Get an invoice with an invalid ID number.
@@ -36,11 +36,11 @@ class GetInvoicesTest < Test::Unit::TestCase
     @gateway.create_invoice(invoice)
     
     # Check that it is returned
-    result = @gateway.get_invoices(Date.today - 1)
+    result = @gateway.get_invoices(:updated_after => Date.today - 1)
     assert result.success?
     assert !result.request_params.nil?
     assert !result.response_xml.nil?    
-    assert result.request_params.keys.include?(:modifiedSince) # make sure the flag was sent
+    assert result.request_params.keys.include?(:ModifiedAfter) # make sure the flag was sent
     assert result.invoices.collect {|response_invoice| response_invoice.invoice_number}.include?(invoice.invoice_number)
   end
   

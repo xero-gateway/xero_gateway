@@ -138,13 +138,20 @@ module XeroGateway
     # Retrieves all invoices from Xero
     #
     # Usage : get_invoices
-    #         get_invoices(modified_since)
+    #         get_invoices(:invoice_id => " 297c2dc5-cc47-4afd-8ec8-74990b8761e9")
     #
     # Note  : modified_since is in UTC format (i.e. Brisbane is UTC+10)
-    def get_invoices(modified_since = nil)
-      request_params = modified_since ? {:modifiedSince => Gateway.format_date_time(modified_since)} : {}
-    
-      response_xml = http_get(@client, "#{@xero_url}/invoices", request_params)
+    def get_invoices(options = {})
+      request_params = {}
+      
+      request_params[:InvoiceID]     = options[:invoice_id] if options[:invoice_id]
+      request_params[:InvoiceNumber] = options[:invoice_number] if options[:invoice_number]
+      request_params[:OrderBy]       = options[:order] if options[:order]      
+      request_params[:ModifiedAfter] = Gateway.format_date_time(options[:updated_after]) if options[:updated_after]
+
+      request_params[:where]         = options[:where] if options[:where]
+        
+      response_xml = http_get(@client, "#{@xero_url}/Invoices", request_params)
 
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/invoices'})
     end
