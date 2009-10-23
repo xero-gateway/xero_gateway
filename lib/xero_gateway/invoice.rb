@@ -225,7 +225,7 @@ module XeroGateway
       b.Invoice {
         b.Type self.invoice_type
         contact.to_xml(b)
-        b.InvoiceDate Invoice.format_date_time(self.date || Date.today)
+        b.Date Invoice.format_date_time(self.date || Date.today)
         b.DueDate Invoice.format_date_time(self.due_date) if self.due_date
         b.InvoiceNumber self.invoice_number if self.invoice_number
         b.Reference self.reference if self.reference
@@ -250,7 +250,7 @@ module XeroGateway
           when "InvoiceID" then invoice.invoice_id = element.text
           when "InvoiceNumber" then invoice.invoice_number = element.text            
           when "Type" then invoice.invoice_type = element.text
-          when "InvoiceDate" then invoice.date = parse_date_time(element.text)
+          when "Date" then invoice.date = parse_date_time(element.text)
           when "DueDate" then invoice.due_date = parse_date_time(element.text)
           when "Reference" then invoice.reference = element.text
           when "LineAmountTypes" then invoice.line_amount_types = element.text
