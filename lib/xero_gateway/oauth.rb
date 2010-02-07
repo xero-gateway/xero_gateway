@@ -21,7 +21,7 @@ module XeroGateway
     end
     
     extend Forwardable
-    def_delegators :access_token, :get, :post
+    def_delegators :access_token, :get, :post, :put
     
     attr_reader :ctoken, :csecret, :consumer_options
     
