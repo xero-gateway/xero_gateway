@@ -266,8 +266,8 @@ class InvoiceTest < Test::Unit::TestCase
       contact_params = {
         :contact_id => '00000000-0000-0000-0000-000000000000', # Just any valid GUID
         :name => "CONTACT NAME",
-        :firstname => "Bob",
-        :lastname => "Builder"
+        :first_name => "Bob",
+        :last_name => "Builder"
       }.merge(contact_params)
     
       # Create invoice.contact from contact_params.
