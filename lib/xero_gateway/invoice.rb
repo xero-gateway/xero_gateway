@@ -203,9 +203,10 @@ module XeroGateway
     end
     
     def ==(other)
-      ["invoice_number", "invoice_type", "invoice_status", "reference", "line_amount_types", "sub_total", "total_tax", "total", "contact", "line_items"].each do |field|
+      ["invoice_number", "invoice_type", "invoice_status", "reference", "line_amount_types", "contact", "line_items"].each do |field|
         return false if send(field) != other.send(field)
       end
+      
       ["date", "due_date"].each do |field|
         return false if send(field).to_s != other.send(field).to_s
       end
@@ -253,8 +254,8 @@ module XeroGateway
         when "Reference" then invoice.reference = element.text
           when "Type" then invoice.invoice_type = element.text
           when "Contact" then invoice.contact = Contact.from_xml(element)
-          when "Date" then invoice.date = parse_date_time(element.text)
-          when "DueDate" then invoice.due_date = parse_date_time(element.text)
+          when "Date" then invoice.date = parse_date(element.text)
+          when "DueDate" then invoice.due_date = parse_date(element.text)
           when "Status" then invoice.invoice_status = element.text
           when "LineAmountTypes" then invoice.line_amount_types = element.text
           when "LineItems" then element.children.each {|line_item| invoice.line_items_downloaded = true; invoice.line_items << LineItem.from_xml(line_item) }

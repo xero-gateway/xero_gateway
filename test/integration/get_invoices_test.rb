@@ -36,11 +36,11 @@ class GetInvoicesTest < Test::Unit::TestCase
     @gateway.create_invoice(invoice)
     
     # Check that it is returned
-    result = @gateway.get_invoices(Date.today - 1)
+    result = @gateway.get_invoices(:modified_since => Date.today - 1)
     assert result.success?
     assert !result.request_params.nil?
     assert !result.response_xml.nil?    
-    assert result.request_params.keys.include?(:modifiedSince) # make sure the flag was sent
+    assert result.request_params.keys.include?(:modified_since) # make sure the flag was sent
     assert result.invoices.collect {|response_invoice| response_invoice.invoice_number}.include?(invoice.invoice_number)
   end
   

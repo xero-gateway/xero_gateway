@@ -77,6 +77,8 @@ module XeroGateway
         b.Quantity quantity if quantity
         b.UnitAmount LineItem.format_money(unit_amount)
         b.TaxType tax_type if tax_type
+        b.TaxAmount tax_amount if tax_amount
+        b.LineAmount line_amount if line_amount
         b.AccountCode account_code if account_code
         if has_tracking?
           b.Tracking {

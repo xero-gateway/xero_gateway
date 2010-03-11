@@ -141,9 +141,9 @@ module XeroGateway
         b.ContactID self.contact_id if self.contact_id
         b.ContactNumber self.contact_number if self.contact_number
         b.Name self.name
+        b.EmailAddress self.email if self.email
         b.FirstName self.firstname
         b.LastName self.lastname
-        b.EmailAddress self.email if self.email
         b.Addresses {
           addresses.each { |address| address.to_xml(b) }
         }

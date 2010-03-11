@@ -9,7 +9,7 @@ class GetTrackingCategoriesTest < Test::Unit::TestCase
     if STUB_XERO_CALLS
       @gateway.xero_url = "DUMMY_URL"
       
-      @gateway.stubs(:http_get).with {|client, url, params| url =~ /tracking$/ }.returns(get_file_as_string("tracking_categories.xml"))          
+      @gateway.stubs(:http_get).with {|client, url, params| url =~ /TrackingCategories$/ }.returns(get_file_as_string("tracking_categories.xml"))          
     end
   end
   

@@ -148,11 +148,11 @@ class InvoiceTest < Test::Unit::TestCase
     
     # Test invoice defaults.
     assert_equal('ACCREC', invoice.invoice_type)
-    assert_kind_of(Time, invoice.date)
-    assert_kind_of(Time, invoice.due_date)
+    assert_kind_of(Date, invoice.date)
+    assert_kind_of(Date, invoice.due_date)
     assert_equal('12345', invoice.invoice_number)
     assert_equal('MY REFERENCE FOR THIS INVOICE', invoice.reference)
-    assert_equal(false, invoice.includes_tax)
+    assert_equal("Exclusive", invoice.line_amount_types)
     
     # Test the contact defaults.
     assert_equal('00000000-0000-0000-0000-000000000000', invoice.contact.contact_id)
@@ -241,11 +241,11 @@ class InvoiceTest < Test::Unit::TestCase
     unless invoice_params.nil?
       invoice_params = {
         :invoice_type => 'ACCREC',
-        :date => Time.now,
-        :due_date => Time.now + (10 * 24 * 3600), # 10 days in the future
+        :date => Date.today,
+        :due_date => Date.today + 10, # 10 days in the future
         :invoice_number => '12345',
         :reference => "MY REFERENCE FOR THIS INVOICE",
-        :includes_tax => false
+        :line_amount_types => "Exclusive"
       }.merge(invoice_params)
     end
     invoice = XeroGateway::Invoice.new(invoice_params || {})
@@ -265,7 +265,9 @@ class InvoiceTest < Test::Unit::TestCase
     
       contact_params = {
         :contact_id => '00000000-0000-0000-0000-000000000000', # Just any valid GUID
-        :name => "CONTACT NAME"
+        :name => "CONTACT NAME",
+        :firstname => "Bob",
+        :lastname => "Builder"
       }.merge(contact_params)
     
       # Create invoice.contact from contact_params.
