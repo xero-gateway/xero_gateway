@@ -75,7 +75,13 @@ module XeroGateway
     def self.parse(string)
       address = Address.new
       
-      string.split("\r\n").each_with_index do |line, index|
+      parts = string.split("\r\n")
+      
+      if(parts.size > 3)
+        parts = [parts.shift, parts.shift, parts.shift, parts.join(", ")]
+      end
+      
+      parts.each_with_index do |line, index|
         address.send("line_#{index+1}=", line)
       end
       address
