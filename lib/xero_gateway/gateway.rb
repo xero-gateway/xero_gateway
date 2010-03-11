@@ -137,13 +137,10 @@ module XeroGateway
     # Usage : get_invoices
     #         get_invoices(modified_since)
     #
-    # Note  : modified_since is in UTC format (i.e. Brisbane is UTC+10)
-    def get_invoices(modified_since = nil)
-      request_params = modified_since ? {:modifiedSince => Gateway.format_date_time(modified_since)} : {}
-    
+    def get_invoices(request_params = {})
       response_xml = http_get(@client, "#{@xero_url}/invoices", request_params)
 
-      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/invoices'})
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/Invoices'})
     end
     
     # Factory method for building new Invoice objects associated with this gateway.
@@ -166,7 +163,7 @@ module XeroGateway
     #      :due_date => 1.month.from_now,
     #      :invoice_number => "YOUR INVOICE NUMBER",
     #      :reference => "YOUR REFERENCE (NOT NECESSARILY UNIQUE!)",
-    #      :includes_tax => false
+    #      :line_amount_types => "Inclusive"
     #    })
     #    invoice.contact = XeroGateway::Contact.new(:name => "THE NAME OF THE CONTACT")
     #    invoice.contact.phone.number = "12345"
@@ -236,8 +233,9 @@ module XeroGateway
     # Gets all tracking categories for a specific organization in Xero.
     #
     def get_tracking_categories
-      response_xml = http_get(@client, "#{xero_url}/tracking")
-      parse_response(response_xml, {}, {:request_signature => 'GET/tracking'})
+      response_xml = http_get(@client, "#{xero_url}/TrackingCategories")
+
+      parse_response(response_xml, {}, {:request_signature => 'GET/TrackingCategories'})
     end
 
     #
@@ -270,7 +268,7 @@ module XeroGateway
       request_params = invoice_id ? {:invoiceID => invoice_id} : {:invoiceNumber => invoice_number}
       response_xml = http_get(@client, "#{@xero_url}/invoice", request_params)
 
-      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/invoice'})
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/Invoice'})
     end
 
     def get_contact(contact_id = nil, contact_number = nil)
@@ -302,7 +300,6 @@ module XeroGateway
     end
 
     def parse_response(raw_response, request = {}, options = {})
-      
       # check for oauth errors
       if raw_response =~ /oauth_problem/
         error_details = CGI.parse(raw_response)
@@ -317,9 +314,9 @@ module XeroGateway
       end
       
       response = XeroGateway::Response.new
-      
+
       doc = REXML::Document.new(raw_response, :ignore_whitespace_nodes => :all)
-      
+
       response_element = REXML::XPath.first(doc, "/Response")
             
       response_element.children.reject { |e| e.is_a? REXML::Text }.each do |element|
@@ -329,16 +326,21 @@ module XeroGateway
           when "ProviderName" then response.provider = element.text
           when "DateTimeUTC" then response.date_time = element.text
           when "Contact" then response.response_item = Contact.from_xml(element, self)
-          when "Invoice" then response.response_item = Invoice.from_xml(element, self, {:line_items_downloaded => options[:request_signature] != "GET/invoices"})
+          when "Invoice" then response.response_item = Invoice.from_xml(element, self, {:line_items_downloaded => options[:request_signature] != "GET/Invoices"})
           when "Contacts" then element.children.each {|child| response.response_item << Contact.from_xml(child, self) }
-          when "Invoices" then element.children.each {|child| response.response_item << Invoice.from_xml(child, self, {:line_items_downloaded => options[:request_signature] != "GET/invoices"}) }
+          when "Invoices" then element.children.each {|child| response.response_item << Invoice.from_xml(child, self, {:line_items_downloaded => options[:request_signature] != "GET/Invoices"}) }
           when "Accounts" then element.children.each {|child| response.response_item << Account.from_xml(child) }
           when "TaxRates" then element.children.each {|child| response.response_item << TaxRate.from_xml(child) }
           when "Currencies" then element.children.each {|child| response.response_item << Currency.from_xml(child) }
           when "Organisations" then response.response_item = Organisation.from_xml(element.children.first) # Xero only returns the Authorized Organisation
-          when "Tracking" then element.children.each {|child| response.response_item << TrackingCategory.from_xml(child) }
+          when "TrackingCategories" then element.children.each {|child| response.response_item << TrackingCategory.from_xml(child) }
           when "Errors" then element.children.each { |error| parse_error(error, response) }
         end
+      end if response_element
+      
+      # If a single result is returned don't put it in an array
+      if response.response_item.is_a?(Array) && response.response_item.size == 1
+        response.response_item = response.response_item.first
       end
       
       response.request_params = request[:request_params]
