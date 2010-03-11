@@ -5,8 +5,12 @@ module XeroGateway
     end
     
     module ClassMethods
+      def format_date(time)
+        return time.strftime("%Y-%m-%d")
+      end
+      
       def format_date_time(time)
-        return time.strftime("%Y-%m-%dT%H:%M:%S")
+        return time.strftime("%Y%m%d%H%M%S")
       end
       
       def parse_date_time(time)
