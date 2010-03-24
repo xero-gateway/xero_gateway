@@ -19,16 +19,19 @@ module XeroGateway
     #
     # Retrieve all contacts from Xero
     #
-    # Usage : get_contacts(:type => :all, :sort => :name, :direction => :desc)
-    #         get_contacts(:type => :all, :updated_after => Time)
+    # Usage : get_contacts(:order => :name)
+    #         get_contacts(:updated_after => Time)
     #
     # Note  : modified_since is in UTC format (i.e. Brisbane is UTC+10)
     def get_contacts(options = {})
       request_params = {}
-      request_params[:type] = options[:type] if options[:type]
-      request_params[:sortBy] = options[:sort] if options[:sort]      
-      request_params[:direction] = options[:direction] if options[:direction]
-      request_params[:updatedAfter] = Gateway.format_date_time(options[:updated_after]) if options[:updated_after]
+      
+      request_params[:ContactID]     = options[:contact_id] if options[:contact_id]
+      request_params[:ContactNumber] = options[:contact_number] if options[:contact_number]
+      request_params[:OrderBy]       = options[:order] if options[:order]      
+      request_params[:ModifiedAfter] = Gateway.format_date_time(options[:updated_after]) if options[:updated_after]
+      
+      request_params[:where]         = options[:where] if options[:where]
     
       response_xml = http_get(@client, "#{@xero_url}/contacts", request_params)
     
@@ -135,10 +138,20 @@ module XeroGateway
     # Retrieves all invoices from Xero
     #
     # Usage : get_invoices
-    #         get_invoices(modified_since)
+    #         get_invoices(:invoice_id => " 297c2dc5-cc47-4afd-8ec8-74990b8761e9")
     #
-    def get_invoices(request_params = {})
-      response_xml = http_get(@client, "#{@xero_url}/invoices", request_params)
+    # Note  : modified_since is in UTC format (i.e. Brisbane is UTC+10)
+    def get_invoices(options = {})
+      request_params = {}
+      
+      request_params[:InvoiceID]     = options[:invoice_id] if options[:invoice_id]
+      request_params[:InvoiceNumber] = options[:invoice_number] if options[:invoice_number]
+      request_params[:OrderBy]       = options[:order] if options[:order]      
+      request_params[:ModifiedAfter] = Gateway.format_date_time(options[:modified_since]) if options[:modified_since]
+
+      request_params[:where]         = options[:where] if options[:where]
+        
+      response_xml = http_get(@client, "#{@xero_url}/Invoices", request_params)
 
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/Invoices'})
     end
@@ -182,7 +195,11 @@ module XeroGateway
       response_xml = http_put(@client, "#{@xero_url}/invoice", request_xml)
       response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/invoice'})
       
-      if response.success? && response.invoice && response.invoice.invoice_id
+      # Xero returns invoices inside an <Invoices> tag, even though there's only ever
+      # one for this request
+      response.response_item = response.invoices
+      
+      if response.success? && response.invoices && response.invoice.invoice_id
         invoice.invoice_id = response.invoice.invoice_id 
       end
       

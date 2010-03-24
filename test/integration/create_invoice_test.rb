@@ -9,7 +9,7 @@ class CreateInvoiceTest < Test::Unit::TestCase
     if STUB_XERO_CALLS
       @gateway.xero_url = "DUMMY_URL"
       
-      @gateway.stubs(:http_put).with {|client, url, body, params| url =~ /invoice$/ }.returns(get_file_as_string("invoice.xml"))          
+      @gateway.stubs(:http_put).with {|client, url, body, params| url =~ /invoice$/ }.returns(get_file_as_string("create_invoice.xml"))          
       @gateway.stubs(:http_post).with {|client, url, body, params| url =~ /invoice$/ }.returns(get_file_as_string("invoice.xml"))          
     end
   end

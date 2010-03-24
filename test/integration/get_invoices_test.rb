@@ -11,8 +11,8 @@ class GetInvoicesTest < Test::Unit::TestCase
     if STUB_XERO_CALLS
       @gateway.xero_url = "DUMMY_URL"
       
-      @gateway.stubs(:http_get).with {|client, url, params| url =~ /invoices$/ }.returns(get_file_as_string("invoices.xml"))
-      @gateway.stubs(:http_put).with {|client, url, body, params| url =~ /invoice$/ }.returns(get_file_as_string("invoice.xml"))
+      @gateway.stubs(:http_get).with {|client, url, params| url =~ /Invoices$/ }.returns(get_file_as_string("invoices.xml"))
+      @gateway.stubs(:http_put).with {|client, url, body, params| url =~ /invoice$/ }.returns(get_file_as_string("create_invoice.xml"))
 
       # Get an invoice with an invalid ID number.
       @gateway.stubs(:http_get).with {|client, url, params| url =~ /invoice$/ && params[:invoiceID] == "99999999-9999-9999-9999-999999999999" }.returns(get_file_as_string("invoice_not_found_error.xml"))
@@ -40,7 +40,7 @@ class GetInvoicesTest < Test::Unit::TestCase
     assert result.success?
     assert !result.request_params.nil?
     assert !result.response_xml.nil?    
-    assert result.request_params.keys.include?(:modified_since) # make sure the flag was sent
+    assert result.request_params.keys.include?(:ModifiedAfter) # make sure the flag was sent
     assert result.invoices.collect {|response_invoice| response_invoice.invoice_number}.include?(invoice.invoice_number)
   end
   

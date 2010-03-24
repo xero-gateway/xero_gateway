@@ -18,7 +18,10 @@ module XeroGateway
     # Any errors that occurred when the #valid? method called.
     attr_reader :errors
     
-    attr_accessor :contact_id, :contact_number, :status, :name, :first_name, :last_name, :email, :addresses, :phones, :updated_at
+    attr_accessor :contact_id, :contact_number, :status, :name, :first_name, :last_name, :email, :addresses, :phones, :updated_at,
+                  :bank_account_details, :tax_number, :accounts_receivable_tax_type, :accounts_payable_tax_type, :is_customer, :is_supplier,
+                  :default_currency, :contact_groups
+
         
     def initialize(params = {})
       @errors ||= []
@@ -142,8 +145,16 @@ module XeroGateway
         b.ContactNumber self.contact_number if self.contact_number
         b.Name self.name
         b.EmailAddress self.email if self.email
-        b.FirstName self.first_name
-        b.LastName self.last_name
+        b.FirstName self.first_name if self.first_name
+        b.LastName self.last_name if self.last_name
+        b.BankAccountDetails self.bank_account_details if self.bank_account_details
+        b.TaxNumber self.tax_number if self.tax_number
+        b.AccountsReceivableTaxType self.accounts_receivable_tax_type if self.accounts_receivable_tax_type
+        b.AccountsPayableTaxType self.accounts_payable_tax_type if self.accounts_payable_tax_type
+        b.ContactGroups if self.contact_groups
+        b.IsCustomer if self.is_customer
+        b.IsSupplier if self.is_supplier
+        b.DefaultCurrency if self.default_currency
         b.Addresses {
           addresses.each { |address| address.to_xml(b) }
         }
@@ -167,13 +178,25 @@ module XeroGateway
           when "EmailAddress" then contact.email = element.text
           when "Addresses" then element.children.each {|address_element| contact.addresses << Address.from_xml(address_element)}
           when "Phones" then element.children.each {|phone_element| contact.phones << Phone.from_xml(phone_element)}
+          when "FirstName" then contact.first_name = element.text
+          when "LastName"  then contact.last_name  = element.text
+          when "BankAccountDetails" then contact.bank_account_details = element.text
+          when "TaxNumber" then contact.tax_number = element.text
+          when "AccountsReceivableTaxType" then contact.accounts_receivable_tax_type = element.text
+          when "AccountsPayableTaxType" then contact.accounts_payable_tax_type = element.text
+          when "ContactGroups" then contact.contact_groups = element.text
+          when "IsCustomer" then contact.is_customer = (element.text == "true")
+          when "IsSupplier" then contact.is_supplier = (element.text == "true")
+          when "DefaultCurrency" then contact.default_currency = element.text
         end
       end
       contact
     end
     
     def ==(other)
-      [:contact_number, :status, :name, :first_name, :last_name, :email, :addresses, :phones].each do |field|
+      [ :contact_id, :contact_number, :status, :name, :first_name, :last_name, :email, :addresses, :phones, :updated_at,
+        :bank_account_details, :tax_number, :accounts_receivable_tax_type, :accounts_payable_tax_type, :is_customer, :is_supplier,
+        :default_currency, :contact_groups ].each do |field|
         return false if send(field) != other.send(field)
       end
       return true

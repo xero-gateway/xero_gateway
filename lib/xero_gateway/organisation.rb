@@ -3,11 +3,12 @@ module XeroGateway
     
     unless defined? ATTRS
       ATTRS = {
-        "Name" 	       => :string,     # Display name of organisation shown in Xero
-        "LegalName"    => :string,	   # Organisation name shown on Reports
-        "PaysTax" 	   => :boolean,    # Boolean to describe if organisation is registered with a local tax authority i.e. true, false
-        "Version"   	 => :string,     # See Version Types
-        "BaseCurrency" => :string      # Default currency for organisation. See Currency types
+        "Name" 	           => :string,     # Display name of organisation shown in Xero
+        "LegalName"        => :string,	   # Organisation name shown on Reports
+        "PaysTax" 	       => :boolean,    # Boolean to describe if organisation is registered with a local tax authority i.e. true, false
+        "Version"   	     => :string,     # See Version Types
+        "BaseCurrency"     => :string,     # Default currency for organisation. See Currency types
+        "OrganisationType" => :string      # UNDOCUMENTED parameter, only returned for "real" (i.e non-demo) companies
       }
     end
     

@@ -17,7 +17,7 @@ module XeroGateway
       "Inclusive" =>        'Invoice lines are inclusive tax',
       "Exclusive" =>        'Invoice lines are exclusive of tax (default)',
       "NoTax"     =>        'Invoices lines have no tax'
-    }
+    } unless defined?(LINE_AMOUNT_TYPES)
     
     INVOICE_STATUS = {
       'AUTHORISED' =>       'Approved invoices awaiting payment',
@@ -36,11 +36,12 @@ module XeroGateway
     # Any errors that occurred when the #valid? method called.
     attr_reader :errors
 
-    # Represents whether the line_items have been downloaded when getting from GET /API.XRO/1.0/INVOICES
+    # Represents whether the line_items have been downloaded when getting from GET /API.XRO/2.0/INVOICES
     attr_accessor :line_items_downloaded
   
     # All accessible fields
-    attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :currency, :line_amount_types, :line_items, :contact, :payments, :fully_paid_on, :amount_due, :amount_paid, :amount_credited
+    attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :line_amount_types, :currency_code, :line_items, :contact, :payments, :fully_paid_on, :amount_due, :amount_paid, :amount_credited
+
     
     def initialize(params = {})
       @errors ||= []
@@ -199,7 +200,7 @@ module XeroGateway
     end
     
     def ==(other)
-      ["invoice_number", "invoice_type", "invoice_status", "reference", "currency", "line_amount_types", "contact", "line_items"].each do |field|
+      ["invoice_number", "invoice_type", "invoice_status", "reference", "currency_code", "line_amount_types", "contact", "line_items"].each do |field|
         return false if send(field) != other.send(field)
       end
       
@@ -233,7 +234,7 @@ module XeroGateway
         b.DueDate Invoice.format_date(self.due_date) if self.due_date
         b.InvoiceNumber self.invoice_number if invoice_number
         b.Reference self.reference if self.reference
-        b.CurrencyCode self.currency if self.currency
+        b.CurrencyCode self.currency_code if self.currency_code
         b.LineAmountTypes self.line_amount_types
         b.LineItems {
           self.line_items.each do |line_item|
@@ -243,18 +244,21 @@ module XeroGateway
       }
     end
     
-    #TODO UpdatedDateUTC, CurrencyCode
+    #TODO UpdatedDateUTC
     def self.from_xml(invoice_element, gateway = nil, options = {})
       invoice = Invoice.new(options.merge({:gateway => gateway}))
       invoice_element.children.each do |element|
         case(element.name)
-          when "Reference" then invoice.reference = element.text
-          when "CurrencyCode" then invoice.currency = element.text
+          when "InvoiceID" then invoice.invoice_id = element.text
+          when "InvoiceNumber" then invoice.invoice_number = element.text            
+          when "Type" then invoice.invoice_type = element.text
+          when "CurrencyCode" then invoice.currency_code = element.text
           when "Type" then invoice.invoice_type = element.text
           when "Contact" then invoice.contact = Contact.from_xml(element)
           when "Date" then invoice.date = parse_date(element.text)
           when "DueDate" then invoice.due_date = parse_date(element.text)
           when "Status" then invoice.invoice_status = element.text
+          when "Reference" then invoice.reference = element.text
           when "LineAmountTypes" then invoice.line_amount_types = element.text
           when "LineItems" then element.children.each {|line_item| invoice.line_items_downloaded = true; invoice.line_items << LineItem.from_xml(line_item) }
           when "SubTotal" then invoice.sub_total = BigDecimal.new(element.text)
