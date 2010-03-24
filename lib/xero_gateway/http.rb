@@ -19,7 +19,9 @@ module XeroGateway
     private
     
       def http_request(client, method, url, body, params = {})
-        headers = {'Accept-Encoding' => 'gzip, deflate'}
+        # headers = {'Accept-Encoding' => 'gzip, deflate'}
+
+        headers = {}
 
         if method != :get
          headers['Content-Type'] ||= "application/x-www-form-urlencoded"
