@@ -36,7 +36,7 @@ class GetInvoicesTest < Test::Unit::TestCase
     @gateway.create_invoice(invoice)
     
     # Check that it is returned
-    result = @gateway.get_invoices(:updated_after => Date.today - 1)
+    result = @gateway.get_invoices(:modified_since => Date.today - 1)
     assert result.success?
     assert !result.request_params.nil?
     assert !result.response_xml.nil?    

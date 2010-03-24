@@ -13,6 +13,12 @@ module XeroGateway
       'ACCPAY' =>           'Accounts Payable'
     } unless defined?(INVOICE_TYPE)
     
+    LINE_AMOUNT_TYPES = {
+      "Inclusive" =>        'Invoice lines are inclusive tax',
+      "Exclusive" =>        'Invoice lines are exclusive of tax (default)',
+      "NoTax"     =>        'Invoices lines have no tax'
+    } unless defined?(LINE_AMOUNT_TYPES)
+    
     INVOICE_STATUS = {
       'AUTHORISED' =>       'Approved invoices awaiting payment',
       'DELETED' =>          'Draft invoices that are deleted',
@@ -21,9 +27,6 @@ module XeroGateway
       'SUBMITTED' =>        'Invoices entered by an employee awaiting approval',
       'VOID' =>             'Approved invoices that are voided'
     } unless defined?(INVOICE_STATUS)
-    
-    # see http://blog.xero.com/developer/api/types/#LineAmountTypes
-    LINE_AMOUNT_TYPES = %w(Exclusive Inclusive NoTax)
     
     GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ unless defined?(GUID_REGEX)
         
@@ -38,6 +41,7 @@ module XeroGateway
   
     # All accessible fields
     attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :line_amount_types, :currency_code, :line_items, :contact, :payments, :fully_paid_on, :amount_due, :amount_paid, :amount_credited
+
     
     def initialize(params = {})
       @errors ||= []
@@ -47,7 +51,7 @@ module XeroGateway
       @line_items_downloaded = (params.delete(:line_items_downloaded) == true)
       
       params = {
-        :line_amount_types => "Exclusive"
+        :line_amount_types => "Inclusive"
       }.merge(params)
       
       params.each do |k,v|
@@ -73,9 +77,9 @@ module XeroGateway
       if invoice_status && !INVOICE_STATUS[invoice_status]
         @errors << ['invoice_status', "must be one of #{INVOICE_STATUS.keys.join('/')}"]
       end
-      
-      unless invoice_number
-        @errors << ['invoice_number', "can't be blank"]
+
+      if line_amount_types && !LINE_AMOUNT_TYPES[line_amount_types]
+        @errors << ['line_amount_types', "must be one of #{LINE_AMOUNT_TYPES.keys.join('/')}"]
       end
       
       unless date
@@ -196,9 +200,10 @@ module XeroGateway
     end
     
     def ==(other)
-      ["invoice_number", "invoice_type", "invoice_status", "reference", "line_amount_types", "sub_total", "total_tax", "total", "contact", "line_items"].each do |field|
+      ["invoice_number", "invoice_type", "invoice_status", "reference", "currency_code", "line_amount_types", "contact", "line_items"].each do |field|
         return false if send(field) != other.send(field)
       end
+      
       ["date", "due_date"].each do |field|
         return false if send(field).to_s != other.send(field).to_s
       end
@@ -220,20 +225,17 @@ module XeroGateway
     
     # Alias create as save as this is currently the only write action.
     alias_method :save, :create
-        
+            
     def to_xml(b = Builder::XmlMarkup.new)
       b.Invoice {
         b.Type self.invoice_type
         contact.to_xml(b)
-        b.Date Invoice.format_date_time(self.date || Date.today)
-        b.DueDate Invoice.format_date_time(self.due_date) if self.due_date
-        b.InvoiceNumber self.invoice_number if self.invoice_number
+        b.Date Invoice.format_date(self.date || Date.today)
+        b.DueDate Invoice.format_date(self.due_date) if self.due_date
+        b.InvoiceNumber self.invoice_number if invoice_number
         b.Reference self.reference if self.reference
-        b.LineAmountTypes self.line_amount_types if self.line_amount_types
         b.CurrencyCode self.currency_code if self.currency_code
-        b.SubTotal Invoice.format_money(self.sub_total) if self.sub_total
-        b.TotalTax Invoice.format_money(self.total_tax) if self.total_tax
-        b.Total Invoice.format_money(self.total) if self.total
+        b.LineAmountTypes self.line_amount_types
         b.LineItems {
           self.line_items.each do |line_item|
             line_item.to_xml(b)
@@ -242,26 +244,29 @@ module XeroGateway
       }
     end
     
+    #TODO UpdatedDateUTC
     def self.from_xml(invoice_element, gateway = nil, options = {})
       invoice = Invoice.new(options.merge({:gateway => gateway}))
       invoice_element.children.each do |element|
         case(element.name)
-          when "InvoiceStatus" then invoice.invoice_status = element.text
           when "InvoiceID" then invoice.invoice_id = element.text
           when "InvoiceNumber" then invoice.invoice_number = element.text            
           when "Type" then invoice.invoice_type = element.text
-          when "Date" then invoice.date = parse_date_time(element.text)
-          when "DueDate" then invoice.due_date = parse_date_time(element.text)
+          when "CurrencyCode" then invoice.currency_code = element.text
+          when "Type" then invoice.invoice_type = element.text
+          when "Contact" then invoice.contact = Contact.from_xml(element)
+          when "Date" then invoice.date = parse_date(element.text)
+          when "DueDate" then invoice.due_date = parse_date(element.text)
+          when "Status" then invoice.invoice_status = element.text
           when "Reference" then invoice.reference = element.text
           when "LineAmountTypes" then invoice.line_amount_types = element.text
-          when "CurrencyCode" then invoice.currency_code = element.text
+          when "LineItems" then element.children.each {|line_item| invoice.line_items_downloaded = true; invoice.line_items << LineItem.from_xml(line_item) }
           when "SubTotal" then invoice.sub_total = BigDecimal.new(element.text)
           when "TotalTax" then invoice.total_tax = BigDecimal.new(element.text)
           when "Total" then invoice.total = BigDecimal.new(element.text)
-          when "Contact" then invoice.contact = Contact.from_xml(element)
-          when "LineItems" then element.children.each {|line_item| invoice.line_items_downloaded = true; invoice.line_items << LineItem.from_xml(line_item) }
+          when "InvoiceID" then invoice.invoice_id = element.text
+          when "InvoiceNumber" then invoice.invoice_number = element.text            
           when "Payments" then element.children.each { | payment | invoice.payments << Payment.from_xml(payment) }
-          when "FullyPaidOn" then invoice.fully_paid_on = parse_date_time(element.text)
           when "AmountDue" then invoice.amount_due = BigDecimal.new(element.text)
           when "AmountPaid" then invoice.amount_paid = BigDecimal.new(element.text)
           when "AmountCredited" then invoice.amount_credited = BigDecimal.new(element.text)

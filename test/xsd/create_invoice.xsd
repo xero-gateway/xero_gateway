@@ -3,13 +3,23 @@
   <xs:element name="Invoice">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="InvoiceType" type="xs:string" />
+        <xs:element name="Type" type="xs:string" />
         <xs:element name="Contact">
           <xs:complexType>
             <xs:sequence>
               <xs:element minOccurs="0" name="ContactID" type="xs:string" />
+              <xs:element minOccurs="0" name="ContactNumber" type="xs:string" />
               <xs:element name="Name" type="xs:string" />
+              <xs:element minOccurs="0" name="ContactStatus" type="xs:string" />
               <xs:element minOccurs="0" name="EmailAddress" type="xs:string" />
+              <xs:element minOccurs="0" name="SkypeUserName" type="xs:string" />
+              <xs:element minOccurs="0" name="BankAccountDetails" type="xs:string" />
+              <xs:element minOccurs="0" name="TaxNumber" type="xs:string" />
+              <xs:element minOccurs="0" name="AccountsRecievableTaxType" type="xs:string" />
+              <xs:element minOccurs="0" name="AccountsPayableTaxType" type="xs:string" />
+              <xs:element minOccurs="0" name="FirstName" type="xs:string" />
+              <xs:element minOccurs="0" name="LastName" type="xs:string" />
+              <xs:element minOccurs="0" name="DefaultCurrency" type="xs:string" />
               <xs:element name="Addresses">
                 <xs:complexType>
                   <xs:sequence>
@@ -50,12 +60,11 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="InvoiceDate" type="xs:dateTime" />
-        <xs:element minOccurs="0" name="DueDate" type="xs:dateTime" />
+        <xs:element name="Date" type="xs:date" />
+        <xs:element minOccurs="0" name="DueDate" type="xs:date" />
         <xs:element name="InvoiceNumber" type="xs:string" />
         <xs:element minOccurs="0" name="Reference" type="xs:string" />
-        <xs:element minOccurs="0" name="TaxInclusive" type="xs:boolean" />
-        <xs:element minOccurs="0" name="IncludesTax" type="xs:boolean" />
+        <xs:element minOccurs="0" name="LineAmountTypes" type="xs:string" />
         <xs:element minOccurs="0" name="SubTotal" type="xs:decimal" />
         <xs:element minOccurs="0" name="TotalTax" type="xs:decimal" />
         <xs:element minOccurs="0" name="Total" type="xs:decimal" />
@@ -69,8 +78,8 @@
                     <xs:element minOccurs="0" name="Quantity" type="xs:decimal" />
                     <xs:element name="UnitAmount" type="xs:decimal" />
                     <xs:element minOccurs="0" name="TaxType" type="xs:string" />
-                    <xs:element name="TaxAmount" type="xs:decimal" />
-                    <xs:element name="LineAmount" type="xs:decimal" />
+                    <xs:element minOccurs="0" name="TaxAmount" type="xs:decimal" />
+                    <xs:element minOccurs="0" name="LineAmount" type="xs:decimal" />
                     <xs:element name="AccountCode" type="xs:string" />
                     <xs:element minOccurs="0" name="Tracking">
                       <xs:complexType>

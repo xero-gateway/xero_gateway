@@ -6,7 +6,16 @@
         <xs:element minOccurs="0" name="ContactID" type="xs:string" />
         <xs:element minOccurs="0" name="ContactNumber" type="xs:string" />
         <xs:element name="Name" type="xs:string" />
+        <xs:element minOccurs="0" name="ContactStatus" type="xs:string" />
         <xs:element minOccurs="0" name="EmailAddress" type="xs:string" />
+        <xs:element minOccurs="0" name="SkypeUserName" type="xs:string" />
+        <xs:element minOccurs="0" name="BankAccountDetails" type="xs:string" />
+        <xs:element minOccurs="0" name="TaxNumber" type="xs:string" />
+        <xs:element minOccurs="0" name="AccountsRecievableTaxType" type="xs:string" />
+        <xs:element minOccurs="0" name="AccountsPayableTaxType" type="xs:string" />
+        <xs:element minOccurs="0" name="FirstName" type="xs:string" />
+        <xs:element minOccurs="0" name="LastName" type="xs:string" />
+        <xs:element minOccurs="0" name="DefaultCurrency" type="xs:string" />
         <xs:element name="Addresses">
           <xs:complexType>
             <xs:sequence>
