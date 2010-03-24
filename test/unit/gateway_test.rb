@@ -33,6 +33,22 @@ class GatewayTest < Test::Unit::TestCase
       end
     end
     
+    should "handle ApiExceptions" do
+      @gateway.stubs(:http_put).returns(get_file_as_string("api_exception.xml"))
+      
+      assert_raises XeroGateway::ApiException do
+        @gateway.create_invoice(XeroGateway::Invoice.new)
+      end
+    end
+    
+    should "handle random root elements" do
+      @gateway.stubs(:http_put).returns("<RandomRootElement></RandomRootElement>")
+      
+      assert_raises XeroGateway::UnparseableResponse do
+        @gateway.create_invoice(XeroGateway::Invoice.new)
+      end      
+    end
+    
   end
   
   def test_unknown_error_handling

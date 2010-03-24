@@ -1,4 +1,5 @@
 module XeroGateway
+  
   class Gateway
     include Http
     include Dates
@@ -330,12 +331,34 @@ module XeroGateway
         end
       end
       
+      # Xero Gateway API Exceptions *claim* to be UTF-16 encoded, but fail REXML/Iconv parsing...
+      # So let's ignore their lies :)
+      raw_response.gsub! '<?xml version="1.0" encoding="utf-16"?>', ''
+      
       response = XeroGateway::Response.new
-
+      
       doc = REXML::Document.new(raw_response, :ignore_whitespace_nodes => :all)
 
+      # check for responses we don't understand
+      
+      unless %w(Response ApiException).include?(doc.root.name)
+        raise UnparseableResponse.new(doc.root.name)
+      end
+      
+      # and API Exceptions
+      
+      if doc.root.name == "ApiException"
+
+        raise ApiException.new(doc.root.elements["Type"].text, 
+                               doc.root.elements["Message"].text, 
+                               raw_response)
+        
+      end
+      
+      # success!
+
       response_element = REXML::XPath.first(doc, "/Response")
-            
+          
       response_element.children.reject { |e| e.is_a? REXML::Text }.each do |element|
         case(element.name)
           when "ID" then response.response_id = element.text
@@ -354,12 +377,12 @@ module XeroGateway
           when "Errors" then element.children.each { |error| parse_error(error, response) }
         end
       end if response_element
-      
+    
       # If a single result is returned don't put it in an array
       if response.response_item.is_a?(Array) && response.response_item.size == 1
         response.response_item = response.response_item.first
       end
-      
+    
       response.request_params = request[:request_params]
       response.request_xml    = request[:request_xml]
       response.response_xml   = raw_response
