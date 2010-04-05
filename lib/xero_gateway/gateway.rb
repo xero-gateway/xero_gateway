@@ -125,14 +125,14 @@ module XeroGateway
     # Retrieves an invoice from Xero based on its GUID
     #
     # Usage : get_invoice_by_id("8c69117a-60ae-4d31-9eb4-7f5a76bc4947")
-    def get_invoice_by_id(invoice_id)
+    def get_invoice_by_id(invoice_id, request_params = {})
       get_invoice(invoice_id)
     end
 
     # Retrieves an invoice from Xero based on its number
     #
     # Usage : get_invoice_by_number("OIT00526")
-    def get_invoice_by_number(invoice_number)
+    def get_invoice_by_number(invoice_number, request_params = {})
       get_invoice(nil, invoice_number)
     end  
   
@@ -143,6 +143,7 @@ module XeroGateway
     #
     # Note  : modified_since is in UTC format (i.e. Brisbane is UTC+10)
     def get_invoices(options = {})
+      
       request_params = {}
       
       request_params[:InvoiceID]     = options[:invoice_id] if options[:invoice_id]
@@ -283,8 +284,14 @@ module XeroGateway
     private
 
     def get_invoice(invoice_id = nil, invoice_number = nil)
-      request_params = invoice_id ? {:invoiceID => invoice_id} : {:invoiceNumber => invoice_number}
-      response_xml = http_get(@client, "#{@xero_url}/invoice", request_params)
+      
+      request_params = {}
+      request_params = { :invoiceNumber => invoice_number } if invoice_number
+      
+      url  = "#{@xero_url}/Invoices"
+      url += "/#{invoice_id}" if invoice_id
+       
+      response_xml = http_get(@client, url, request_params)
 
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/Invoice'})
     end

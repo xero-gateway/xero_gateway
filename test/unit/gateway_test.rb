@@ -54,7 +54,7 @@ class GatewayTest < Test::Unit::TestCase
   def test_unknown_error_handling
     if STUB_XERO_CALLS
       @gateway.xero_url = "DUMMY_URL"
-      @gateway.stubs(:http_get).with {|client, url, params| url =~ /invoice$/ }.returns(get_file_as_string("unknown_error.xml"))          
+      @gateway.stubs(:http_get).with {|client, url, params| url =~ /Invoices\/AN_INVALID_ID$/ }.returns(get_file_as_string("unknown_error.xml"))          
     end
     
     result = @gateway.get_invoice_by_id("AN_INVALID_ID")
@@ -67,7 +67,7 @@ class GatewayTest < Test::Unit::TestCase
   def test_object_not_found_error_handling
     if STUB_XERO_CALLS
       @gateway.xero_url = "DUMMY_URL"
-      @gateway.stubs(:http_get).with {|client, url, params| url =~ /invoice$/ }.returns(get_file_as_string("invoice_not_found_error.xml"))
+      @gateway.stubs(:http_get).with {|client, url, params| url =~ /Invoices$/ }.returns(get_file_as_string("invoice_not_found_error.xml"))
     end
     
     result = @gateway.get_invoice_by_number("UNKNOWN_INVOICE_NO")
