@@ -122,20 +122,6 @@ module XeroGateway
       response
     end
     
-    # Retrieves an invoice from Xero based on its GUID
-    #
-    # Usage : get_invoice_by_id("8c69117a-60ae-4d31-9eb4-7f5a76bc4947")
-    def get_invoice_by_id(invoice_id, request_params = {})
-      get_invoice(invoice_id)
-    end
-
-    # Retrieves an invoice from Xero based on its number
-    #
-    # Usage : get_invoice_by_number("OIT00526")
-    def get_invoice_by_number(invoice_number, request_params = {})
-      get_invoice(nil, invoice_number)
-    end  
-  
     # Retrieves all invoices from Xero
     #
     # Usage : get_invoices
@@ -156,6 +142,20 @@ module XeroGateway
       response_xml = http_get(@client, "#{@xero_url}/Invoices", request_params)
 
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/Invoices'})
+    end
+    
+    # Retrieves a single invoice
+    #
+    # Usage : get_invoice("297c2dc5-cc47-4afd-8ec8-74990b8761e9") # By ID
+    #         get_invoice("OIT-12345") # By number
+    def get_invoice(invoice_id_or_number)
+      request_params = {}
+      
+      url  = "#{@xero_url}/Invoices/#{invoice_id_or_number}"
+       
+      response_xml = http_get(@client, url, request_params)
+
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/Invoice'})
     end
     
     # Factory method for building new Invoice objects associated with this gateway.
@@ -282,19 +282,6 @@ module XeroGateway
     end
 
     private
-
-    def get_invoice(invoice_id = nil, invoice_number = nil)
-      
-      request_params = {}
-      request_params = { :invoiceNumber => invoice_number } if invoice_number
-      
-      url  = "#{@xero_url}/Invoices"
-      url += "/#{invoice_id}" if invoice_id
-       
-      response_xml = http_get(@client, url, request_params)
-
-      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/Invoice'})
-    end
 
     def get_contact(contact_id = nil, contact_number = nil)
       request_params = contact_id ? {:contactID => contact_id} : {:contactNumber => contact_number}

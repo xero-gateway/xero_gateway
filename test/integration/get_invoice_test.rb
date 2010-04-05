@@ -9,7 +9,7 @@ class GetInvoiceTest < Test::Unit::TestCase
     if STUB_XERO_CALLS
       @gateway.xero_url = "DUMMY_URL"
       
-      @gateway.stubs(:http_get).with {|client, url, params| url =~ /Invoices(\/[0-9a-z]{8}(\-[0-9a-z]{4}){3}\-[0-9a-z]{12})?$/ }.returns(get_file_as_string("invoice.xml"))              
+      @gateway.stubs(:http_get).with {|client, url, params| url =~ /Invoices(\/[0-9a-z\-]+)?$/i }.returns(get_file_as_string("invoice.xml"))              
       @gateway.stubs(:http_put).with {|client, url, body, params| url =~ /invoice$/ }.returns(get_file_as_string("create_invoice.xml"))          
     end
   end
@@ -18,13 +18,13 @@ class GetInvoiceTest < Test::Unit::TestCase
     # Make sure there is an invoice in Xero to retrieve
     invoice = @gateway.create_invoice(dummy_invoice).invoice
 
-    result = @gateway.get_invoice_by_id(invoice.invoice_id)
+    result = @gateway.get_invoice(invoice.invoice_id)
     assert result.success?
     assert !result.request_params.nil?
     assert !result.response_xml.nil?    
     assert_equal result.invoice.invoice_number, invoice.invoice_number
 
-    result = @gateway.get_invoice_by_number(invoice.invoice_number)
+    result = @gateway.get_invoice(invoice.invoice_number)
     assert result.success?
     assert !result.request_params.nil?
     assert !result.response_xml.nil?    
@@ -36,7 +36,7 @@ class GetInvoiceTest < Test::Unit::TestCase
     example_invoice = @gateway.create_invoice(dummy_invoice).invoice
     
     # No line items.
-    response = @gateway.get_invoice_by_id(example_invoice.invoice_id)
+    response = @gateway.get_invoice(example_invoice.invoice_id)
     assert_equal(true, response.success?)
     
     invoice = response.invoice
