@@ -4,7 +4,7 @@ module XeroGateway
     include Http
     include Dates
       
-    attr_accessor :client, :xero_url
+    attr_accessor :client, :xero_url, :logger
     
     extend Forwardable
     def_delegators :client, :request_token, :access_token, :authorize_from_request, :authorize_from_access

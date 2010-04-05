@@ -262,3 +262,13 @@ h3. GET /api.xero/2.0/TaxRates
 
 Retrieves Tax Rates in use for the authorised application.
 <pre><code>    gateway.get_tax_rates.tax_rates</code></pre>
+
+h2. Logging
+
+You can specify a logger to use (so you can track down those tricky exceptions) by using:
+
+<pre>
+  gateway.logger = ActiveSupport::BufferedLogger.new("log_file_name.log")
+</pre>
+
+It doesn't have to be a buffered logger - anything that responds to "info" will do just fine.
