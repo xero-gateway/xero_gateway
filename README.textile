@@ -29,6 +29,7 @@ On the right-hand-side of your application's page there's a box titled "OAuth Cr
 
 (If you're unsure about the Callback URL, specify nothing - it will become clear a bit later)
 
+h3. Xero Gateway Initialization
 
 <pre><code>    require 'xero_gateway'
     gateway = XeroGateway::Gateway.new(YOUR_OAUTH_CONSUMER_KEY, YOUR_OAUTH_CONSUMER_SECRET)
@@ -37,11 +38,7 @@ On the right-hand-side of your application's page there's a box titled "OAuth Cr
 or for private applications
 
 <pre><code>    require 'xero_gateway'
-    gateway = XeroGateway::Gateway.new(
-      YOUR_OAUTH_CONSUMER_KEY,
-      YOUR_OAUTH_CONSUMER_SECRET,
-      :signature_method => "RSA-SHA1",
-      :private_key_file => PATH_TO_YOUR_PRIVATE_KEY)
+    gateway = XeroGateway::PrivateApp.new(YOUR_OAUTH_CONSUMER_KEY, YOUR_OAUTH_CONSUMER_SECRET, PATH_TO_YOUR_PRIVATE_KEY)
 </code></pre>
 
 

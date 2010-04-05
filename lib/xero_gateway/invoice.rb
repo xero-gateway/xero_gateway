@@ -184,7 +184,7 @@ module XeroGateway
       elsif invoice_id =~ GUID_REGEX
         raise NoGatewayError unless @gateway
         
-        response = @gateway.get_invoice_by_id(invoice_id)
+        response = @gateway.get_invoice(invoice_id)
         raise InvoiceNotFoundError, "Invoice with ID #{invoice_id} not found in Xero." unless response.success? && response.invoice.is_a?(XeroGateway::Invoice)
         
         @line_items = response.invoice.line_items

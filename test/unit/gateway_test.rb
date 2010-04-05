@@ -57,7 +57,7 @@ class GatewayTest < Test::Unit::TestCase
       @gateway.stubs(:http_get).with {|client, url, params| url =~ /Invoices\/AN_INVALID_ID$/ }.returns(get_file_as_string("unknown_error.xml"))          
     end
     
-    result = @gateway.get_invoice_by_id("AN_INVALID_ID")
+    result = @gateway.get_invoice("AN_INVALID_ID")
     assert !result.success?
     assert_equal 1, result.errors.size
     assert !result.errors.first.type.nil?
@@ -67,10 +67,10 @@ class GatewayTest < Test::Unit::TestCase
   def test_object_not_found_error_handling
     if STUB_XERO_CALLS
       @gateway.xero_url = "DUMMY_URL"
-      @gateway.stubs(:http_get).with {|client, url, params| url =~ /Invoices$/ }.returns(get_file_as_string("invoice_not_found_error.xml"))
+      @gateway.stubs(:http_get).with {|client, url, params| url =~ /Invoices\/UNKNOWN_INVOICE_NO$/ }.returns(get_file_as_string("invoice_not_found_error.xml"))
     end
     
-    result = @gateway.get_invoice_by_number("UNKNOWN_INVOICE_NO")
+    result = @gateway.get_invoice("UNKNOWN_INVOICE_NO")
     assert !result.success?
     assert_equal 1, result.errors.size
     assert_equal "Xero.API.Library.Exceptions.ObjectDoesNotExistException", result.errors.first.type
