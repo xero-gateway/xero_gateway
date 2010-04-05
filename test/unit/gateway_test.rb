@@ -10,7 +10,7 @@ class GatewayTest < Test::Unit::TestCase
   context "with oauth error handling" do
     
     should "handle token expired" do
-      @gateway.stubs(:http_get).returns(get_file_as_string("token_expired"))
+      XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("token_expired"), :code => "401"))
       
       assert_raises XeroGateway::OAuth::TokenExpired do
         @gateway.get_accounts
@@ -18,7 +18,7 @@ class GatewayTest < Test::Unit::TestCase
     end
     
     should "handle invalid request tokens" do
-      @gateway.stubs(:http_get).returns(get_file_as_string("invalid_request_token"))
+      XeroGateway::OAuth.any_instance.stubs(:http_get).returns(stub(:plain_body => get_file_as_string("invalid_request_token"), :code => "401"))
       
       assert_raises XeroGateway::OAuth::TokenInvalid do
         @gateway.get_accounts
@@ -26,7 +26,7 @@ class GatewayTest < Test::Unit::TestCase
     end
     
     should "handle invalid consumer key" do
-      @gateway.stubs(:http_get).returns(get_file_as_string("invalid_consumer_key"))
+      XeroGateway::OAuth.any_instance.stubs(:http_get).returns(stub(:plain_body => get_file_as_string("invalid_consumer_key"), :code => "401"))
       
       assert_raises XeroGateway::OAuth::TokenInvalid do
         @gateway.get_accounts
@@ -34,7 +34,7 @@ class GatewayTest < Test::Unit::TestCase
     end
     
     should "handle ApiExceptions" do
-      @gateway.stubs(:http_put).returns(get_file_as_string("api_exception.xml"))
+      XeroGateway::OAuth.any_instance.stubs(:put).returns(stub(:plain_body => get_file_as_string("api_exception.xml"), :code => "400"))
       
       assert_raises XeroGateway::ApiException do
         @gateway.create_invoice(XeroGateway::Invoice.new)
@@ -42,8 +42,8 @@ class GatewayTest < Test::Unit::TestCase
     end
     
     should "handle random root elements" do
-      @gateway.stubs(:http_put).returns("<RandomRootElement></RandomRootElement>")
-      
+      XeroGateway::OAuth.any_instance.stubs(:put).returns(stub(:plain_body => "<RandomRootElement></RandomRootElement>", :code => "200"))
+
       assert_raises XeroGateway::UnparseableResponse do
         @gateway.create_invoice(XeroGateway::Invoice.new)
       end      

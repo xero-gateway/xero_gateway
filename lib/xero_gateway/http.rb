@@ -48,12 +48,69 @@ module XeroGateway
         #   @cached_http.verify_depth   = 5
         # end
         
-        case method
-          when :get   then    client.get(uri.request_uri, headers).plain_body
-          when :post  then    client.post(uri.request_uri, body, headers).plain_body
-          when :put   then    client.put(uri.request_uri, body, headers).plain_body
+        response = case method
+          when :get   then    client.get(uri.request_uri, headers)
+          when :post  then    client.post(uri.request_uri, body, headers)
+          when :put   then    client.put(uri.request_uri, body, headers)
+        end
+        
+        case response.code.to_i
+          when 200
+            response.plain_body
+          when 400
+            handle_error!(response)  
+          when 401
+            handle_oauth_error!(response)
+          when 404
+            handle_object_not_found!(response, url)
+          else
+            raise "Unknown response code: #{response.code.to_i}"
         end
       end
        
+      def handle_oauth_error!(response)
+        error_details = CGI.parse(response.plain_body)
+        description   = error_details["oauth_problem_advice"].first
+      
+        # see http://oauth.pbworks.com/ProblemReporting
+        # Xero only appears to return either token_expired or token_rejected
+        case (error_details["oauth_problem"].first)
+          when "token_expired"        then raise OAuth::TokenExpired.new(description)
+          when "token_rejected"       then raise OAuth::TokenInvalid.new(description)
+        end
+      end
+      
+      def handle_error!(response)
+        
+        raw_response = response.plain_body
+        
+        # Xero Gateway API Exceptions *claim* to be UTF-16 encoded, but fail REXML/Iconv parsing...
+        # So let's ignore that :)
+        raw_response.gsub! '<?xml version="1.0" encoding="utf-16"?>', ''
+        
+        doc = REXML::Document.new(raw_response, :ignore_whitespace_nodes => :all)
+        
+        if doc.root.name == "ApiException"
+
+          raise ApiException.new(doc.root.elements["Type"].text, 
+                                 doc.root.elements["Message"].text, 
+                                 raw_response)
+
+        else
+          
+          raise "Unparseable 400 Response: #{raw_response}"
+          
+        end
+        
+      end
+      
+      def handle_object_not_found!(response, request_url)
+        if request_url =~ /Invoices/
+          raise InvoiceNotFoundError.new("Invoice not found in Xero.")
+        else
+          raise ObjectNotFound.new(request_url)
+        end
+      end
+      
   end
 end

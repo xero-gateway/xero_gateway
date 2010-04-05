@@ -325,44 +325,13 @@ module XeroGateway
     end
 
     def parse_response(raw_response, request = {}, options = {})
-      # check for oauth errors
-      if raw_response =~ /oauth_problem/
-        error_details = CGI.parse(raw_response)
-        description   = error_details["oauth_problem_advice"].first
-        
-        # see http://oauth.pbworks.com/ProblemReporting
-        # Xero only appears to return either token_expired or token_rejected
-        case (error_details["oauth_problem"].first)
-          when "token_expired"        then raise OAuth::TokenExpired.new(description)
-          when "token_rejected"       then raise OAuth::TokenInvalid.new(description)
-        end
-      end
-      
-      # Xero Gateway API Exceptions *claim* to be UTF-16 encoded, but fail REXML/Iconv parsing...
-      # So let's ignore their lies :)
-      raw_response.gsub! '<?xml version="1.0" encoding="utf-16"?>', ''
-      
+
       response = XeroGateway::Response.new
-      
+
       doc = REXML::Document.new(raw_response, :ignore_whitespace_nodes => :all)
-
+      
       # check for responses we don't understand
-      
-      unless %w(Response ApiException).include?(doc.root.name)
-        raise UnparseableResponse.new(doc.root.name)
-      end
-      
-      # and API Exceptions
-      
-      if doc.root.name == "ApiException"
-
-        raise ApiException.new(doc.root.elements["Type"].text, 
-                               doc.root.elements["Message"].text, 
-                               raw_response)
-        
-      end
-      
-      # success!
+      raise UnparseableResponse.new(doc.root.name) unless doc.root.name == "Response"
 
       response_element = REXML::XPath.first(doc, "/Response")
           

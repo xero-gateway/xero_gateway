@@ -82,7 +82,7 @@ class GetInvoicesTest < Test::Unit::TestCase
     
     # Make sure we fail here.
     line_items = nil
-    assert_raise(XeroGateway::Invoice::InvoiceNotFoundError) { line_items = invoice.line_items }
+    assert_raise(XeroGateway::InvoiceNotFoundError) { line_items = invoice.line_items }
     assert_nil(line_items)
     
   end

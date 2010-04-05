@@ -24,4 +24,18 @@ module XeroGateway
     end
       
   end
+  
+  class ObjectNotFound < StandardError
+    
+    def initialize(api_endpoint)
+      @api_endpoint = api_endpoint
+    end
+    
+    def message
+      "Couldn't find object for API Endpoint #{@api_endpoint}"
+    end
+    
+  end
+  
+  class InvoiceNotFoundError < StandardError; end
 end

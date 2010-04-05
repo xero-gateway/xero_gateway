@@ -6,7 +6,6 @@ module XeroGateway
     class Error < RuntimeError; end
     class NoGatewayError < Error; end
     class InvalidLineItemError < Error; end
-    class InvoiceNotFoundError < Error; end
     
     INVOICE_TYPE = {
       'ACCREC' =>           'Accounts Receivable',
