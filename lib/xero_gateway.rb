@@ -5,6 +5,7 @@ require "rexml/document"
 require "builder"
 require "bigdecimal"
 require "oauth"
+require 'oauth/signature/rsa/sha1'
 require "forwardable"
 require "active_support"
 
