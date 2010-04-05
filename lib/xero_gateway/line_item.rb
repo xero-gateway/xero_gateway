@@ -17,7 +17,6 @@ module XeroGateway
       @tracking ||= []
       @quantity = 1
       @unit_amount = BigDecimal.new('0')
-      @tax_amount = BigDecimal.new('0')
       
       params.each do |k,v|
         self.send("#{k}=", v)

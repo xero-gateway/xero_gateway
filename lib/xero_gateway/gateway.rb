@@ -1,9 +1,10 @@
 module XeroGateway
+  
   class Gateway
     include Http
     include Dates
       
-    attr_accessor :client, :xero_url
+    attr_accessor :client, :xero_url, :logger
     
     extend Forwardable
     def_delegators :client, :request_token, :access_token, :authorize_from_request, :authorize_from_access
@@ -124,14 +125,14 @@ module XeroGateway
     # Retrieves an invoice from Xero based on its GUID
     #
     # Usage : get_invoice_by_id("8c69117a-60ae-4d31-9eb4-7f5a76bc4947")
-    def get_invoice_by_id(invoice_id)
+    def get_invoice_by_id(invoice_id, request_params = {})
       get_invoice(invoice_id)
     end
 
     # Retrieves an invoice from Xero based on its number
     #
     # Usage : get_invoice_by_number("OIT00526")
-    def get_invoice_by_number(invoice_number)
+    def get_invoice_by_number(invoice_number, request_params = {})
       get_invoice(nil, invoice_number)
     end  
   
@@ -142,6 +143,7 @@ module XeroGateway
     #
     # Note  : modified_since is in UTC format (i.e. Brisbane is UTC+10)
     def get_invoices(options = {})
+      
       request_params = {}
       
       request_params[:InvoiceID]     = options[:invoice_id] if options[:invoice_id]
@@ -282,8 +284,14 @@ module XeroGateway
     private
 
     def get_invoice(invoice_id = nil, invoice_number = nil)
-      request_params = invoice_id ? {:invoiceID => invoice_id} : {:invoiceNumber => invoice_number}
-      response_xml = http_get(@client, "#{@xero_url}/invoice", request_params)
+      
+      request_params = {}
+      request_params = { :invoiceNumber => invoice_number } if invoice_number
+      
+      url  = "#{@xero_url}/Invoices"
+      url += "/#{invoice_id}" if invoice_id
+       
+      response_xml = http_get(@client, url, request_params)
 
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/Invoice'})
     end
@@ -317,25 +325,16 @@ module XeroGateway
     end
 
     def parse_response(raw_response, request = {}, options = {})
-      # check for oauth errors
-      if raw_response =~ /oauth_problem/
-        error_details = CGI.parse(raw_response)
-        description   = error_details["oauth_problem_advice"].first
-        
-        # see http://oauth.pbworks.com/ProblemReporting
-        # Xero only appears to return either token_expired or token_rejected
-        case (error_details["oauth_problem"].first)
-          when "token_expired"        then raise OAuth::TokenExpired.new(description)
-          when "token_rejected"       then raise OAuth::TokenInvalid.new(description)
-        end
-      end
-      
+
       response = XeroGateway::Response.new
 
       doc = REXML::Document.new(raw_response, :ignore_whitespace_nodes => :all)
+      
+      # check for responses we don't understand
+      raise UnparseableResponse.new(doc.root.name) unless doc.root.name == "Response"
 
       response_element = REXML::XPath.first(doc, "/Response")
-            
+          
       response_element.children.reject { |e| e.is_a? REXML::Text }.each do |element|
         case(element.name)
           when "ID" then response.response_id = element.text
@@ -354,12 +353,12 @@ module XeroGateway
           when "Errors" then element.children.each { |error| parse_error(error, response) }
         end
       end if response_element
-      
+    
       # If a single result is returned don't put it in an array
       if response.response_item.is_a?(Array) && response.response_item.size == 1
         response.response_item = response.response_item.first
       end
-      
+    
       response.request_params = request[:request_params]
       response.request_xml    = request[:request_xml]
       response.response_xml   = raw_response

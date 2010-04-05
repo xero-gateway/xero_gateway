@@ -10,7 +10,7 @@ class GatewayTest < Test::Unit::TestCase
   context "with oauth error handling" do
     
     should "handle token expired" do
-      @gateway.stubs(:http_get).returns(get_file_as_string("token_expired"))
+      XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("token_expired"), :code => "401"))
       
       assert_raises XeroGateway::OAuth::TokenExpired do
         @gateway.get_accounts
@@ -18,7 +18,7 @@ class GatewayTest < Test::Unit::TestCase
     end
     
     should "handle invalid request tokens" do
-      @gateway.stubs(:http_get).returns(get_file_as_string("invalid_request_token"))
+      XeroGateway::OAuth.any_instance.stubs(:http_get).returns(stub(:plain_body => get_file_as_string("invalid_request_token"), :code => "401"))
       
       assert_raises XeroGateway::OAuth::TokenInvalid do
         @gateway.get_accounts
@@ -26,11 +26,27 @@ class GatewayTest < Test::Unit::TestCase
     end
     
     should "handle invalid consumer key" do
-      @gateway.stubs(:http_get).returns(get_file_as_string("invalid_consumer_key"))
+      XeroGateway::OAuth.any_instance.stubs(:http_get).returns(stub(:plain_body => get_file_as_string("invalid_consumer_key"), :code => "401"))
       
       assert_raises XeroGateway::OAuth::TokenInvalid do
         @gateway.get_accounts
       end
+    end
+    
+    should "handle ApiExceptions" do
+      XeroGateway::OAuth.any_instance.stubs(:put).returns(stub(:plain_body => get_file_as_string("api_exception.xml"), :code => "400"))
+      
+      assert_raises XeroGateway::ApiException do
+        @gateway.create_invoice(XeroGateway::Invoice.new)
+      end
+    end
+    
+    should "handle random root elements" do
+      XeroGateway::OAuth.any_instance.stubs(:put).returns(stub(:plain_body => "<RandomRootElement></RandomRootElement>", :code => "200"))
+
+      assert_raises XeroGateway::UnparseableResponse do
+        @gateway.create_invoice(XeroGateway::Invoice.new)
+      end      
     end
     
   end
@@ -38,7 +54,7 @@ class GatewayTest < Test::Unit::TestCase
   def test_unknown_error_handling
     if STUB_XERO_CALLS
       @gateway.xero_url = "DUMMY_URL"
-      @gateway.stubs(:http_get).with {|client, url, params| url =~ /invoice$/ }.returns(get_file_as_string("unknown_error.xml"))          
+      @gateway.stubs(:http_get).with {|client, url, params| url =~ /Invoices\/AN_INVALID_ID$/ }.returns(get_file_as_string("unknown_error.xml"))          
     end
     
     result = @gateway.get_invoice_by_id("AN_INVALID_ID")
@@ -51,7 +67,7 @@ class GatewayTest < Test::Unit::TestCase
   def test_object_not_found_error_handling
     if STUB_XERO_CALLS
       @gateway.xero_url = "DUMMY_URL"
-      @gateway.stubs(:http_get).with {|client, url, params| url =~ /invoice$/ }.returns(get_file_as_string("invoice_not_found_error.xml"))
+      @gateway.stubs(:http_get).with {|client, url, params| url =~ /Invoices$/ }.returns(get_file_as_string("invoice_not_found_error.xml"))
     end
     
     result = @gateway.get_invoice_by_number("UNKNOWN_INVOICE_NO")
