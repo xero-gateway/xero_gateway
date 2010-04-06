@@ -30,9 +30,11 @@ module XeroGateway
         # HAX.  Xero completely misuse the If-Modified-Since HTTP header.
         headers['If-Modified-Since'] = params.delete(:modified_since).utc.strftime("%Y-%m-%dT%H:%S") if params[:modified_since]
 
-        params = params.map {|key,value| "#{CGI.escape(key.to_s)}=#{CGI.escape(value.to_s)}"}.join("&")
+        if params.any?
+          url += "?" + params.map {|key,value| "#{CGI.escape(key.to_s)}=#{CGI.escape(value.to_s)}"}.join("&")
+        end
 
-        uri   = URI.parse(url + "?" + params)
+        uri   = URI.parse(url)
 
         # # Only setup @cached_http once on first use as loading the CA file is quite expensive computationally.
         # unless @cached_http && @cached_http.address == uri.host && @cached_http.port == uri.port
