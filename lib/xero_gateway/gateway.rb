@@ -151,7 +151,7 @@ module XeroGateway
     def get_invoice(invoice_id_or_number)
       request_params = {}
       
-      url  = "#{@xero_url}/Invoices/#{CGI.escape(invoice_id_or_number)}"
+      url  = "#{@xero_url}/Invoices/#{URI.escape(invoice_id_or_number)}"
        
       response_xml = http_get(@client, url, request_params)
 
