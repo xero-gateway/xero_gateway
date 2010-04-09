@@ -8,7 +8,8 @@ module XeroGateway
         "PaysTax" 	       => :boolean,    # Boolean to describe if organisation is registered with a local tax authority i.e. true, false
         "Version"   	     => :string,     # See Version Types
         "BaseCurrency"     => :string,     # Default currency for organisation. See Currency types
-        "OrganisationType" => :string      # UNDOCUMENTED parameter, only returned for "real" (i.e non-demo) companies
+        "OrganisationType" => :string,     # UNDOCUMENTED parameter, only returned for "real" (i.e non-demo) companies
+        "APIKey"           => :string      # UNDOCUMENTED paramater, returned if organisations are linked via Xero Network
       }
     end
     
