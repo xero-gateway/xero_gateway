@@ -9,8 +9,8 @@ class UpdateContactTest < Test::Unit::TestCase
     if STUB_XERO_CALLS
       @gateway.xero_url = "DUMMY_URL"
       
-      @gateway.stubs(:http_put).with {|client, url, body, params| url =~ /contact$/ }.returns(get_file_as_string("contact.xml"))          
-      @gateway.stubs(:http_post).with {|client, url, body, params| url =~ /contact$/ }.returns(get_file_as_string("contact.xml"))          
+      @gateway.stubs(:http_put).with {|client, url, body, params| url =~ /Contacts$/ }.returns(get_file_as_string("contact.xml"))          
+      @gateway.stubs(:http_post).with {|client, url, body, params| url =~ /Contacts$/ }.returns(get_file_as_string("contact.xml"))          
     end
   end
   

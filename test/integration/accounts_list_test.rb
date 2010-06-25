@@ -9,7 +9,7 @@ class AccountsListTest < Test::Unit::TestCase
     # Always stub out calls for this integration test as we need to be able to control the data.
     @gateway.xero_url = "DUMMY_URL"    
     
-    @gateway.stubs(:http_get).with {|client, url, params| url =~ /accounts$/ }.returns(get_file_as_string("accounts.xml"))
+    @gateway.stubs(:http_get).with {|client, url, params| url =~ /Accounts$/ }.returns(get_file_as_string("accounts.xml"))
   end
   
   def test_get_accounts_list

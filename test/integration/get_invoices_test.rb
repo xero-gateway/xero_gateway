@@ -12,7 +12,7 @@ class GetInvoicesTest < Test::Unit::TestCase
       @gateway.xero_url = "DUMMY_URL"
       
       @gateway.stubs(:http_get).with {|client, url, params| url =~ /Invoices/ }.returns(get_file_as_string("invoices.xml"))
-      @gateway.stubs(:http_put).with {|client, url, body, params| url =~ /invoice$/ }.returns(get_file_as_string("create_invoice.xml"))
+      @gateway.stubs(:http_put).with {|client, url, body, params| url =~ /Invoices$/ }.returns(get_file_as_string("create_invoice.xml"))
 
       # Get an invoice with an invalid ID number.
       @gateway.stubs(:http_get).with {|client, url, params| url =~ Regexp.new("Invoices/#{INVALID_INVOICE_ID}") }.returns(get_file_as_string("invoice_not_found_error.xml"))

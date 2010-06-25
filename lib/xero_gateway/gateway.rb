@@ -26,15 +26,14 @@ module XeroGateway
     # Note  : modified_since is in UTC format (i.e. Brisbane is UTC+10)
     def get_contacts(options = {})
       request_params = {}
-      
+
       request_params[:ContactID]     = options[:contact_id] if options[:contact_id]
       request_params[:ContactNumber] = options[:contact_number] if options[:contact_number]
       request_params[:OrderBy]       = options[:order] if options[:order]      
       request_params[:ModifiedAfter] = Gateway.format_date_time(options[:updated_after]) if options[:updated_after]
-      
       request_params[:where]         = options[:where] if options[:where]
     
-      response_xml = http_get(@client, "#{@xero_url}/contacts", request_params)
+      response_xml = http_get(@client, "#{@xero_url}/Contacts", request_params)
     
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/contacts'})
     end
@@ -113,7 +112,7 @@ module XeroGateway
         end
       }
       
-      response_xml = http_post(@client, "#{@xero_url}/contacts", request_xml, {})
+      response_xml = http_post(@client, "#{@xero_url}/Contacts", request_xml, {})
 
       response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'POST/contacts'})
       response.contacts.each_with_index do | response_contact, index |
@@ -194,7 +193,7 @@ module XeroGateway
     #    create_invoice(invoice)
     def create_invoice(invoice)
       request_xml = invoice.to_xml
-      response_xml = http_put(@client, "#{@xero_url}/invoice", request_xml)
+      response_xml = http_put(@client, "#{@xero_url}/Invoices", request_xml)
       response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/invoice'})
       
       # Xero returns invoices inside an <Invoices> tag, even though there's only ever
@@ -223,7 +222,7 @@ module XeroGateway
         end
       }
       
-      response_xml = http_put(@client, "#{@xero_url}/invoices", request_xml, {})
+      response_xml = http_put(@client, "#{@xero_url}/Invoices", request_xml, {})
 
       response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/invoices'})
       response.invoices.each_with_index do | response_invoice, index |
@@ -236,7 +235,7 @@ module XeroGateway
     # Gets all accounts for a specific organization in Xero.
     #
     def get_accounts
-      response_xml = http_get(@client, "#{xero_url}/accounts")
+      response_xml = http_get(@client, "#{xero_url}/Accounts")
       parse_response(response_xml, {}, {:request_signature => 'GET/accounts'})
     end
     
@@ -283,9 +282,9 @@ module XeroGateway
 
     private
 
-    def get_contact(contact_id = nil, contact_number = nil)
-      request_params = contact_id ? {:contactID => contact_id} : {:contactNumber => contact_number}
-      response_xml = http_get(@client, "#{@xero_url}/contact", request_params)
+    def get_contact(contact_id = nil, contact_number = nil)      
+      request_params = contact_id ? { :contactID => contact_id } : { :contactNumber => contact_number }
+      response_xml = http_get(@client, "#{@xero_url}/Contacts/#{URI.escape(contact_id||contact_number)}", request_params)
 
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/contact'})
     end
@@ -298,11 +297,11 @@ module XeroGateway
       create_or_save = nil
       if contact.contact_id.nil? && contact.contact_number.nil?
         # Create new contact record.
-        response_xml = http_put(@client, "#{@xero_url}/contact", request_xml, {})
+        response_xml = http_put(@client, "#{@xero_url}/Contacts", request_xml, {})
         create_or_save = :create
       else
         # Update existing contact record.
-        response_xml = http_post(@client, "#{@xero_url}/contact", request_xml, {})
+        response_xml = http_post(@client, "#{@xero_url}/Contacts", request_xml, {})
         create_or_save = :save
       end
 
