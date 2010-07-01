@@ -21,10 +21,10 @@ module XeroGateway
       def http_request(client, method, url, body, params = {})
         # headers = {'Accept-Encoding' => 'gzip, deflate'}
 
-        headers = {}
+        headers = { 'charset' => 'utf-8' }
 
         if method != :get
-         headers['Content-Type'] ||= "application/x-www-form-urlencoded"
+          headers['Content-Type'] ||= "application/x-www-form-urlencoded"
         end
 
         # HAX.  Xero completely misuse the If-Modified-Since HTTP header.
@@ -54,8 +54,8 @@ module XeroGateway
         
         response = case method
           when :get   then    client.get(uri.request_uri, headers)
-          when :post  then    client.post(uri.request_uri, body, headers)
-          when :put   then    client.put(uri.request_uri, body, headers)
+          when :post  then    client.post(uri.request_uri, { :xml => body }, headers)
+          when :put   then    client.put(uri.request_uri, { :xml => body }, headers)
         end
         
         if self.logger
