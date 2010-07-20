@@ -152,8 +152,8 @@ module XeroGateway
         b.AccountsReceivableTaxType self.accounts_receivable_tax_type if self.accounts_receivable_tax_type
         b.AccountsPayableTaxType self.accounts_payable_tax_type if self.accounts_payable_tax_type
         b.ContactGroups if self.contact_groups
-        b.IsCustomer if self.is_customer
-        b.IsSupplier if self.is_supplier
+        b.IsCustomer true if self.is_customer
+        b.IsSupplier true if self.is_supplier
         b.DefaultCurrency if self.default_currency
         b.Addresses {
           addresses.each { |address| address.to_xml(b) }

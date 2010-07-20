@@ -89,6 +89,8 @@ class ContactTest < Test::Unit::TestCase
     contact.address.line_3 = "LINE 3 OF THE ADDRESS"
     contact.address.line_4 = "LINE 4 OF THE ADDRESS"
     contact.phone.number = "12345"
+    contact.is_customer = true
+    contact.is_supplier = true
 
     contact
   end
