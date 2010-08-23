@@ -231,6 +231,7 @@ module XeroGateway
         contact.to_xml(b)
         b.Date Invoice.format_date(self.date || Date.today)
         b.DueDate Invoice.format_date(self.due_date) if self.due_date
+        b.Status self.invoice_status if self.invoice_status
         b.InvoiceNumber self.invoice_number if invoice_number
         b.Reference self.reference if self.reference
         b.CurrencyCode self.currency_code if self.currency_code
