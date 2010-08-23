@@ -41,7 +41,7 @@ module XeroGateway
     end
     
     def self.from_xml(tax_rate_element)
-      returning TaxRate.new do |tax_rate|
+      TaxRate.new.tap do |tax_rate|
         tax_rate_element.children.each do |element|
         
           attribute             = element.name

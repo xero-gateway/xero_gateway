@@ -23,7 +23,7 @@ class TaxRateTest < Test::Unit::TestCase
   private
   
   def create_test_tax_rate
-    returning XeroGateway::TaxRate.new do |tax_rate|
+    XeroGateway::TaxRate.new.tap do |tax_rate|
        tax_rate.name = "GST on Expenses"
        tax_rate.tax_type = "INPUT"
        tax_rate.can_apply_to_assets      = true

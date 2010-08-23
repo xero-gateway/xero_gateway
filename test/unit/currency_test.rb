@@ -23,7 +23,7 @@ class CurrencyTest < Test::Unit::TestCase
   private
   
   def create_test_currency
-    returning XeroGateway::Currency.new do |currency|
+    XeroGateway::Currency.new.tap do |currency|
       currency.code        = "NZD"
       currency.description = "New Zealand Dollar"
     end

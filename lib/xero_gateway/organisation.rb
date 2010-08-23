@@ -39,7 +39,7 @@ module XeroGateway
     end
     
     def self.from_xml(organisation_element)
-      returning Organisation.new do |org|
+      Organisation.new.tap do |org|
         organisation_element.children.each do |element|
         
           attribute             = element.name

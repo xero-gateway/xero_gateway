@@ -23,7 +23,7 @@ class OrganisationTest < Test::Unit::TestCase
   private
   
   def create_test_organisation
-    returning XeroGateway::Organisation.new do |org|
+    XeroGateway::Organisation.new.tap do |org|
       org.name          = "Demo Company (NZ)"
       org.legal_name    = "Demo Company (NZ)"
       org.pays_tax      = true

@@ -34,7 +34,7 @@ module XeroGateway
     end
     
     def self.from_xml(currency_element)
-      returning Currency.new do |currency|
+      Currency.new.tap do |currency|
         currency_element.children.each do |element|
         
           attribute             = element.name

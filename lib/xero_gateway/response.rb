@@ -2,15 +2,19 @@ module XeroGateway
   class Response
     attr_accessor :response_id, :status, :errors, :provider, :date_time, :response_item, :request_params, :request_xml, :response_xml
     
-    alias_method :invoice, :response_item
-    alias_method :invoices, :response_item
-    alias_method :contact, :response_item
-    alias_method :contacts, :response_item
-    alias_method :accounts, :response_item
-    alias_method :tracking_categories, :response_item
-    alias_method :organisation,  :response_item
-    alias_method :tax_rates,     :response_item
-    alias_method :currencies,    :response_item
+    def array_wrapped_response_item
+      Array(response_item)
+    end
+    
+    alias_method :invoice,      :response_item
+    alias_method :contact,      :response_item
+    alias_method :organisation, :response_item
+    alias_method :invoices,     :array_wrapped_response_item
+    alias_method :contacts,     :array_wrapped_response_item
+    alias_method :accounts,     :array_wrapped_response_item
+    alias_method :tracking_categories, :array_wrapped_response_item
+    alias_method :tax_rates,    :array_wrapped_response_item
+    alias_method :currencies,   :array_wrapped_response_item
     
     def initialize(params = {})
       params.each do |k,v|
@@ -19,7 +23,8 @@ module XeroGateway
       
       @errors ||= []
       @response_item ||= []
-    end    
+    end
+    
     
     def success?
       status == "OK"

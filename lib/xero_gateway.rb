@@ -7,7 +7,7 @@ require "bigdecimal"
 require "oauth"
 require 'oauth/signature/rsa/sha1'
 require "forwardable"
-require "active_support"
+require "active_support/inflector"
 
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'http_encoding_helper')
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'http')

@@ -198,9 +198,9 @@ module XeroGateway
       
       # Xero returns invoices inside an <Invoices> tag, even though there's only ever
       # one for this request
-      response.response_item = response.invoices
+      response.response_item = response.invoices.first
       
-      if response.success? && response.invoices && response.invoice.invoice_id
+      if response.success? && response.invoice && response.invoice.invoice_id
         invoice.invoice_id = response.invoice.invoice_id 
       end
       
@@ -306,7 +306,7 @@ module XeroGateway
       end
 
       response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => "#{create_or_save == :create ? 'PUT' : 'POST'}/contact"})
-      contact.contact_id = response.contacts.contact_id if response.contacts && response.contacts.contact_id
+      contact.contact_id = response.contact.contact_id if response.contact && response.contact.contact_id
       response
     end
 
