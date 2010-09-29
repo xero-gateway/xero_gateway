@@ -8,8 +8,6 @@ Gem::Specification.new do |s|
   s.description = "Enables ruby based applications to communicate with the Xero API"
   s.has_rdoc = false
   s.authors  = ["Tim Connor", "Nik Wakelin"]
-  s.add_dependency('builder', '>= 2.1.2')
-  s.add_dependency('oauth', '>= 0.3.6')
   s.files    = ["CHANGELOG.textile",
     "init.rb",
     "LICENSE",
