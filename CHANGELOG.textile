@@ -1,3 +1,7 @@
+h2. 2.0.4, released 29/09/2010
+
+* Use bundler for dependency management
+
 h2. 2.0.3, released 29/09/2010
 
 * Fix issue caused by Xero updating the Tracking Category XML structure
