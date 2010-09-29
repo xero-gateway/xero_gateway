@@ -1,8 +1,10 @@
-h2. Upcoming
+h2. 2.0.3, released 29/09/2010
+
+* Fix issue caused by Xero updating the Tracking Category XML structure
+
+h2. 2.0.2, released 23/08/2010
 
 * Xero Api version 2.0
-* As get_invoices doesn't download the attached line items, add code to automatically request line items from Xero the first time XeroGateway::Invoice#line_items is accessed. *
-* Populate XeroGateway::Payment class with results from invoice/s including new invoice fields for payment status. *
 
 h2. 1.0.5, released 25/09/2009
 
