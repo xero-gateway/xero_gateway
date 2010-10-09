@@ -214,8 +214,7 @@ Invoice and line item totals are calculated automatically.
       :due_date => 1.month.from_now,
       :invoice_number => "YOUR INVOICE NUMBER",
       :reference => "YOUR REFERENCE (NOT NECESSARILY UNIQUE!)",
-      :tax_inclusive => true,
-      :includes_tax => false
+      :line_amount_types => "Inclusive" # "Inclusive", "Exclusive" or "NoTax"
     })
     invoice.contact.name = "THE NAME OF THE CONTACT"
     invoice.contact.phone.number = "12345"
