@@ -200,7 +200,7 @@ h3. GET /api.xro/2.0/invoices (get_invoices)
 
 Gets all invoice records for a particular Xero customer.
 <pre><code>    gateway.get_invoices
-    gateway.get_invoices(1.month.ago) # modified since 1 month ago</code></pre>
+    gateway.get_invoices(:modified_since => 1.month.ago) # modified since 1 month ago</code></pre>
 
 
 
