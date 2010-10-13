@@ -33,7 +33,7 @@ module XeroGateway
       'ZERORATED' =>        'Zero-rated supplies/sales from overseas (NZ Only)'
     } unless defined?(TAX_TYPE)
     
-    attr_accessor :code, :name, :type, :tax_type, :description
+    attr_accessor :account_id, :code, :name, :type, :tax_type, :description, :system_account, :enable_payments_to_account
     
     def initialize(params = {})
       params.each do |k,v|
@@ -42,7 +42,7 @@ module XeroGateway
     end
     
     def ==(other)
-      [:code, :name, :type, :tax_type, :description].each do |field|
+      [:account_id, :code, :name, :type, :tax_type, :description, :system_account, :enable_payments_to_account].each do |field|
         return false if send(field) != other.send(field)
       end
       return true
@@ -52,11 +52,14 @@ module XeroGateway
       b = Builder::XmlMarkup.new
       
       b.Account {
+        b.AccountID self.account_id
         b.Code self.code
         b.Name self.name
         b.Type self.type
         b.TaxType self.tax_type
         b.Description self.description
+        b.SystemAccount self.system_account unless self.system_account.nil?
+        b.EnablePaymentsToAccount self.enable_payments_to_account
       }
     end
     
@@ -64,11 +67,14 @@ module XeroGateway
       account = Account.new
       account_element.children.each do |element|
         case(element.name)
+          when "AccountID" then account.account_id = element.text
           when "Code" then account.code = element.text
           when "Name" then account.name = element.text
           when "Type" then account.type = element.text
           when "TaxType" then account.tax_type = element.text
           when "Description" then account.description = element.text
+          when "SystemAccount" then account.system_account = element.text
+          when "EnablePaymentsToAccount" then account.enable_payments_to_account = (element.text == 'true')
         end
       end      
       account

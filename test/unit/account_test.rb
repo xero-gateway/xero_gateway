@@ -22,12 +22,13 @@ class AccountTest < Test::Unit::TestCase
   private
   
   def create_test_account
-    account = XeroGateway::Account.new
+    account = XeroGateway::Account.new(:account_id => "57cedda9")
     account.code = "200"
     account.name = "Sales"
     account.type = "REVENUE"
     account.tax_type = "OUTPUT"
     account.description = "Income from any normal business activity"
+    account.enable_payments_to_account = false
     
     account
   end
