@@ -21,16 +21,21 @@ module XeroGateway
     # Retrieve all contacts from Xero
     #
     # Usage : get_contacts(:order => :name)
-    #         get_contacts(:updated_after => Time)
+    #         get_contacts(:modified_since => Time)
     #
     # Note  : modified_since is in UTC format (i.e. Brisbane is UTC+10)
     def get_contacts(options = {})
       request_params = {}
 
+      if !options[:updated_after].nil?
+        warn '[warning] :updated_after is depracated in XeroGateway#get_contacts.  Use :modified_since'
+        options[:modified_since] = options.delete(:updated_after)
+      end
+
       request_params[:ContactID]     = options[:contact_id] if options[:contact_id]
       request_params[:ContactNumber] = options[:contact_number] if options[:contact_number]
       request_params[:OrderBy]       = options[:order] if options[:order]      
-      request_params[:ModifiedAfter] = options[:updated_after] if options[:updated_after]
+      request_params[:ModifiedAfter] = options[:modified_since] if options[:modified_since]
       request_params[:where]         = options[:where] if options[:where]
     
       response_xml = http_get(@client, "#{@xero_url}/Contacts", request_params)
