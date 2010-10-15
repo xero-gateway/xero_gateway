@@ -236,6 +236,116 @@ module XeroGateway
       response
     end
 
+    # Retrieves all credit_notes from Xero
+    #
+    # Usage : get_credit_notes
+    #         get_credit_notes(:credit_note_id => " 297c2dc5-cc47-4afd-8ec8-74990b8761e9")
+    #
+    # Note  : modified_since is in UTC format (i.e. Brisbane is UTC+10)
+    def get_credit_notes(options = {})
+      
+      request_params = {}
+      
+      request_params[:CreditNoteID]     = options[:credit_note_id] if options[:credit_note_id]
+      request_params[:CreditNoteNumber] = options[:credit_note_number] if options[:credit_note_number]
+      request_params[:OrderBy]       = options[:order] if options[:order]      
+      request_params[:ModifiedAfter] = options[:modified_since] if options[:modified_since]
+
+      request_params[:where]         = options[:where] if options[:where]
+
+      response_xml = http_get(@client, "#{@xero_url}/CreditNotes", request_params)
+
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/CreditNotes'})
+    end
+    
+    # Retrieves a single credit_note
+    #
+    # Usage : get_credit_note("297c2dc5-cc47-4afd-8ec8-74990b8761e9") # By ID
+    #         get_credit_note("OIT-12345") # By number
+    def get_credit_note(credit_note_id_or_number)
+      request_params = {}
+      
+      url  = "#{@xero_url}/CreditNotes/#{URI.escape(credit_note_id_or_number)}"
+       
+      response_xml = http_get(@client, url, request_params)
+
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/CreditNote'})
+    end
+    
+    # Factory method for building new CreditNote objects associated with this gateway.
+    def build_credit_note(credit_note = {})
+      case credit_note
+        when CreditNote then     credit_note.gateway = self
+        when Hash then        credit_note = CreditNote.new(credit_note.merge(:gateway => self))
+      end
+      credit_note
+    end
+  
+    # Creates an credit_note in Xero based on an credit_note object.
+    #
+    # CreditNote and line item totals are calculated automatically.
+    #
+    # Usage : 
+    #
+    #    credit_note = XeroGateway::CreditNote.new({
+    #      :credit_note_type => "ACCREC",
+    #      :due_date => 1.month.from_now,
+    #      :credit_note_number => "YOUR CREDIT_NOTE NUMBER",
+    #      :reference => "YOUR REFERENCE (NOT NECESSARILY UNIQUE!)",
+    #      :line_amount_types => "Inclusive"
+    #    })
+    #    credit_note.contact = XeroGateway::Contact.new(:name => "THE NAME OF THE CONTACT")
+    #    credit_note.contact.phone.number = "12345"
+    #    credit_note.contact.address.line_1 = "LINE 1 OF THE ADDRESS"    
+    #    credit_note.line_items << XeroGateway::LineItem.new(
+    #      :description => "THE DESCRIPTION OF THE LINE ITEM",
+    #      :unit_amount => 100,
+    #      :tax_amount => 12.5,
+    #      :tracking_category => "THE TRACKING CATEGORY FOR THE LINE ITEM",
+    #      :tracking_option => "THE TRACKING OPTION FOR THE LINE ITEM"
+    #    )
+    #
+    #    create_credit_note(credit_note)
+    def create_credit_note(credit_note)
+      request_xml = credit_note.to_xml
+      response_xml = http_put(@client, "#{@xero_url}/CreditNotes", request_xml)
+      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/credit_note'})
+      
+      # Xero returns credit_notes inside an <CreditNotes> tag, even though there's only ever
+      # one for this request
+      response.response_item = response.credit_notes.first
+      
+      if response.success? && response.credit_note && response.credit_note.credit_note_id
+        credit_note.credit_note_id = response.credit_note.credit_note_id 
+      end
+      
+      response
+    end
+    
+    #
+    # Creates an array of credit_notes with a single API request.
+    # 
+    # Usage :
+    #  credit_notes = [XeroGateway::CreditNote.new(...), XeroGateway::CreditNote.new(...)]
+    #  result = gateway.create_credit_notes(credit_notes)
+    #
+    def create_credit_notes(credit_notes)
+      b = Builder::XmlMarkup.new
+      request_xml = b.CreditNotes {
+        credit_notes.each do | credit_note |
+          credit_note.to_xml(b)
+        end
+      }
+      
+      response_xml = http_put(@client, "#{@xero_url}/CreditNotes", request_xml, {})
+
+      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/credit_notes'})
+      response.credit_notes.each_with_index do | response_credit_note, index |
+        credit_notes[index].credit_note_id = response_credit_note.credit_note_id if response_credit_note && response_credit_note.credit_note_id
+      end
+      response
+    end
+
     #
     # Gets all accounts for a specific organization in Xero.
     #
@@ -336,6 +446,7 @@ module XeroGateway
           when "Invoice" then response.response_item = Invoice.from_xml(element, self, {:line_items_downloaded => options[:request_signature] != "GET/Invoices"})
           when "Contacts" then element.children.each {|child| response.response_item << Contact.from_xml(child, self) }
           when "Invoices" then element.children.each {|child| response.response_item << Invoice.from_xml(child, self, {:line_items_downloaded => options[:request_signature] != "GET/Invoices"}) }
+          when "CreditNotes" then element.children.each {|child| response.response_item << CreditNote.from_xml(child, self, {:line_items_downloaded => options[:request_signature] != "GET/CreditNotes"}) }
           when "Accounts" then element.children.each {|child| response.response_item << Account.from_xml(child) }
           when "TaxRates" then element.children.each {|child| response.response_item << TaxRate.from_xml(child) }
           when "Currencies" then element.children.each {|child| response.response_item << Currency.from_xml(child) }

@@ -7,9 +7,11 @@ module XeroGateway
     end
     
     alias_method :invoice,      :response_item
+    alias_method :credit_note,  :response_item
     alias_method :contact,      :response_item
     alias_method :organisation, :response_item
     alias_method :invoices,     :array_wrapped_response_item
+    alias_method :credit_notes, :array_wrapped_response_item
     alias_method :contacts,     :array_wrapped_response_item
     alias_method :accounts,     :array_wrapped_response_item
     alias_method :tracking_categories, :array_wrapped_response_item

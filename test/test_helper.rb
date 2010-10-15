@@ -51,6 +51,30 @@ module TestHelper
      invoice
   end
       
+  def dummy_credit_note(with_line_items = true)
+     credit_note = XeroGateway::CreditNote.new({
+       :type => "ACCRECCREDIT",
+       :date => Time.now,
+       :due_date => Date.today + 20,
+       :credit_note_number => STUB_XERO_CALLS ? "CN-0153" : "#{Time.now.to_f}",
+       :reference => "YOUR REFERENCE (NOT NECESSARILY UNIQUE!)",
+       :line_items_downloaded => with_line_items
+     })
+     credit_note.contact = dummy_contact
+     if with_line_items
+       credit_note.line_items << XeroGateway::LineItem.new(
+         :description => "THE DESCRIPTION OF THE LINE ITEM",
+         :unit_amount => 1000,
+         :tax_amount => 125,
+         :tracking => [
+            XeroGateway::TrackingCategory.new(:name => "THE FIRST  TRACKING CATEGORY FOR THE LINE ITEM", :options => ["a", "b"]),
+            XeroGateway::TrackingCategory.new(:name => "THE SECOND TRACKING CATEGORY FOR THE LINE ITEM", :options => "c")
+         ]
+       )
+     end
+     credit_note
+  end
+      
   def dummy_contact
     unique_id = Time.now.to_f
     contact = XeroGateway::Contact.new(:name => STUB_XERO_CALLS ? "CONTACT NAME" : "THE NAME OF THE CONTACT #{unique_id}")

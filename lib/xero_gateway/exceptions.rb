@@ -38,4 +38,6 @@ module XeroGateway
   end
   
   class InvoiceNotFoundError < StandardError; end
+
+  class CreditNoteNotFoundError < StandardError; end
 end
