@@ -65,7 +65,7 @@ module XeroGateway
       tracking_category = TrackingCategory.new
       tracking_category_element.children.each do |element|
         case(element.name)
-          when "TrackingCategoryID" then tracking_category.name = element.text
+          when "TrackingCategoryID" then tracking_category.tracking_category_id = element.text
           when "Name" then tracking_category.name = element.text
           when "Options" then
             element.children.each do |option_child|
