@@ -32,6 +32,22 @@ class GatewayTest < Test::Unit::TestCase
         @gateway.get_accounts
       end
     end
+
+    should "handle rate limit exceeded" do
+      XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("rate_limit_exceeded"), :code => "401"))
+
+      assert_raises XeroGateway::OAuth::RateLimitExceeded do
+        @gateway.get_accounts
+      end
+    end
+
+    should "handle unknown errors" do
+      XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("bogus_oauth_error"), :code => "401"))
+
+      assert_raises XeroGateway::OAuth::UnknownError do
+        @gateway.get_accounts
+      end
+    end
     
     should "handle ApiExceptions" do
       XeroGateway::OAuth.any_instance.stubs(:put).returns(stub(:plain_body => get_file_as_string("api_exception.xml"), :code => "400"))
