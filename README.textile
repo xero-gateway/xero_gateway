@@ -237,6 +237,59 @@ This method uses only a single API request to create/update multiple contacts.
 <pre><code>    invoices = [XeroGateway::Invoice.new(...), XeroGateway::Invoice.new(...)]
     result = gateway.create_invoices(invoices)</code></pre>
 
+h3. GET /api.xro/2.0/credit_note (get_credit_note_by_id)
+
+Gets an credit_note record for a specific Xero organisation
+<pre><code>    gateway.get_credit_note_by_id(credit_note_id)</code></pre>
+
+
+h3. GET /api.xro/2.0/credit_note (get_credit_note_by_number)
+
+Gets a credit note record for a specific Xero organisation
+<pre><code>    gateway.get_credit_note_by_number(credit_note_number)</code></pre>
+
+
+
+h3. GET /api.xro/2.0/credit_notes (get_credit_notes)
+
+Gets all credit note records for a particular Xero customer.
+<pre><code>    gateway.get_credit_notes
+    gateway.get_credit_notes(:modified_since => 1.month.ago) # modified since 1 month ago</code></pre>
+
+
+
+h3. PUT /api.xro/2.0/credit_note
+
+Inserts a credit note for a specific organization in Xero (Currently only adding new credit notes is allowed).
+
+CreditNote and line item totals are calculated automatically.
+<pre><code>    credit_note = gateway.build_credit_note({
+      :credit_note_type => "ACCRECCREDIT",
+      :credit_note_number => "YOUR CREDIT NOTE NUMBER",
+      :reference => "YOUR REFERENCE (NOT NECESSARILY UNIQUE!)",
+      :line_amount_types => "Inclusive" # "Inclusive", "Exclusive" or "NoTax"
+    })
+    credit_note.contact.name = "THE NAME OF THE CONTACT"
+    credit_note.contact.phone.number = "12345"
+    credit_note.contact.address.line_1 = "LINE 1 OF THE ADDRESS"    
+    credit_note.add_line_item({
+      :description => "THE DESCRIPTION OF THE LINE ITEM",
+      :unit_amount => 1000,
+      :tax_amount => 125,
+      :tracking_category => "THE TRACKING CATEGORY FOR THE LINE ITEM",
+      :tracking_option => "THE TRACKING OPTION FOR THE LINE ITEM"
+    })
+	
+		credit_note.create</code></pre>
+
+
+h3. PUT /api.xro/2.0/credit_notes
+
+Inserts multiple credit notes for a specific organization in Xero (currently only adding new credit notes is allowed).
+This method uses only a single API request to create/update multiple contacts.
+<pre><code>    credit_notes = [XeroGateway::CreditNote.new(...), XeroGateway::CreditNote.new(...)]
+    result = gateway.create_credit_notes(credit_notes)</code></pre>
+
 h3. GET /api.xro/2.0/accounts
 
 Gets all accounts for a specific organization in Xero.

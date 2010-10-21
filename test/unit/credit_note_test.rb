@@ -135,7 +135,6 @@ class CreditNoteTest < Test::Unit::TestCase
     # Test credit_note defaults.
     assert_equal('ACCRECCREDIT', credit_note.type)
     assert_kind_of(Date, credit_note.date)
-    assert_kind_of(Date, credit_note.due_date)
     assert_equal('12345', credit_note.credit_note_number)
     assert_equal('MY REFERENCE FOR THIS CREDIT NOTE', credit_note.reference)
     assert_equal("Exclusive", credit_note.line_amount_types)
@@ -228,7 +227,6 @@ class CreditNoteTest < Test::Unit::TestCase
       credit_note_params = {
         :type => 'ACCRECCREDIT',
         :date => Date.today,
-        :due_date => Date.today + 20,
         :credit_note_number => '12345',
         :reference => "MY REFERENCE FOR THIS CREDIT NOTE",
         :line_amount_types => "Exclusive"

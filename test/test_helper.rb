@@ -55,7 +55,6 @@ module TestHelper
      credit_note = XeroGateway::CreditNote.new({
        :type => "ACCRECCREDIT",
        :date => Time.now,
-       :due_date => Date.today + 20,
        :credit_note_number => STUB_XERO_CALLS ? "CN-0153" : "#{Time.now.to_f}",
        :reference => "YOUR REFERENCE (NOT NECESSARILY UNIQUE!)",
        :line_items_downloaded => with_line_items

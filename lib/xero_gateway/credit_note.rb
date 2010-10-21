@@ -39,7 +39,7 @@ module XeroGateway
     attr_accessor :line_items_downloaded
   
     # All accessible fields
-    attr_accessor :credit_note_id, :credit_note_number, :type, :status, :date, :due_date, :reference, :line_amount_types, :currency_code, :line_items, :contact, :payments, :fully_paid_on, :amount_credited
+    attr_accessor :credit_note_id, :credit_note_number, :type, :status, :date, :reference, :line_amount_types, :currency_code, :line_items, :contact, :payments, :fully_paid_on, :amount_credited
 
     
     def initialize(params = {})
@@ -203,7 +203,7 @@ module XeroGateway
         return false if send(field) != other.send(field)
       end
       
-      ["date", "due_date"].each do |field|
+      ["date"].each do |field|
         return false if send(field).to_s != other.send(field).to_s
       end
       return true
@@ -230,7 +230,6 @@ module XeroGateway
         b.Type self.type
         contact.to_xml(b)
         b.Date CreditNote.format_date(self.date || Date.today)
-        b.DueDate CreditNote.format_date(self.due_date) if self.due_date
         b.Status self.status if self.status
         b.CreditNoteNumber self.credit_note_number if credit_note_number
         b.Reference self.reference if self.reference
@@ -255,7 +254,6 @@ module XeroGateway
           when "CurrencyCode" then credit_note.currency_code = element.text
           when "Contact" then credit_note.contact = Contact.from_xml(element)
           when "Date" then credit_note.date = parse_date(element.text)
-          when "DueDate" then credit_note.due_date = parse_date(element.text)
           when "Status" then credit_note.status = element.text
           when "Reference" then credit_note.reference = element.text
           when "LineAmountTypes" then credit_note.line_amount_types = element.text

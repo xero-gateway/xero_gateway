@@ -29,7 +29,6 @@
         <Name>Red House Reads</Name>
       </Contact>
       <Date>2010-08-31T00:00:00</Date>
-      <DueDate>2010-08-31T00:00:00</DueDate>
       <Status>PAID</Status>
       <LineAmountTypes>Exclusive</LineAmountTypes>
       <SubTotal>199.75</SubTotal>
@@ -48,7 +47,6 @@
         <Name>Hot Chilly</Name>
       </Contact>
       <Date>2010-09-08T00:00:00</Date>
-      <DueDate>2010-09-08T00:00:00</DueDate>
       <Status>PAID</Status>
       <LineAmountTypes>Exclusive</LineAmountTypes>
       <SubTotal>24.00</SubTotal>
@@ -67,7 +65,6 @@
         <Name>Ridgeway University</Name>
       </Contact>
       <Date>2010-08-23T00:00:00</Date>
-      <DueDate>2010-08-23T00:00:00</DueDate>
       <Status>PAID</Status>
       <LineAmountTypes>Exclusive</LineAmountTypes>
       <SubTotal>500.00</SubTotal>
@@ -86,7 +83,6 @@
         <Name>Basket Case</Name>
       </Contact>
       <Date>2010-07-18T00:00:00</Date>
-      <DueDate>2010-07-18T00:00:00</DueDate>
       <Status>PAID</Status>
       <LineAmountTypes>Exclusive</LineAmountTypes>
       <SubTotal>100.00</SubTotal>
@@ -104,7 +100,6 @@
         <Name>Saatchi</Name>
       </Contact>
       <Date>2010-08-27T00:00:00</Date>
-      <DueDate>2010-08-27T00:00:00</DueDate>
       <Status>PAID</Status>
       <LineAmountTypes>Exclusive</LineAmountTypes>
       <SubTotal>222.22</SubTotal>
@@ -123,7 +118,6 @@
         <Name>Victor Power</Name>
       </Contact>
       <Date>2010-07-18T00:00:00</Date>
-      <DueDate>2010-07-18T00:00:00</DueDate>
       <Status>PAID</Status>
       <LineAmountTypes>Exclusive</LineAmountTypes>
       <SubTotal>50.00</SubTotal>
