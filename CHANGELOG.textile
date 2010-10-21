@@ -1,3 +1,7 @@
+h2. 2.0.5, released 21/10/2010
+
+* Add support for credit notes.  Thanks to malclocke and wasabhi for their contributions
+
 h2. 2.0.4, released 29/09/2010
 
 * Use bundler for dependency management
