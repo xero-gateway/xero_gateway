@@ -18,7 +18,7 @@
 #
 module XeroGateway
   class TrackingCategory
-    attr_accessor :name, :options
+    attr_accessor :tracking_category_id, :name, :options
     
     def initialize(params = {})
       @options = []
@@ -33,6 +33,7 @@ module XeroGateway
         
     def to_xml(b = Builder::XmlMarkup.new)
       b.TrackingCategory {
+        b.TrackingCategoryID self.tracking_category_id
         b.Name self.name
         b.Options {
           if self.options.is_a?(Array)
@@ -54,6 +55,7 @@ module XeroGateway
     # option, and the Options tag is omitted
     def to_xml_for_invoice_messages(b = Builder::XmlMarkup.new)
       b.TrackingCategory {
+        b.TrackingCategoryID self.tracking_category_id
         b.Name self.name
         b.Option self.options.is_a?(Array) ? self.options.first : self.options.to_s 
       }      
@@ -63,6 +65,7 @@ module XeroGateway
       tracking_category = TrackingCategory.new
       tracking_category_element.children.each do |element|
         case(element.name)
+          when "TrackingCategoryID" then tracking_category.tracking_category_id = element.text
           when "Name" then tracking_category.name = element.text
           when "Options" then
             element.children.each do |option_child|
@@ -74,7 +77,7 @@ module XeroGateway
     end  
     
     def ==(other)
-      [:name, :options].each do |field|
+      [:tracking_category_id, :name, :options].each do |field|
         return false if send(field) != other.send(field)
       end
       return true

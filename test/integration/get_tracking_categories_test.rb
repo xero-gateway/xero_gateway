@@ -20,7 +20,8 @@ class GetTrackingCategoriesTest < Test::Unit::TestCase
     if STUB_XERO_CALLS
       # When operating against the Xero test environment, there may not be any tracking categories present,
       # so this assertion can only be done when operating against stub responses
-      assert result.tracking_categories.size == 2
+      assert_equal 1, result.tracking_categories.size
+      assert_equal 4, result.tracking_categories.first.options.size
     end
   end
 end
