@@ -71,6 +71,7 @@ module XeroGateway
             element.children.each do |option_child|
               tracking_category.options << option_child.children.detect {|c| c.name == "Name"}.text
             end
+          when "Option" then tracking_category.options << element.text
         end
       end
       tracking_category              
