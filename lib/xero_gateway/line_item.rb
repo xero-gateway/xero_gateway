@@ -98,7 +98,7 @@ module XeroGateway
         case(element.name)
           when "LineItemID" then line_item.line_item_id = element.text
           when "Description" then line_item.description = element.text
-          when "Quantity" then line_item.quantity = element.text.to_i
+          when "Quantity" then line_item.quantity = BigDecimal(element.text)
           when "UnitAmount" then line_item.unit_amount = BigDecimal.new(element.text)
           when "TaxType" then line_item.tax_type = element.text
           when "TaxAmount" then line_item.tax_amount = BigDecimal.new(element.text)
