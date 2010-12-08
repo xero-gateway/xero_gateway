@@ -11,5 +11,5 @@ Gem::Specification.new do |s|
   s.files = ["Gemfile", "LICENSE", "Rakefile", "README.textile", "xero_gateway.gemspec"] + Dir['**/*.rb'] + Dir['**/*.crt']
   s.add_dependency('builder', '>= 2.1.2')
   s.add_dependency('oauth', '>= 0.3.6')
-  s.add_dependenct('activesupport')
+  s.add_dependency('activesupport')
 end
