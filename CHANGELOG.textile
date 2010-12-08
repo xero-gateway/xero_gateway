@@ -1,3 +1,11 @@
+h2. 2.0.7, released 09/12/2010
+
+* Bug fixes
+
+h2. 2.0.6, released 14/11/2010
+
+* Bug fixes
+
 h2. 2.0.5, released 21/10/2010
 
 * Add support for credit notes.  Thanks to malclocke and wasabhi for their contributions
