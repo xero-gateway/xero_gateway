@@ -8,7 +8,11 @@
       <LegalName>Demo Company (NZ)</LegalName>
       <PaysTax>true</PaysTax>
       <Version>NZ</Version>
+      <CountryCode>NZ</CountryCode>
+      <OrganisationType>COMPANY</OrganisationType>
+      <OrganisationStatus>ACTIVE</OrganisationStatus>
       <BaseCurrency>NZD</BaseCurrency>
+      <IsDemoCompany>false</IsDemoCompany>
     </Organisation>
   </Organisations>
 </Response>

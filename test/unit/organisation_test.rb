@@ -24,11 +24,15 @@ class OrganisationTest < Test::Unit::TestCase
   
   def create_test_organisation
     XeroGateway::Organisation.new.tap do |org|
-      org.name          = "Demo Company (NZ)"
-      org.legal_name    = "Demo Company (NZ)"
-      org.pays_tax      = true
-      org.version       = "NZ"
-      org.base_currency = "NZD"
+      org.name                = "Demo Company (NZ)"
+      org.legal_name          = "Demo Company (NZ)"
+      org.pays_tax            = true
+      org.version             = "NZ"
+      org.base_currency       = "NZD"
+      org.country_code        = "NZ"
+      org.organisation_type   = nil
+      org.organisation_status = nil
+      org.is_demo_company     = false
     end
   end
 end
