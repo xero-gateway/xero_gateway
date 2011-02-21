@@ -10,7 +10,7 @@ module XeroGateway
     attr_reader :errors
 
     # All accessible fields
-    attr_accessor :line_item_id, :description, :quantity, :unit_amount, :tax_type, :tax_amount, :account_code, :tracking
+    attr_accessor :line_item_id, :description, :quantity, :unit_amount, :item_code, :tax_type, :tax_amount, :account_code, :tracking
         
     def initialize(params = {})
       @errors ||= []
@@ -75,6 +75,7 @@ module XeroGateway
         b.Description description
         b.Quantity quantity if quantity
         b.UnitAmount LineItem.format_money(unit_amount)
+        b.ItemCode item_code if item_code
         b.TaxType tax_type if tax_type
         b.TaxAmount tax_amount if tax_amount
         b.LineAmount line_amount if line_amount
@@ -100,6 +101,7 @@ module XeroGateway
           when "Description" then line_item.description = element.text
           when "Quantity" then line_item.quantity = BigDecimal(element.text)
           when "UnitAmount" then line_item.unit_amount = BigDecimal.new(element.text)
+          when "ItemCode" then line_item.item_code = element.text
           when "TaxType" then line_item.tax_type = element.text
           when "TaxAmount" then line_item.tax_amount = BigDecimal.new(element.text)
           when "LineAmount" then line_item.line_amount = BigDecimal.new(element.text)
@@ -114,7 +116,7 @@ module XeroGateway
     end    
 
     def ==(other)
-      [:description, :quantity, :unit_amount, :tax_type, :tax_amount, :line_amount, :account_code].each do |field|
+      [:description, :quantity, :unit_amount, :tax_type, :tax_amount, :line_amount, :account_code, :item_code].each do |field|
         return false if send(field) != other.send(field)
       end
       return true
