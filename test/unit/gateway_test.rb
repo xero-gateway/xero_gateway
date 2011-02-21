@@ -18,7 +18,7 @@ class GatewayTest < Test::Unit::TestCase
     end
     
     should "handle invalid request tokens" do
-      XeroGateway::OAuth.any_instance.stubs(:http_get).returns(stub(:plain_body => get_file_as_string("invalid_request_token"), :code => "401"))
+      XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("invalid_request_token"), :code => "401"))
       
       assert_raises XeroGateway::OAuth::TokenInvalid do
         @gateway.get_accounts
@@ -26,7 +26,7 @@ class GatewayTest < Test::Unit::TestCase
     end
     
     should "handle invalid consumer key" do
-      XeroGateway::OAuth.any_instance.stubs(:http_get).returns(stub(:plain_body => get_file_as_string("invalid_consumer_key"), :code => "401"))
+     XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("invalid_consumer_key"), :code => "401"))
       
       assert_raises XeroGateway::OAuth::TokenInvalid do
         @gateway.get_accounts

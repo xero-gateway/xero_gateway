@@ -1,1 +1,1 @@
-oauth_problem=token_rejected&oauth_problem_advice=Unknown%20consumer
+oauth_problem=consumer_key_unknown&oauth_problem_advice=Consumer%20key%20was%20not%20recognised
