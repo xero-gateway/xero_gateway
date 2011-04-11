@@ -33,7 +33,7 @@ module XeroGateway
         
     def to_xml(b = Builder::XmlMarkup.new)
       b.TrackingCategory {
-        b.TrackingCategoryID self.tracking_category_id
+        b.TrackingCategoryID tracking_category_id unless tracking_category_id.nil?
         b.Name self.name
         b.Options {
           if self.options.is_a?(Array)
