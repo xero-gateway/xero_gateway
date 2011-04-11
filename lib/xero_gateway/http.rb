@@ -70,7 +70,7 @@ module XeroGateway
           when 200
             response.plain_body
           when 400
-            handle_error!(response)  
+            handle_error!(body, response)  
           when 401
             handle_oauth_error!(response)
           when 404
@@ -97,7 +97,7 @@ module XeroGateway
         end
       end
       
-      def handle_error!(response)
+      def handle_error!(request_xml, response)
         
         raw_response = response.plain_body
         
@@ -110,7 +110,8 @@ module XeroGateway
         if doc.root.name == "ApiException"
 
           raise ApiException.new(doc.root.elements["Type"].text, 
-                                 doc.root.elements["Message"].text, 
+                                 doc.root.elements["Message"].text,
+                                 request_xml, 
                                  raw_response)
 
         else
