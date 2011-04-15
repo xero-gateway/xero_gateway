@@ -50,7 +50,7 @@ module XeroGateway
       @line_items_downloaded = (params.delete(:line_items_downloaded) == true)
       
       params = {
-        :line_amount_types => "Inclusive"
+        :line_amount_types => "Exclusive"
       }.merge(params)
       
       params.each do |k,v|
