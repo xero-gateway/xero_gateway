@@ -236,6 +236,11 @@ class InvoiceTest < Test::Unit::TestCase
       assert_equal(2, invoice.line_items.size)
     end
   end
+
+  def test_instantiate_invoice_with_default_line_amount_types
+    invoice = XeroGateway::Invoice.new
+    assert_equal(invoice.line_amount_types, 'Exclusive')
+  end
   
   private
     
