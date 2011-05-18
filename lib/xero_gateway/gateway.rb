@@ -197,21 +197,24 @@ module XeroGateway
     #
     #    create_invoice(invoice)
     def create_invoice(invoice)
-      request_xml = invoice.to_xml
-      response_xml = http_put(@client, "#{@xero_url}/Invoices", request_xml)
-      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/invoice'})
-      
-      # Xero returns invoices inside an <Invoices> tag, even though there's only ever
-      # one for this request
-      response.response_item = response.invoices.first
-      
-      if response.success? && response.invoice && response.invoice.invoice_id
-        invoice.invoice_id = response.invoice.invoice_id 
-      end
-      
-      response
+      save_invoice(invoice)
     end
-    
+
+    #
+    # Updates an existing Xero invoice
+    #
+    # Usage : 
+    #
+    # invoice = xero_gateway.get_invoice(some_invoice_id)
+    # invoice.due_date = Date.today
+    #
+    # xero_gateway.update_invoice(invoice)  
+
+    def update_invoice(invoice)
+      raise "invoice_id is required for updating invoices" if invoice.invoice_id.nil?
+      save_invoice(invoice)
+    end
+
     #
     # Creates an array of invoices with a single API request.
     # 
@@ -422,6 +425,35 @@ module XeroGateway
 
       response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => "#{create_or_save == :create ? 'PUT' : 'POST'}/contact"})
       contact.contact_id = response.contact.contact_id if response.contact && response.contact.contact_id
+      response
+    end
+
+    # Create or update an invoice record based on if it has an invoice_id.
+    def save_invoice(invoice)
+      request_xml = invoice.to_xml
+      
+      response_xml = nil
+      create_or_save = nil
+      if invoice.invoice_id.nil?
+        # Create new invoice record.
+        response_xml = http_put(@client, "#{@xero_url}/Invoices", request_xml, {})
+        create_or_save = :create
+      else
+        # Update existing invoice record.
+        response_xml = http_post(@client, "#{@xero_url}/Invoices", request_xml, {})
+        create_or_save = :save
+      end
+
+      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => "#{create_or_save == :create ? 'PUT' : 'POST'}/invoice"})
+      
+      # Xero returns invoices inside an <Invoices> tag, even though there's only ever
+      # one for this request
+      response.response_item = response.invoices.first
+      
+      if response.success? && response.invoice && response.invoice.invoice_id
+        invoice.invoice_id = response.invoice.invoice_id 
+      end
+      
       response
     end
 
