@@ -209,10 +209,14 @@ module XeroGateway
       return true
     end
     
-    # General purpose createsave method.
-    # If contact_id and contact_number are nil then create, otherwise, attempt to save.
+    # General purpose create/save method.
+    # If invoice_id is nil then create, otherwise, attempt to save.
     def save
-      create
+      if invoice_id.nil?
+        create
+      else
+        update
+      end
     end
     
     # Creates this invoice record (using gateway.create_invoice) with the associated gateway.
@@ -222,19 +226,24 @@ module XeroGateway
       gateway.create_invoice(self)
     end
     
-    # Alias create as save as this is currently the only write action.
-    alias_method :save, :create
-            
+    # Updates this invoice record (using gateway.update_invoice) with the associated gateway.
+    # If no gateway set, raise a Xero::Invoice::NoGatewayError exception.
+    def update
+      raise NoGatewayError unless gateway
+      gateway.update_invoice(self)
+    end
+    
     def to_xml(b = Builder::XmlMarkup.new)
       b.Invoice {
+        b.InvoiceID self.invoice_id if self.invoice_id
+        b.InvoiceNumber self.invoice_number if invoice_number
         b.Type self.invoice_type
+        b.CurrencyCode self.currency_code if self.currency_code
         contact.to_xml(b)
         b.Date Invoice.format_date(self.date || Date.today)
         b.DueDate Invoice.format_date(self.due_date) if self.due_date
         b.Status self.invoice_status if self.invoice_status
-        b.InvoiceNumber self.invoice_number if invoice_number
         b.Reference self.reference if self.reference
-        b.CurrencyCode self.currency_code if self.currency_code
         b.LineAmountTypes self.line_amount_types
         b.LineItems {
           self.line_items.each do |line_item|
@@ -253,7 +262,6 @@ module XeroGateway
           when "InvoiceNumber" then invoice.invoice_number = element.text            
           when "Type" then invoice.invoice_type = element.text
           when "CurrencyCode" then invoice.currency_code = element.text
-          when "Type" then invoice.invoice_type = element.text
           when "Contact" then invoice.contact = Contact.from_xml(element)
           when "Date" then invoice.date = parse_date(element.text)
           when "DueDate" then invoice.due_date = parse_date(element.text)

@@ -230,6 +230,15 @@ Invoice and line item totals are calculated automatically.
 		invoice.create</code></pre>
 
 
+
+h3. POST /api.xro/2.0/invoice
+
+Updates an existing invoice record.
+<pre><code>    invoice_retrieved_from_xero.due_date = Date.today
+    invoice_retrieved_from_xero.save</code></pre>
+
+
+
 h3. PUT /api.xro/2.0/invoices
 
 Inserts multiple invoices for a specific organization in Xero (currently only adding new invoices is allowed).
