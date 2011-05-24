@@ -58,10 +58,10 @@ Next, you need to redirect your user to the authorisation url for this request t
     redirect_to request_token.authorize_url
 </code></pre>
 
-You may also provide a callback parameter, which is the URL within your app the user will be redirected to. See next section for more information on what Xero sends in this request.
+You may also provide a callback parameter, which is the URL within your app the user will be redirected to. See next section for more information on what parameters Xero sends with this request.
 
 <pre><code>
-    redirect_to request_token.authorize_url(:oauth_callback = "http://www.something.com/xero/complete")
+    redirect_to request_token.authorize_url(:oauth_callback => "http://www.something.com/xero/complete")
 </code></pre>
 
 h3. Retrieving an Access Token
