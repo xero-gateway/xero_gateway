@@ -65,19 +65,16 @@ class OAuthTest < Test::Unit::TestCase
     assert_equal "asecret", xero.access_token.secret
   end
 
-  # Xero doesn't support OAuth Callbacks, not that this calls to Xero anyway :)
-  # See: http://blog.xero.com/developer/api-overview/ 
-  #
-  # should "be able to create request token with callback url" do
-  #   xero = XeroGateway::OAuth.new('token', 'secret')
-  #   consumer = OAuth::Consumer.new('token', 'secret')
-  #   xero.stubs(:consumer).returns(consumer)
-  # 
-  #   request_token = mock('request token')
-  #   consumer.expects(:get_request_token).with(:oauth_callback => "http://callback.com").returns(request_token)
-  # 
-  #   xero.request_token(:oauth_callback => "http://callback.com")
-  # end
+  should "be able to create request token with callback url" do
+    xero = XeroGateway::OAuth.new('token', 'secret')
+    consumer = OAuth::Consumer.new('token', 'secret')
+    xero.stubs(:consumer).returns(consumer)
+  
+    request_token = mock('request token')
+    consumer.expects(:get_request_token).with(:oauth_callback => "http://callback.com").returns(request_token)
+  
+    xero.request_token(:oauth_callback => "http://callback.com")
+  end
   
   should "be able to create access token with oauth verifier" do
     xero = XeroGateway::OAuth.new('token', 'secret')
