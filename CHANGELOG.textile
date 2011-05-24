@@ -1,3 +1,13 @@
+h2. 2.0.12, released 25/05/2011
+
+* Add OUTPUT2 and EC Zero-rated income as valid tax types
+* Add support for updating invoices
+* Ass support for oauth_callback
+
+h2. 2.0.11, released 18/04/2011
+
+* Bug fixes
+
 h2. 2.0.10, released 12/04/2011
 
 * Fix issue with TrackingCategory#to_xml
