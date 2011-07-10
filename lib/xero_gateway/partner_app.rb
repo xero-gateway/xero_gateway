@@ -31,6 +31,10 @@ module XeroGateway
       @client    = OAuth.new(consumer_key, consumer_secret, options)
     end
     
+    def set_session_handle(handle)
+      client.session_handle = handle
+    end
+    
     protected
     
       def http_request_with_autorenew(*args)
