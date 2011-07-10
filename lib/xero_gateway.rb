@@ -7,7 +7,9 @@ require "bigdecimal"
 require "oauth"
 require 'oauth/signature/rsa/sha1'
 require "forwardable"
-require "active_support/inflector"
+require "active_support/all"
+
+require File.join(File.dirname(__FILE__), 'oauth', 'oauth_consumer')
 
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'http_encoding_helper')
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'http')
@@ -32,3 +34,4 @@ require File.join(File.dirname(__FILE__), 'xero_gateway', 'oauth')
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'exceptions')
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'gateway')
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'private_app')
+require File.join(File.dirname(__FILE__), 'xero_gateway', 'partner_app')

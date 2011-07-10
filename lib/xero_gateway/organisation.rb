@@ -3,16 +3,21 @@ module XeroGateway
     
     unless defined? ATTRS
       ATTRS = {
-        "Name" 	             => :string,     # Display name of organisation shown in Xero
-        "LegalName"          => :string,	   # Organisation name shown on Reports
-        "PaysTax" 	         => :boolean,    # Boolean to describe if organisation is registered with a local tax authority i.e. true, false
-        "Version"   	       => :string,     # See Version Types
-        "BaseCurrency"       => :string,     # Default currency for organisation. See Currency types
-        "OrganisationType"   => :string,     # UNDOCUMENTED parameter, only returned for "real" (i.e non-demo) companies
-        "OrganisationStatus" => :string,   # UNDOCUMENTED parameter
-        "IsDemoCompany"      => :boolean,    # UNDOCUMENTED parameter
-        "APIKey"             => :string,     # UNDOCUMENTED paramater, returned if organisations are linked via Xero Network
-        "CountryCode"        => :stirng      # UNDOCUMENTED parameter
+        "Name" 	                => :string,     # Display name of organisation shown in Xero
+        "LegalName"             => :string,	   # Organisation name shown on Reports
+        "PaysTax" 	            => :boolean,    # Boolean to describe if organisation is registered with a local tax authority i.e. true, false
+        "Version"   	          => :string,     # See Version Types
+        "BaseCurrency"          => :string,     # Default currency for organisation. See Currency types
+        "OrganisationType"      => :string,     # UNDOCUMENTED parameter, only returned for "real" (i.e non-demo) companies
+        "OrganisationStatus"    => :string,   # UNDOCUMENTED parameter
+        "IsDemoCompany"         => :boolean,    # UNDOCUMENTED parameter
+        "APIKey"                => :string,     # UNDOCUMENTED paramater, returned if organisations are linked via Xero Network
+        "CountryCode"           => :string,      # UNDOCUMENTED parameter
+        "TaxNumber"             => :string,
+        "FinancialYearEndDay"   => :string,
+        "FinancialYearEndMonth" => :string,
+        "PeriodLockDate"        => :string,
+        "CreatedDateUTC"        => :string        
       }
     end
     
@@ -48,12 +53,18 @@ module XeroGateway
           attribute             = element.name
           underscored_attribute = element.name.underscore
         
-          raise "Unknown attribute: #{attribute}" unless ATTRS.keys.include?(attribute)
-        
-          case (ATTRS[attribute])
-            when :boolean then  org.send("#{underscored_attribute}=", (element.text == "true"))
-            when :float   then  org.send("#{underscored_attribute}=", element.text.to_f)
-            else                org.send("#{underscored_attribute}=", element.text)
+          if ATTRS.keys.include?(attribute)
+                  
+            case (ATTRS[attribute])
+              when :boolean then  org.send("#{underscored_attribute}=", (element.text == "true"))
+              when :float   then  org.send("#{underscored_attribute}=", element.text.to_f)
+              else                org.send("#{underscored_attribute}=", element.text)
+            end
+            
+          else
+            
+            warn "Ignoring unknown attribute: #{attribute}" 
+            
           end
           
         end
