@@ -56,10 +56,6 @@ module XeroGateway
     def authorize_from_access(atoken, asecret)
       @atoken, @asecret = atoken, asecret
     end
-    
-    def access_token_expired?
-      @access_token && Time.now >= @expires_at
-    end
   
     # Renewing access tokens only works for Partner applications
     def renew_access_token(access_token = nil, access_secret = nil, session_handle = nil)

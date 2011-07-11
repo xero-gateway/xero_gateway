@@ -7,9 +7,6 @@ module XeroGateway
     NO_PRIVATE_KEY_ERROR_MESSAGE = "You need to provide your private key (corresponds to the public key you uploaded at api.xero.com) as :private_key_file (should be .crt or .pem files)"
     
     def_delegators :client, :session_handle, :renew_access_token
-    
-    # should we automatically attempt to renew OAuth tokens?
-    attr_accessor :autorenew
      
     def initialize(consumer_key, consumer_secret, options = {})
       
@@ -26,22 +23,13 @@ module XeroGateway
         :private_key_file => options[:private_key_file]
       )
       
-      @autorenew = options[:autorenew].present?
-      @xero_url  = options[:xero_url] || "https://api-partner.xero.com/api.xro/2.0"  
-      @client    = OAuth.new(consumer_key, consumer_secret, options)
+      @xero_url = options[:xero_url] || "https://api-partner.xero.com/api.xro/2.0"  
+      @client   = OAuth.new(consumer_key, consumer_secret, options)
     end
-    
+
     def set_session_handle(handle)
       client.session_handle = handle
     end
-    
-    protected
-    
-      def http_request_with_autorenew(*args)
-        renew_access_token if autorenew && access_token_expired?
-        
-        http_request_without_autorenew(*args)
-      end
     
   end
 end

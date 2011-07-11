@@ -16,7 +16,7 @@ module XeroGateway
       http_request(client, :put, url, body, extra_params)
     end
     
-    protected
+    private
     
       def http_request(client, method, url, body, params = {})
         # headers = {'Accept-Encoding' => 'gzip, deflate'}
