@@ -1,8 +1,14 @@
+h2. 2.0.13, released 14/09/2011
+
+* Add new Organisation attributes
+* Partner app implementation
+* Add Invoice#sent_to_contact
+
 h2. 2.0.12, released 25/05/2011
 
 * Add OUTPUT2 and EC Zero-rated income as valid tax types
 * Add support for updating invoices
-* Ass support for oauth_callback
+* Add support for oauth_callback
 
 h2. 2.0.11, released 18/04/2011
 
