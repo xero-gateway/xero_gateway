@@ -2,22 +2,23 @@ require File.join(File.dirname(__FILE__), '../test_helper.rb')
 
 class InvoiceTest < Test::Unit::TestCase
 
-  # Tests that an invoice can be converted into XML that Xero can understand, and then converted back to an invoice
-  def test_build_and_parse_xml
-    invoice = create_test_invoice
-    
-    # Generate the XML message
-    invoice_as_xml = invoice.to_xml
+  context "building and parsing XML" do
+    should "work vice versa" do
+      invoice = create_test_invoice
 
-    # Parse the XML message and retrieve the invoice element
-    invoice_element = REXML::XPath.first(REXML::Document.new(invoice_as_xml), "/Invoice")
+      # Generate the XML message
+      invoice_as_xml = invoice.to_xml
 
-    # Build a new invoice from the XML
-    result_invoice = XeroGateway::Invoice.from_xml(invoice_element)
+      # Parse the XML message and retrieve the invoice element
+      invoice_element = REXML::XPath.first(REXML::Document.new(invoice_as_xml), "/Invoice")
 
-    assert_equal(invoice, result_invoice)
+      # Build a new invoice from the XML
+      result_invoice = XeroGateway::Invoice.from_xml(invoice_element)
+
+      assert_equal(invoice, result_invoice)
+    end
   end
-  
+
   # Tests the sub_total calculation and that setting it manually doesn't modify the data.
   def test_invoice_sub_total_calculation
     invoice = create_test_invoice
