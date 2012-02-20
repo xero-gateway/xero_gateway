@@ -17,6 +17,15 @@ class InvoiceTest < Test::Unit::TestCase
 
       assert_equal(invoice, result_invoice)
     end
+
+    should "work for optional params" do
+      invoice = create_test_invoice(:url => 'http://example.com')
+      invoice_element = REXML::XPath.first(REXML::Document.new(invoice.to_xml), "/Invoice")
+      assert_match /Url/, invoice_element.to_s
+
+      parsed_invoice = XeroGateway::Invoice.from_xml(invoice_element)
+      assert_equal 'http://example.com', parsed_invoice.url
+    end
   end
 
   # Tests the sub_total calculation and that setting it manually doesn't modify the data.
@@ -159,6 +168,9 @@ class InvoiceTest < Test::Unit::TestCase
     assert_equal(BigDecimal.new('100'), invoice.line_items.first.unit_amount)
     assert_equal(BigDecimal.new('12.5'), invoice.line_items.first.tax_amount)
 
+    # Test optional params
+    assert_nil invoice.url
+
     # Test overriding an invoice parameter (assume works for all).
     invoice = create_test_invoice({:invoice_type => 'ACCPAY'})
     assert_equal('ACCPAY', invoice.invoice_type)
@@ -226,7 +238,12 @@ class InvoiceTest < Test::Unit::TestCase
     invoice = XeroGateway::Invoice.new
     assert_equal(invoice.line_amount_types, 'Exclusive')
   end
-  
+
+  def test_optional_params
+    invoice = create_test_invoice(:url => 'http://example.com')
+    assert_equal 'http://example.com', invoice.url
+  end
+
   private
     
   def create_test_invoice(invoice_params = {}, contact_params = {}, line_item_params = [])
