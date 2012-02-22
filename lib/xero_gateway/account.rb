@@ -35,7 +35,7 @@ module XeroGateway
       'ZERORATED' =>        'Zero-rated supplies/sales from overseas (NZ Only)'
     } unless defined?(TAX_TYPE)
     
-    attr_accessor :account_id, :code, :name, :type, :tax_type, :description, :system_account, :enable_payments_to_account
+    attr_accessor :account_id, :code, :name, :type, :tax_type, :description, :system_account, :enable_payments_to_account, :currency_code
     
     def initialize(params = {})
       params.each do |k,v|
@@ -62,6 +62,7 @@ module XeroGateway
         b.Description self.description
         b.SystemAccount self.system_account unless self.system_account.nil?
         b.EnablePaymentsToAccount self.enable_payments_to_account
+        b.CurrencyCode currency_code if currency_code
       }
     end
     
@@ -77,6 +78,7 @@ module XeroGateway
           when "Description" then account.description = element.text
           when "SystemAccount" then account.system_account = element.text
           when "EnablePaymentsToAccount" then account.enable_payments_to_account = (element.text == 'true')
+          when "CurrencyCode" then account.currency_code = element.text
         end
       end      
       account

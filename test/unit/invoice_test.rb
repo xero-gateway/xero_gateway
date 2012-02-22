@@ -1,39 +1,33 @@
 require File.join(File.dirname(__FILE__), '../test_helper.rb')
 
 class InvoiceTest < Test::Unit::TestCase
-  
-  def setup
-    # @schema = LibXML::XML::Schema.document(LibXML::XML::Document.file(File.join(File.dirname(__FILE__), '../xsd/create_invoice.xsd')))
+
+  context "building and parsing XML" do
+    should "work vice versa" do
+      invoice = create_test_invoice
+
+      # Generate the XML message
+      invoice_as_xml = invoice.to_xml
+
+      # Parse the XML message and retrieve the invoice element
+      invoice_element = REXML::XPath.first(REXML::Document.new(invoice_as_xml), "/Invoice")
+
+      # Build a new invoice from the XML
+      result_invoice = XeroGateway::Invoice.from_xml(invoice_element)
+
+      assert_equal(invoice, result_invoice)
+    end
+
+    should "work for optional params" do
+      invoice = create_test_invoice(:url => 'http://example.com')
+      invoice_element = REXML::XPath.first(REXML::Document.new(invoice.to_xml), "/Invoice")
+      assert_match /Url/, invoice_element.to_s
+
+      parsed_invoice = XeroGateway::Invoice.from_xml(invoice_element)
+      assert_equal 'http://example.com', parsed_invoice.url
+    end
   end
 
-  # NB: Xero no longer appears to provide XSDs for their api, check http://blog.xero.com/developer/api/invoices/
-  #
-  # Tests that the XML generated from an invoice object validates against the Xero XSD
-  # def test_build_xml
-  #   invoice = create_test_invoice
-  # 
-  #   message = invoice.to_xml
-  # 
-  #   # Check that the document matches the XSD
-  #   assert LibXML::XML::Parser.string(message).parse.validate_schema(@schema), "The XML document generated did not validate against the XSD"
-  # end
-  
-  # Tests that an invoice can be converted into XML that Xero can understand, and then converted back to an invoice
-  def test_build_and_parse_xml
-    invoice = create_test_invoice
-    
-    # Generate the XML message
-    invoice_as_xml = invoice.to_xml
-
-    # Parse the XML message and retrieve the invoice element
-    invoice_element = REXML::XPath.first(REXML::Document.new(invoice_as_xml), "/Invoice")
-
-    # Build a new invoice from the XML
-    result_invoice = XeroGateway::Invoice.from_xml(invoice_element)
-
-    assert_equal(invoice, result_invoice)
-  end
-  
   # Tests the sub_total calculation and that setting it manually doesn't modify the data.
   def test_invoice_sub_total_calculation
     invoice = create_test_invoice
@@ -174,6 +168,9 @@ class InvoiceTest < Test::Unit::TestCase
     assert_equal(BigDecimal.new('100'), invoice.line_items.first.unit_amount)
     assert_equal(BigDecimal.new('12.5'), invoice.line_items.first.tax_amount)
 
+    # Test optional params
+    assert_nil invoice.url
+
     # Test overriding an invoice parameter (assume works for all).
     invoice = create_test_invoice({:invoice_type => 'ACCPAY'})
     assert_equal('ACCPAY', invoice.invoice_type)
@@ -241,7 +238,12 @@ class InvoiceTest < Test::Unit::TestCase
     invoice = XeroGateway::Invoice.new
     assert_equal(invoice.line_amount_types, 'Exclusive')
   end
-  
+
+  def test_optional_params
+    invoice = create_test_invoice(:url => 'http://example.com')
+    assert_equal 'http://example.com', invoice.url
+  end
+
   private
     
   def create_test_invoice(invoice_params = {}, contact_params = {}, line_item_params = [])
@@ -304,4 +306,21 @@ class InvoiceTest < Test::Unit::TestCase
     
     invoice
   end
+
+  # NB: Xero no longer appears to provide XSDs for their api, check http://blog.xero.com/developer/api/invoices/
+  #
+  # context "validating against the Xero XSD" do
+  #   setup do
+  #     # @schema = LibXML::XML::Schema.document(LibXML::XML::Document.file(File.join(File.dirname(__FILE__), '../xsd/create_invoice.xsd')))
+  #   end
+  #
+  #   should "succeed" do
+  #     invoice = create_test_invoice
+  #     message = invoice.to_xml
+  #
+  #     # Check that the document matches the XSD
+  #     assert LibXML::XML::Parser.string(message).parse.validate_schema(@schema), "The XML document generated did not validate against the XSD"
+  #   end
+  # end
+
 end
