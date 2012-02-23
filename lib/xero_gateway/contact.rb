@@ -109,7 +109,7 @@ module XeroGateway
       
       # Make sure all phone numbers are correct.
       unless phones.all? { | phone | phone.valid? }
-        @errors << ['phones', 'at leaset one phone is invalid']
+        @errors << ['phones', 'at least one phone is invalid']
       end
       
       @errors.size == 0
