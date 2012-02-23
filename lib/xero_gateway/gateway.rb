@@ -349,6 +349,61 @@ module XeroGateway
       response
     end
 
+    # Creates a bank transaction in Xero based on a bank transaction object.
+    #
+    # Bank transaction and line item totals are calculated automatically.
+    #
+    # Usage :
+    #
+    #    bank_transaction = XeroGateway::BankTransaction.new({
+    #      :type => "RECEIVE",
+    #      :date => 1.month.from_now,
+    #      :reference => "YOUR INVOICE NUMBER",
+    #    })
+    #    bank_transaction.contact = XeroGateway::Contact.new(:name => "THE NAME OF THE CONTACT")
+    #    bank_transaction.contact.phone.number = "12345"
+    #    bank_transaction.contact.address.line_1 = "LINE 1 OF THE ADDRESS"
+    #    bank_transaction.line_items << XeroGateway::LineItem.new(
+    #      :description => "THE DESCRIPTION OF THE LINE ITEM",
+    #      :unit_amount => 100,
+    #      :tax_amount => 12.5,
+    #      :tracking_category => "THE TRACKING CATEGORY FOR THE LINE ITEM",
+    #      :tracking_option => "THE TRACKING OPTION FOR THE LINE ITEM"
+    #    )
+    #    bank_transaction.bank_account = XeroGateway::Account.new(:code => 'BANK-ABC)
+    #
+    #    create_bank_transaction(bank_transaction)
+    def create_bank_transaction(bank_transaction)
+      save_bank_transaction(bank_transaction)
+    end
+
+    # Retrieves all bank transactions from Xero
+    #
+    # Usage : get_bank_transactions
+    #         get_bank_transactions(:bank_transaction_id => " 297c2dc5-cc47-4afd-8ec8-74990b8761e9")
+    #
+    # Note  : modified_since is in UTC format (i.e. Brisbane is UTC+10)
+    def get_bank_transactions(options = {})
+      request_params = {}
+      request_params[:BankTransactionID]  = options[:bank_transaction_id] if options[:bank_transaction_id]
+      request_params[:ModifiedAfter]      = options[:modified_since] if options[:modified_since]
+
+      response_xml = http_get(@client, "#{@xero_url}/BankTransactions", request_params)
+
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/BankTransactions'})
+    end
+
+    # Retrieves a single bank transaction
+    #
+    # Usage : get_bank_transaction("297c2dc5-cc47-4afd-8ec8-74990b8761e9") # By ID
+    #         get_bank_transaction("OIT-12345") # By number
+    def get_bank_transaction(bank_transaction_id)
+      request_params = {}
+      url = "#{@xero_url}/BankTransactions/#{URI.escape(bank_transaction_id)}"
+      response_xml = http_get(@client, url, request_params)
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/BankTransaction'})
+    end
+
     #
     # Gets all accounts for a specific organization in Xero.
     #
@@ -457,6 +512,35 @@ module XeroGateway
       response
     end
 
+    # Create or update a bank transaction record based on if it has an bank_transaction_id.
+    def save_bank_transaction(bank_transaction)
+      request_xml = bank_transaction.to_xml
+      response_xml = nil
+      create_or_save = nil
+
+      if bank_transaction.bank_transaction_id.nil?
+        # Create new bank transaction record.
+        response_xml = http_put(@client, "#{@xero_url}/BankTransactions", request_xml, {})
+        create_or_save = :create
+      else
+        # Update existing bank transaction record.
+        response_xml = http_post(@client, "#{@xero_url}/BankTransactions", request_xml, {})
+        create_or_save = :save
+      end
+
+      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => "#{create_or_save == :create ? 'PUT' : 'POST'}/BankTransactions"})
+
+      # Xero returns bank transactions inside an <BankTransactions> tag, even though there's only ever
+      # one for this request
+      response.response_item = response.bank_transactions.first
+
+      if response.success? && response.bank_transaction && response.bank_transaction.bank_transaction_id
+        bank_transaction.bank_transaction_id = response.bank_transaction.bank_transaction_id
+      end
+
+      response
+    end
+
     def parse_response(raw_response, request = {}, options = {})
 
       response = XeroGateway::Response.new
@@ -476,8 +560,14 @@ module XeroGateway
           when "DateTimeUTC" then response.date_time = element.text
           when "Contact" then response.response_item = Contact.from_xml(element, self)
           when "Invoice" then response.response_item = Invoice.from_xml(element, self, {:line_items_downloaded => options[:request_signature] != "GET/Invoices"})
+          when "BankTransaction"
+            response.response_item = BankTransaction.from_xml(element, self, {:line_items_downloaded => options[:request_signature] != "GET/BankTransactions"})
           when "Contacts" then element.children.each {|child| response.response_item << Contact.from_xml(child, self) }
           when "Invoices" then element.children.each {|child| response.response_item << Invoice.from_xml(child, self, {:line_items_downloaded => options[:request_signature] != "GET/Invoices"}) }
+          when "BankTransactions"
+            element.children.each do |child|
+              response.response_item << BankTransaction.from_xml(child, self, {:line_items_downloaded => options[:request_signature] != "GET/BankTransactions"})
+            end
           when "CreditNotes" then element.children.each {|child| response.response_item << CreditNote.from_xml(child, self, {:line_items_downloaded => options[:request_signature] != "GET/CreditNotes"}) }
           when "Accounts" then element.children.each {|child| response.response_item << Account.from_xml(child) }
           when "TaxRates" then element.children.each {|child| response.response_item << TaxRate.from_xml(child) }
