@@ -92,13 +92,13 @@ class BankTransactionTest < Test::Unit::TestCase
     end
 
     should "work for optional params" do
-      bank_transaction = create_test_bank_transaction(:url => 'http://example.com')
+      bank_transaction = create_test_bank_transaction(:url => 'http://example.com?with=params&and=more')
       bank_transaction_element = REXML::XPath.first(REXML::Document.new(bank_transaction.to_xml), "/BankTransaction")
 
-      assert_xml_field bank_transaction_element, 'Url', :value => 'http://example.com'
+      assert_xml_field bank_transaction_element, 'Url', :value => 'http://example.com\?with=params&amp;and=more'
 
       parsed_bank_transaction = XeroGateway::BankTransaction.from_xml(bank_transaction_element)
-      assert_equal 'http://example.com', parsed_bank_transaction.url
+      assert_equal 'http://example.com?with=params&and=more', parsed_bank_transaction.url
     end
   end
 
