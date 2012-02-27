@@ -377,6 +377,20 @@ module XeroGateway
       save_bank_transaction(bank_transaction)
     end
 
+    #
+    # Updates an existing Xero bank transaction
+    #
+    # Usage :
+    #
+    # bank_transaction = xero_gateway.get_bank_transaction(some_bank_transaction_id)
+    # bank_transaction.due_date = Date.today
+    #
+    # xero_gateway.update_bank_transaction(bank_transaction)
+    def update_bank_transaction(bank_transaction)
+      raise "bank_transaction_id is required for updating bank transactions" if bank_transaction.bank_transaction_id.nil?
+      save_bank_transaction(bank_transaction)
+    end
+
     # Retrieves all bank transactions from Xero
     #
     # Usage : get_bank_transactions
