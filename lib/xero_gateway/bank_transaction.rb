@@ -105,10 +105,9 @@ module XeroGateway
       if line_items_downloaded?
         @line_items
 
-      # There is an bank_transaction_id so we can assume this record was loaded from Xero.
-      # attempt to download the line_item records.
-      elsif bank_transaction_id =~ GUID_REGEX
-        raise NoGatewayError unless @gateway
+      elsif bank_transaction_id =~ GUID_REGEX && @gateway
+        # There is a bank_transaction_id so we can assume this record was loaded from Xero.
+        # Let's attempt to download the line_item records (if there is a gateway)
 
         response = @gateway.get_bank_transaction(bank_transaction_id)
         raise BankTransactionNotFoundError, "Bank Transaction with ID #{bank_transaction_id} not found in Xero." unless response.success? && response.bank_transaction.is_a?(XeroGateway::BankTransaction)

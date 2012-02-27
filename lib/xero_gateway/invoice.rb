@@ -125,12 +125,10 @@ module XeroGateway
     def line_items
       if line_items_downloaded?
         @line_items
-        
-      # There is an invoice_is so we can assume this record was loaded from Xero.
-      # attempt to download the line_item records.
-      elsif invoice_id =~ GUID_REGEX
-        raise NoGatewayError unless @gateway
-        
+
+      elsif invoice_id =~ GUID_REGEX && @gateway
+        # There is an invoice_id so we can assume this record was loaded from Xero.
+        # Let's attempt to download the line_item records (if there is a gateway)
         response = @gateway.get_invoice(invoice_id)
         raise InvoiceNotFoundError, "Invoice with ID #{invoice_id} not found in Xero." unless response.success? && response.invoice.is_a?(XeroGateway::Invoice)
         
