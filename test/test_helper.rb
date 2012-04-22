@@ -100,5 +100,80 @@ module TestHelper
     f.close
     return data
   end
-  
+
+  def create_test_bank_transaction(params={}, contact_params={}, line_item_params={})
+    params = {
+      :type       => 'RECEIVE',
+      :date       => Date.today,
+      :reference  => '12345',
+      :status     => 'ACTIVE',
+    }.merge(params)
+    bank_transaction = XeroGateway::BankTransaction.new(params)
+
+    bank_transaction.contact = create_test_contact(contact_params)
+    add_test_line_items(bank_transaction, line_item_params)
+    bank_transaction.bank_account = create_test_account
+
+    bank_transaction
+  end
+
+  def add_test_line_items(bank_transaction, line_item_params={})
+    if line_item_params
+      line_item_params = [line_item_params].flatten # always use an array, even if only a single hash passed in
+
+      # At least one line item, make first have some defaults.
+      line_item_params << {} if line_item_params.size == 0
+      line_item_params[0] = {
+        :description  => "A LINE ITEM",
+        :account_code => "200",
+        :unit_amount  => BigDecimal.new("100"),
+        :tax_amount   => BigDecimal.new("12.5"),
+        :tracking     => XeroGateway::TrackingCategory.new(:name => "blah", :options => "hello")
+      }.merge(line_item_params[0])
+
+      # Create line_items from line_item_params
+      line_item_params.each do |line_item|
+        bank_transaction.add_line_item(line_item)
+      end
+    end
+    bank_transaction
+  end
+
+  def create_test_account
+    account = XeroGateway::Account.new(:account_id => "57cedda9")
+    account.code = "200"
+    account.name = "Sales"
+    account.type = "REVENUE"
+    account.tax_type = "OUTPUT"
+    account.description = "Income from any normal business activity"
+    account.enable_payments_to_account = false
+    account
+  end
+
+  def create_test_contact(contact_params={})
+    # Strip out :address key from contact_params to use as the default address.
+    stripped_address = {
+      :address_type => 'STREET',
+      :line_1       => 'LINE 1 OF THE ADDRESS'
+    }.merge(contact_params.delete(:address) || {})
+
+    # Strip out :phone key from contact_params to use at the default phone.
+    stripped_phone = {
+      :phone_type => 'DEFAULT',
+      :number     => '12345678'
+    }.merge(contact_params.delete(:phone) || {})
+
+    contact_params = {
+      :contact_id => '00000000-0000-0000-0000-000000000000', # Just any valid GUID
+      :name       => "CONTACT NAME",
+      :first_name => "Bob",
+      :last_name  => "Builder"
+    }.merge(contact_params)
+
+    contact = XeroGateway::Contact.new(contact_params)
+    contact.address = XeroGateway::Address.new(stripped_address)
+    contact.phone = XeroGateway::Phone.new(stripped_phone)
+    contact
+  end
+
 end

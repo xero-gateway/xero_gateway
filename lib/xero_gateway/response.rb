@@ -6,17 +6,19 @@ module XeroGateway
       Array(response_item)
     end
     
-    alias_method :invoice,      :response_item
-    alias_method :credit_note,  :response_item
-    alias_method :contact,      :response_item
-    alias_method :organisation, :response_item
-    alias_method :invoices,     :array_wrapped_response_item
-    alias_method :credit_notes, :array_wrapped_response_item
-    alias_method :contacts,     :array_wrapped_response_item
-    alias_method :accounts,     :array_wrapped_response_item
-    alias_method :tracking_categories, :array_wrapped_response_item
-    alias_method :tax_rates,    :array_wrapped_response_item
-    alias_method :currencies,   :array_wrapped_response_item
+    alias_method :invoice,              :response_item
+    alias_method :credit_note,          :response_item
+    alias_method :bank_transaction,     :response_item
+    alias_method :contact,              :response_item
+    alias_method :organisation,         :response_item
+    alias_method :invoices,             :array_wrapped_response_item
+    alias_method :credit_notes,         :array_wrapped_response_item
+    alias_method :bank_transactions,    :array_wrapped_response_item
+    alias_method :contacts,             :array_wrapped_response_item
+    alias_method :accounts,             :array_wrapped_response_item
+    alias_method :tracking_categories,  :array_wrapped_response_item
+    alias_method :tax_rates,            :array_wrapped_response_item
+    alias_method :currencies,           :array_wrapped_response_item
     
     def initialize(params = {})
       params.each do |k,v|

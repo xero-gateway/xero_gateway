@@ -50,10 +50,8 @@ module XeroGateway
       return true
     end
     
-    def to_xml
-      b = Builder::XmlMarkup.new
-      
-      b.Account {
+    def to_xml(b = Builder::XmlMarkup.new, options={})
+      b.tag!(options[:name] ? options[:name] : 'Account') {
         b.AccountID self.account_id
         b.Code self.code
         b.Name self.name
