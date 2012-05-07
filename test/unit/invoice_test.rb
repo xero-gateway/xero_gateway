@@ -19,12 +19,12 @@ class InvoiceTest < Test::Unit::TestCase
     end
 
     should "work for optional params" do
-      invoice = create_test_invoice(:url => 'http://example.com')
+      invoice = create_test_invoice(:url => 'http://example.com?with=params&and=more')
       invoice_element = REXML::XPath.first(REXML::Document.new(invoice.to_xml), "/Invoice")
-      assert_match /Url/, invoice_element.to_s
+      assert_match /<Url>http:\/\/example.com\?with=params&amp;and=more<\/Url>/, invoice_element.to_s
 
       parsed_invoice = XeroGateway::Invoice.from_xml(invoice_element)
-      assert_equal 'http://example.com', parsed_invoice.url
+      assert_equal 'http://example.com?with=params&and=more', parsed_invoice.url
     end
   end
 
