@@ -25,6 +25,7 @@ class GetBankTransactionTest < Test::Unit::TestCase
     assert !result.response_xml.nil?
     assert_equal result.bank_transaction.bank_transaction_id, bank_transaction.bank_transaction_id
     assert_equal result.bank_transaction.reference, bank_transaction.reference
+    assert result.bank_transaction.is_reconciled
 
     result = @gateway.get_bank_transaction(bank_transaction.bank_transaction_id)
     assert result.success?
