@@ -128,8 +128,8 @@ module XeroGateway
         b.BankTransactionID bank_transaction_id if bank_transaction_id
         b.Type type
         # b.CurrencyCode self.currency_code if self.currency_code
-        contact.to_xml(b)
-        bank_account.to_xml(b, :name => 'BankAccount')
+        contact.to_xml(b) if contact
+        bank_account.to_xml(b, :name => 'BankAccount') if bank_account
         b.Date BankTransaction.format_date(date || Date.today)
         b.Status status if status
         b.Reference reference if reference

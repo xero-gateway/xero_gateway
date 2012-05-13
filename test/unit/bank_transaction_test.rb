@@ -100,6 +100,18 @@ class BankTransactionTest < Test::Unit::TestCase
       parsed_bank_transaction = XeroGateway::BankTransaction.from_xml(bank_transaction_element)
       assert_equal 'http://example.com?with=params&and=more', parsed_bank_transaction.url
     end
+
+    should "ignore missing contact" do
+      bank_transaction = create_test_bank_transaction
+      bank_transaction.contact = nil
+      bank_transaction.to_xml
+    end
+
+    should "ignore missing bank account" do
+      bank_transaction = create_test_bank_transaction
+      bank_transaction.bank_account = nil
+      bank_transaction.to_xml
+    end
   end
 
 private
