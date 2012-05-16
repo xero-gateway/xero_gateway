@@ -7,7 +7,7 @@ class GatewayTest < Test::Unit::TestCase
     @gateway = XeroGateway::Gateway.new(CONSUMER_KEY, CONSUMER_SECRET)
   end
   
-  context "with oauth error handling" do
+  context "with error handling" do
     
     should "handle token expired" do
       XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("token_expired"), :code => "401"))
@@ -56,7 +56,31 @@ class GatewayTest < Test::Unit::TestCase
         @gateway.create_invoice(XeroGateway::Invoice.new)
       end
     end
-    
+
+    should "handle invoices not found" do
+      XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("api_exception.xml"), :code => "404"))
+
+      assert_raises XeroGateway::InvoiceNotFoundError do
+        @gateway.get_invoice('unknown-invoice-id')
+      end
+    end
+
+    should "handle bank transactions not found" do
+      XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("api_exception.xml"), :code => "404"))
+
+      assert_raises XeroGateway::BankTransactionNotFoundError do
+        @gateway.get_bank_transaction('unknown-bank-transaction-id')
+      end
+    end
+
+    should "handle credit notes not found" do
+      XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("api_exception.xml"), :code => "404"))
+
+      assert_raises XeroGateway::CreditNoteNotFoundError do
+        @gateway.get_credit_note('unknown-credit-note-id')
+      end
+    end
+
     should "handle random root elements" do
       XeroGateway::OAuth.any_instance.stubs(:put).returns(stub(:plain_body => "<RandomRootElement></RandomRootElement>", :code => "200"))
 
