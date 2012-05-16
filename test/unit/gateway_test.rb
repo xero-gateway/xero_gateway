@@ -65,6 +65,14 @@ class GatewayTest < Test::Unit::TestCase
       end
     end
 
+    should "handle bank transactions not found" do
+      XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("api_exception.xml"), :code => "404"))
+
+      assert_raises XeroGateway::BankTransactionNotFoundError do
+        @gateway.get_bank_transaction('unknown-bank-transaction-id')
+      end
+    end
+
     should "handle credit notes not found" do
       XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("api_exception.xml"), :code => "404"))
 
