@@ -27,7 +27,7 @@ module XeroGateway
     attr_accessor :line_items_downloaded
 
     # accessible fields
-    attr_accessor :bank_transaction_id, :type, :date, :reference, :status, :contact, :line_items, :bank_account, :url
+    attr_accessor :bank_transaction_id, :type, :date, :reference, :status, :contact, :line_items, :bank_account, :url, :is_reconciled
 
     def initialize(params = {})
       @errors ||= []
@@ -128,11 +128,12 @@ module XeroGateway
         b.BankTransactionID bank_transaction_id if bank_transaction_id
         b.Type type
         # b.CurrencyCode self.currency_code if self.currency_code
-        contact.to_xml(b)
-        bank_account.to_xml(b, :name => 'BankAccount')
+        contact.to_xml(b) if contact
+        bank_account.to_xml(b, :name => 'BankAccount') if bank_account
         b.Date BankTransaction.format_date(date || Date.today)
         b.Status status if status
         b.Reference reference if reference
+        b.IsReconciled true if self.is_reconciled
         b.LineItems {
           self.line_items.each do |line_item|
             line_item.to_xml(b)
@@ -165,6 +166,7 @@ module XeroGateway
           # when "AmountPaid" then invoice.amount_paid = BigDecimal.new(element.text)
           # when "AmountCredited" then invoice.amount_credited = BigDecimal.new(element.text)
           # when "SentToContact" then invoice.sent_to_contact = (element.text.strip.downcase == "true")
+          when "IsReconciled" then bank_transaction.is_reconciled = (element.text.strip.downcase == "true")
           when "Url" then bank_transaction.url = element.text
         end
       end
