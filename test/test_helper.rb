@@ -176,4 +176,42 @@ module TestHelper
     contact
   end
 
+  def create_test_manual_journal(params={}, journal_line_params={})
+    params = {      
+      :date       => Date.today,
+      :narration  => 'test narration',
+      :status     => 'POSTED'
+    }.merge(params)
+    manual_journal = XeroGateway::ManualJournal.new(params)
+    add_test_journal_lines(manual_journal, journal_line_params)
+  end
+
+  def add_test_journal_lines(manual_journal, journal_line_params)
+    if journal_line_params
+      journal_line_params = [journal_line_params].flatten # always use an array, even if only a single hash passed in
+
+      # At least one line item, make first have some defaults.
+      journal_line_params << {} if journal_line_params.size == 0
+      journal_line_params[0] = {
+        :description  => "FIRST LINE",
+        :account_code => "200",
+        :line_amount  => BigDecimal.new("100"),
+        :tracking     => XeroGateway::TrackingCategory.new(:name => "blah", :options => "hello")
+      }.merge(journal_line_params[0])
+      params_line_1 = journal_line_params[1] || {}
+      journal_line_params[1] = {
+        :description  => "SECOND LINE",
+        :account_code => "200",
+        :line_amount  => BigDecimal.new("-100"),        
+        :tracking     => XeroGateway::TrackingCategory.new(:name => "blah2", :options => "hello2")
+      }.merge(params_line_1)      
+
+      # Create line_items from line_item_params
+      journal_line_params.each do |journal_line|
+        manual_journal.add_journal_line(journal_line)
+      end
+    end
+    manual_journal
+  end
+
 end
