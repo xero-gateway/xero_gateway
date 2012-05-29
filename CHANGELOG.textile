@@ -1,3 +1,7 @@
+h2. 2.0.15, released 28/05/2012
+
+* Add support for manual journals
+
 h2. 2.0.14, released 07/05/2012
 
 * Add support for bank transactions

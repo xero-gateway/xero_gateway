@@ -418,6 +418,56 @@ module XeroGateway
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/BankTransaction'})
     end
 
+    # Creates a manual journal in Xero based on a manual journal object.
+    #
+    # Manual journal and line item totals are calculated automatically.
+    #
+    # Usage : # TODO
+
+    def create_manual_journal(manual_journal)
+      save_manual_journal(manual_journal)
+    end
+
+    #
+    # Updates an existing Xero manual journal
+    #
+    # Usage :
+    #
+    # manual_journal = xero_gateway.get_manual_journal(some_manual_journal_id)
+    #
+    # xero_gateway.update_manual_journal(manual_journal)
+    def update_manual_journal(manual_journal)
+      raise "manual_journal_id is required for updating manual journals" if manual_journal.manual_journal_id.nil?
+      save_manual_journal(manual_journal)
+    end
+
+    # Retrieves all manual journals from Xero
+    #
+    # Usage : get_manual_journal
+    #         getmanual_journal(:manual_journal_id => " 297c2dc5-cc47-4afd-8ec8-74990b8761e9")
+    #
+    # Note  : modified_since is in UTC format (i.e. Brisbane is UTC+10)
+    def get_manual_journals(options = {})
+      request_params = {}
+      request_params[:ManualJournalID]  = options[:manual_journal_id] if options[:manual_journal_id]
+      request_params[:ModifiedAfter]      = options[:modified_since] if options[:modified_since]
+
+      response_xml = http_get(@client, "#{@xero_url}/ManualJournals", request_params)
+
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/ManualJournals'})
+    end
+
+    # Retrieves a single manual journal
+    #
+    # Usage : get_manual_journal("297c2dc5-cc47-4afd-8ec8-74990b8761e9") # By ID
+    #         get_manual_journal("OIT-12345") # By number
+    def get_manual_journal(manual_journal_id)
+      request_params = {}
+      url = "#{@xero_url}/ManualJournals/#{URI.escape(manual_journal_id)}"
+      response_xml = http_get(@client, url, request_params)
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/ManualJournal'})
+    end
+
     #
     # Gets all accounts for a specific organization in Xero.
     #
@@ -555,6 +605,33 @@ module XeroGateway
       response
     end
 
+    # Create or update a manual journal record based on if it has an manual_journal_id.
+    def save_manual_journal(manual_journal)
+      request_xml = manual_journal.to_xml
+      response_xml = nil
+      create_or_save = nil
+
+      if manual_journal.manual_journal_id.nil?
+        # Create new manual journal record.
+        response_xml = http_put(@client, "#{@xero_url}/ManualJournals", request_xml, {})
+        create_or_save = :create
+      else
+        # Update existing manual journal record.
+        response_xml = http_post(@client, "#{@xero_url}/ManualJournals", request_xml, {})
+        create_or_save = :save
+      end
+
+      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => "#{create_or_save == :create ? 'PUT' : 'POST'}/ManualJournals"})
+
+      # Xero returns manual journals inside an <ManualJournals> tag, even though there's only ever
+      # one for this request
+      response.response_item = response.manual_journals.first
+
+      manual_journal.manual_journal_id = response.manual_journal.manual_journal_id if response.success? && response.manual_journal && response.manual_journal.manual_journal_id
+
+      response
+    end
+
     def parse_response(raw_response, request = {}, options = {})
 
       response = XeroGateway::Response.new
@@ -576,11 +653,17 @@ module XeroGateway
           when "Invoice" then response.response_item = Invoice.from_xml(element, self, {:line_items_downloaded => options[:request_signature] != "GET/Invoices"})
           when "BankTransaction"
             response.response_item = BankTransaction.from_xml(element, self, {:line_items_downloaded => options[:request_signature] != "GET/BankTransactions"})
+          when "ManualJournal"
+            response.response_item = ManualJournal.from_xml(element, self, {:journal_lines_downloaded => options[:request_signature] != "GET/ManualJournals"})
           when "Contacts" then element.children.each {|child| response.response_item << Contact.from_xml(child, self) }
           when "Invoices" then element.children.each {|child| response.response_item << Invoice.from_xml(child, self, {:line_items_downloaded => options[:request_signature] != "GET/Invoices"}) }
           when "BankTransactions"
             element.children.each do |child|
               response.response_item << BankTransaction.from_xml(child, self, {:line_items_downloaded => options[:request_signature] != "GET/BankTransactions"})
+            end
+          when "ManualJournals"
+            element.children.each do |child|
+              response.response_item << ManualJournal.from_xml(child, self, {:journal_lines_downloaded => options[:request_signature] != "GET/ManualJournals"})
             end
           when "CreditNotes" then element.children.each {|child| response.response_item << CreditNote.from_xml(child, self, {:line_items_downloaded => options[:request_signature] != "GET/CreditNotes"}) }
           when "Accounts" then element.children.each {|child| response.response_item << Account.from_xml(child) }
