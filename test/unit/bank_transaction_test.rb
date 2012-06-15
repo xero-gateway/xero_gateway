@@ -65,7 +65,7 @@ class BankTransactionTest < Test::Unit::TestCase
 
       # Test that pushing anything else into add_line_item fails.
       ["invalid", 100, nil, []].each do | invalid_object |
-        assert_raise(XeroGateway::Invoice::InvalidLineItemError) { @bank_transaction.add_line_item(invalid_object) }
+        assert_raise(XeroGateway::InvalidLineItemError) { @bank_transaction.add_line_item(invalid_object) }
         assert_equal(2, @bank_transaction.line_items.size)
       end
     end

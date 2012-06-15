@@ -229,7 +229,7 @@ class InvoiceTest < Test::Unit::TestCase
 
     # Test that pushing anything else into add_line_item fails.
     ["invalid", 100, nil, []].each do | invalid_object |
-      assert_raise(XeroGateway::Invoice::InvalidLineItemError) { invoice.add_line_item(invalid_object) }
+      assert_raise(XeroGateway::InvalidLineItemError) { invoice.add_line_item(invalid_object) }
       assert_equal(2, invoice.line_items.size)
     end
   end

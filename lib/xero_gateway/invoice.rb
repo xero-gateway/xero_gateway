@@ -4,8 +4,6 @@ module XeroGateway
     include Money
     include LineItemCalculations
     
-    class NoGatewayError < Error; end
-    
     INVOICE_TYPE = {
       'ACCREC' =>           'Accounts Receivable',
       'ACCPAY' =>           'Accounts Payable'
@@ -165,14 +163,14 @@ module XeroGateway
     end
     
     # Creates this invoice record (using gateway.create_invoice) with the associated gateway.
-    # If no gateway set, raise a Xero::Invoice::NoGatewayError exception.
+    # If no gateway set, raise a NoGatewayError exception.
     def create
       raise NoGatewayError unless gateway
       gateway.create_invoice(self)
     end
     
     # Updates this invoice record (using gateway.update_invoice) with the associated gateway.
-    # If no gateway set, raise a Xero::Invoice::NoGatewayError exception.
+    # If no gateway set, raise a NoGatewayError exception.
     def update
       raise NoGatewayError unless gateway
       gateway.update_invoice(self)

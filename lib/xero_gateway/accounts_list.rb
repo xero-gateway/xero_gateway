@@ -1,10 +1,6 @@
 module XeroGateway
   class AccountsList
     
-    class Error < RuntimeError; end
-    class NoGatewayError < Error; end
-    class AccountsListNotLoadedError < Error; end
-    
     # Xero::Gateway associated with this invoice.
     attr_accessor :gateway
     

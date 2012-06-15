@@ -1,4 +1,4 @@
-h2. 2.0.15, released 28/05/2012
+h2. 2.0.15, released 15/06/2012
 
 * Add support for manual journals
 

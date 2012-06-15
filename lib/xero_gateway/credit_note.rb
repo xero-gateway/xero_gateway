@@ -4,8 +4,6 @@ module XeroGateway
     include Money
     include LineItemCalculations
     
-    class NoGatewayError < Error; end
-    
     CREDIT_NOTE_TYPE = {
       'ACCRECCREDIT' =>           'Accounts Receivable',
       'ACCPAYCREDIT' =>           'Accounts Payable'
@@ -163,7 +161,7 @@ module XeroGateway
     end
     
     # Creates this credit_note record (using gateway.create_credit_note) with the associated gateway.
-    # If no gateway set, raise a Xero::CreditNote::NoGatewayError exception.
+    # If no gateway set, raise a NoGatewayError exception.
     def create
       raise NoGatewayError unless gateway
       gateway.create_credit_note(self)

@@ -215,7 +215,7 @@ class CreditNoteTest < Test::Unit::TestCase
 
     # Test that pushing anything else into add_line_item fails.
     ["invalid", 100, nil, []].each do | invalid_object |
-      assert_raise(XeroGateway::CreditNote::InvalidLineItemError) { credit_note.add_line_item(invalid_object) }
+      assert_raise(XeroGateway::InvalidLineItemError) { credit_note.add_line_item(invalid_object) }
       assert_equal(2, credit_note.line_items.size)
     end
   end

@@ -3,8 +3,6 @@ module XeroGateway
     include Dates
     include LineItemCalculations
 
-    class NoGatewayError < Error; end
-
     GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ unless defined?(GUID_REGEX)
 
     TYPES = {
