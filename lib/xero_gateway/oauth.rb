@@ -25,7 +25,7 @@ module XeroGateway
     extend Forwardable
     def_delegators :access_token, :get, :post, :put, :delete
     
-    attr_reader :ctoken, :csecret, :consumer_options, :session_handle, :authorization_expires_at
+    attr_reader :ctoken, :csecret, :consumer_options, :session_handle, :expires_at, :authorization_expires_at
     
     def initialize(ctoken, csecret, options = {})
       @ctoken, @csecret = ctoken, csecret

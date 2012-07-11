@@ -1,3 +1,7 @@
+h2. 2.0.16, released 12/07/2012
+
+* Add accessor for the expires_at time when renewing access tokens
+
 h2. 2.0.15, released 15/06/2012
 
 * Add support for manual journals
