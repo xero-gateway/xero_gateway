@@ -1,4 +1,4 @@
-h2. 2.0.16, released 12/07/2012
+h2. 2.0.17, released 12/07/2012
 
 * Add accessor for the expires_at time when renewing access tokens
 

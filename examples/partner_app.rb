@@ -23,7 +23,7 @@ oauth_verifier = gets.chomp
 
 gateway.authorize_from_request(gateway.request_token.token, gateway.request_token.secret, :oauth_verifier => oauth_verifier)
 
-puts "Your access token/secret: #{gateway.access_token.token}, #{gateway.access_token.secret}. Expires: #{gateway.authorization_expires_at}"
+puts "Your access token/secret: #{gateway.access_token.token}, #{gateway.access_token.secret}. Expires: #{gateway.expires_at}"
 puts "(Good for 30 Minutes - but we can renew it!)"
 
 puts "Session Handle: #{gateway.session_handle}"
@@ -33,4 +33,4 @@ pp gateway.get_contacts.contacts.map(&:name)
 
 # Renew!
 gateway.renew_access_token(gateway.access_token.token, gateway.access_token.secret, gateway.session_handle)
-puts "Your renewed access token/secret is:  #{gateway.access_token.token}, #{gateway.access_token.secret}. Expires: #{gateway.authorization_expires_at}"
+puts "Your renewed access token/secret is:  #{gateway.access_token.token}, #{gateway.access_token.secret}. Expires: #{gateway.expires_at}"
