@@ -70,7 +70,7 @@ module XeroGateway
       })
       
       update_attributes_from_token(access_token)
-    rescue OAuth::Unauthorized => e
+    rescue ::OAuth::Unauthorized => e
       # If the original access token is for some reason invalid an OAuth::Unauthorized could be raised.
       # In this case raise a XeroGateway::OAuth::TokenInvalid which can be captured by the caller.  In this
       # situation the end user will need to re-authorize the application via the request token authorization URL

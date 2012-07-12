@@ -1,4 +1,8 @@
-h2. 2.0.17, released 12/07/2012
+h2. 2.0.19, released 13/07/2012
+
+* Handle additional payment fields (payment_id, currency_rate)
+
+h2. 2.0.18, released 12/07/2012
 
 * Add accessor for the expires_at time when renewing access tokens
 
