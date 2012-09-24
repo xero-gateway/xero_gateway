@@ -70,7 +70,7 @@ module XeroGateway
           when 200
             response.plain_body
           when 400
-            handle_error!(body, response)  
+            handle_error!(body, response)
           when 401
             handle_oauth_error!(response)
           when 404
@@ -106,7 +106,7 @@ module XeroGateway
         raw_response.gsub! '<?xml version="1.0" encoding="utf-16"?>', ''
         
         doc = REXML::Document.new(raw_response, :ignore_whitespace_nodes => :all)
-        
+
         if doc.root.name == "ApiException"
 
           raise ApiException.new(doc.root.elements["Type"].text, 
