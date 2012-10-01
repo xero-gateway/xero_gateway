@@ -36,7 +36,7 @@ module XeroGateway
     attr_accessor :line_items_downloaded
   
     # All accessible fields
-    attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :line_amount_types, :currency_code, :line_items, :contact, :payments, :fully_paid_on, :amount_due, :amount_paid, :amount_credited, :sent_to_contact, :url
+    attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :branding_theme_id, :line_amount_types, :currency_code, :line_items, :contact, :payments, :fully_paid_on, :amount_due, :amount_paid, :amount_credited, :sent_to_contact, :url
 
     
     def initialize(params = {})
@@ -187,6 +187,7 @@ module XeroGateway
         b.DueDate Invoice.format_date(self.due_date) if self.due_date
         b.Status self.invoice_status if self.invoice_status
         b.Reference self.reference if self.reference
+        b.BrandingThemeID self.branding_theme_id if self.branding_theme_id
         b.LineAmountTypes self.line_amount_types
         b.LineItems {
           self.line_items.each do |line_item|
@@ -211,13 +212,14 @@ module XeroGateway
           when "DueDate" then invoice.due_date = parse_date(element.text)
           when "Status" then invoice.invoice_status = element.text
           when "Reference" then invoice.reference = element.text
+          when "BrandingThemeID" then invoice.branding_theme_id = element.text
           when "LineAmountTypes" then invoice.line_amount_types = element.text
           when "LineItems" then element.children.each {|line_item| invoice.line_items_downloaded = true; invoice.line_items << LineItem.from_xml(line_item) }
           when "SubTotal" then invoice.sub_total = BigDecimal.new(element.text)
           when "TotalTax" then invoice.total_tax = BigDecimal.new(element.text)
           when "Total" then invoice.total = BigDecimal.new(element.text)
           when "InvoiceID" then invoice.invoice_id = element.text
-          when "InvoiceNumber" then invoice.invoice_number = element.text            
+          when "InvoiceNumber" then invoice.invoice_number = element.text
           when "Payments" then element.children.each { | payment | invoice.payments << Payment.from_xml(payment) }
           when "AmountDue" then invoice.amount_due = BigDecimal.new(element.text)
           when "AmountPaid" then invoice.amount_paid = BigDecimal.new(element.text)
@@ -225,8 +227,8 @@ module XeroGateway
           when "SentToContact" then invoice.sent_to_contact = (element.text.strip.downcase == "true")
           when "Url" then invoice.url = element.text
         end
-      end      
+      end
       invoice
-    end    
+    end
   end
 end
