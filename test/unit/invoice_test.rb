@@ -240,8 +240,9 @@ class InvoiceTest < Test::Unit::TestCase
   end
 
   def test_optional_params
-    invoice = create_test_invoice(:url => 'http://example.com')
+    invoice = create_test_invoice(:url => 'http://example.com', :branding_theme_id => 'a94a78db-5cc6-4e26-a52b-045237e56e6e')
     assert_equal 'http://example.com', invoice.url
+    assert_equal 'a94a78db-5cc6-4e26-a52b-045237e56e6e', invoice.branding_theme_id
   end
 
   private
