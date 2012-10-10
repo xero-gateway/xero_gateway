@@ -230,7 +230,7 @@ module XeroGateway
         end
       }
       
-      response_xml = http_put(@client, "#{@xero_url}/Invoices", request_xml, {})
+      response_xml = http_put(@client, "#{@xero_url}/Invoices?SummarizeErrors=false", request_xml, {})
 
       response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/invoices'})
       response.invoices.each_with_index do | response_invoice, index |
