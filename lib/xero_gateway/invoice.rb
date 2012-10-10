@@ -66,6 +66,10 @@ module XeroGateway
     def valid?
       @errors = []
       
+      if !INVOICE_TYPE[invoice_type]
+        @errors << ['invoice_type', "must be one of #{INVOICE_TYPE.keys.join('/')}"]
+      end
+
       if !invoice_id.nil? && invoice_id !~ GUID_REGEX
         @errors << ['invoice_id', 'must be blank or a valid Xero GUID']
       end
