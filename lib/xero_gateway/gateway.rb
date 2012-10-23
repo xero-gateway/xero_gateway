@@ -672,6 +672,7 @@ module XeroGateway
           when "Organisations" then response.response_item = Organisation.from_xml(element.children.first) # Xero only returns the Authorized Organisation
           when "TrackingCategories" then element.children.each {|child| response.response_item << TrackingCategory.from_xml(child) }
           when "Errors" then element.children.each { |error| parse_error(error, response) }
+          when "ValidationErrors" then element.children.each { |error| parse_error(error, response) }
         end
       end if response_element
     
