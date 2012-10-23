@@ -30,7 +30,8 @@ module XeroGateway
     attr_accessor :gateway
     
     # Any errors that occurred when the #valid? method called.
-    attr_reader :errors
+    # Or errors that were within the XML payload from Xero
+    attr_accessor :errors
 
     # Represents whether the line_items have been downloaded when getting from GET /API.XRO/2.0/INVOICES
     attr_accessor :line_items_downloaded
@@ -230,6 +231,7 @@ module XeroGateway
           when "AmountCredited" then invoice.amount_credited = BigDecimal.new(element.text)
           when "SentToContact" then invoice.sent_to_contact = (element.text.strip.downcase == "true")
           when "Url" then invoice.url = element.text
+          when "ValidationErrors" then invoice.errors = element.children.map { |error| Error.parse(error) }
         end
       end
       invoice
