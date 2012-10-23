@@ -230,7 +230,7 @@ module XeroGateway
         end
       }
       
-      response_xml = http_put(@client, "#{@xero_url}/Invoices", request_xml, {})
+      response_xml = http_put(@client, "#{@xero_url}/Invoices?SummarizeErrors=false", request_xml, {})
 
       response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/invoices'})
       response.invoices.each_with_index do | response_invoice, index |
@@ -671,7 +671,7 @@ module XeroGateway
           when "Currencies" then element.children.each {|child| response.response_item << Currency.from_xml(child) }
           when "Organisations" then response.response_item = Organisation.from_xml(element.children.first) # Xero only returns the Authorized Organisation
           when "TrackingCategories" then element.children.each {|child| response.response_item << TrackingCategory.from_xml(child) }
-          when "Errors" then element.children.each { |error| parse_error(error, response) }
+          when "Errors" then response.errors = element.children.map { |error| Error.parse(error) }
         end
       end if response_element
     
@@ -686,13 +686,5 @@ module XeroGateway
       response
     end    
 
-    def parse_error(error_element, response)
-      response.errors << Error.new(
-          :description => REXML::XPath.first(error_element, "Description").text,
-          :date_time => REXML::XPath.first(error_element, "//DateTime").text,
-          :type => REXML::XPath.first(error_element, "//ExceptionType").text,
-          :message => REXML::XPath.first(error_element, "//Message").text           
-      )
-    end
   end  
 end
