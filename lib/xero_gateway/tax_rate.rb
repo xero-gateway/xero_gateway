@@ -47,7 +47,7 @@ module XeroGateway
           attribute             = element.name
           underscored_attribute = element.name.underscore
         
-          raise "Unknown attribute: #{attribute}" unless ATTRS.keys.include?(attribute)
+          next if !ATTRS.keys.include?(attribute)
         
           case (ATTRS[attribute])
             when :boolean then  tax_rate.send("#{underscored_attribute}=", (element.text == "true"))
