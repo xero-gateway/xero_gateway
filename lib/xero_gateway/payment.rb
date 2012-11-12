@@ -52,7 +52,7 @@ module XeroGateway
 
         if self.account_id || self.code
           b.Account do |a|
-            a.AccountId         self.account_id     if self.account_id
+            a.AccountID         self.account_id     if self.account_id
             a.Code              self.code           if self.code
           end
         end
