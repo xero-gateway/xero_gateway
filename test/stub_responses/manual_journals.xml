@@ -1,0 +1,14 @@
+<Response xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Id>ac61eaae-0700-4f95-813d-aefa09eb57c6</Id>
+  <Status>OK</Status>
+  <ProviderName>XeroGateway Test</ProviderName>
+  <DateTimeUTC>2009-10-17T09:17:48.5216708Z</DateTimeUTC>
+  <ManualJournal>
+    <Date>2010-07-30T00:00:00</Date>
+    <LineAmountTypes>NoTax</LineAmountTypes>
+    <Narration>test narration</Narration>
+    <UpdatedDateUTC>2008-02-20T12:19:56.657</UpdatedDateUTC>
+    <ManualJournalID>d20b6c54-7f5d-4ce6-ab83-55f609719126</ManualJournalID>
+    <Status>POSTED</Status>
+  </ManualJournal>
+</Response>

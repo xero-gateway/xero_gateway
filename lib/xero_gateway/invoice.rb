@@ -2,10 +2,7 @@ module XeroGateway
   class Invoice
     include Dates
     include Money
-    
-    class Error < RuntimeError; end
-    class NoGatewayError < Error; end
-    class InvalidLineItemError < Error; end
+    include LineItemCalculations
     
     INVOICE_TYPE = {
       'ACCREC' =>           'Accounts Receivable',
@@ -33,13 +30,14 @@ module XeroGateway
     attr_accessor :gateway
     
     # Any errors that occurred when the #valid? method called.
-    attr_reader :errors
+    # Or errors that were within the XML payload from Xero
+    attr_accessor :errors
 
     # Represents whether the line_items have been downloaded when getting from GET /API.XRO/2.0/INVOICES
     attr_accessor :line_items_downloaded
   
     # All accessible fields
-    attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :line_amount_types, :currency_code, :line_items, :contact, :payments, :fully_paid_on, :amount_due, :amount_paid, :amount_credited
+    attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :branding_theme_id, :line_amount_types, :currency_code, :line_items, :contact, :payments, :fully_paid_on, :amount_due, :amount_paid, :amount_credited, :sent_to_contact, :url
 
     
     def initialize(params = {})
@@ -69,6 +67,10 @@ module XeroGateway
     def valid?
       @errors = []
       
+      if !INVOICE_TYPE[invoice_type]
+        @errors << ['invoice_type', "must be one of #{INVOICE_TYPE.keys.join('/')}"]
+      end
+
       if !invoice_id.nil? && invoice_id !~ GUID_REGEX
         @errors << ['invoice_id', 'must be blank or a valid Xero GUID']
       end
@@ -107,58 +109,6 @@ module XeroGateway
       @contact ||= build_contact
     end
     
-    # Helper method to create a new associated line_item.
-    # Usage:
-    #   invoice.add_line_item({:description => "Bob's Widgets", :quantity => 1, :unit_amount => 120})
-    def add_line_item(params = {})
-      line_item = nil
-      case params
-        when Hash then      line_item = LineItem.new(params)
-        when LineItem then  line_item = params
-        else                raise InvalidLineItemError
-      end
-      
-      @line_items << line_item
-      
-      line_item
-    end
-    
-    # Deprecated (but API for setter remains).
-    #
-    # As sub_total must equal SUM(line_item.line_amount) for the API call to pass, this is now
-    # automatically calculated in the sub_total method.
-    def sub_total=(value)
-    end
-    
-    # Calculate the sub_total as the SUM(line_item.line_amount).
-    def sub_total
-      line_items.inject(BigDecimal.new('0')) { | sum, line_item | sum + BigDecimal.new(line_item.line_amount.to_s) }
-    end
-    
-    # Deprecated (but API for setter remains).
-    #
-    # As total_tax must equal SUM(line_item.tax_amount) for the API call to pass, this is now
-    # automatically calculated in the total_tax method.
-    def total_tax=(value)
-    end
-    
-    # Calculate the total_tax as the SUM(line_item.tax_amount).
-    def total_tax
-      line_items.inject(BigDecimal.new('0')) { | sum, line_item | sum + BigDecimal.new(line_item.tax_amount.to_s) }
-    end
-    
-    # Deprecated (but API for setter remains).
-    #
-    # As total must equal sub_total + total_tax for the API call to pass, this is now
-    # automatically calculated in the total method.
-    def total=(value)
-    end
-    
-    # Calculate the toal as sub_total + total_tax.
-    def total
-      sub_total + total_tax
-    end
-    
     # Helper method to check if the invoice is accounts payable.
     def accounts_payable?
       invoice_type == 'ACCPAY'
@@ -178,12 +128,10 @@ module XeroGateway
     def line_items
       if line_items_downloaded?
         @line_items
-        
-      # There is an invoice_is so we can assume this record was loaded from Xero.
-      # attempt to download the line_item records.
-      elsif invoice_id =~ GUID_REGEX
-        raise NoGatewayError unless @gateway
-        
+
+      elsif invoice_id =~ GUID_REGEX && @gateway
+        # There is an invoice_id so we can assume this record was loaded from Xero.
+        # Let's attempt to download the line_item records (if there is a gateway)
         response = @gateway.get_invoice(invoice_id)
         raise InvoiceNotFoundError, "Invoice with ID #{invoice_id} not found in Xero." unless response.success? && response.invoice.is_a?(XeroGateway::Invoice)
         
@@ -220,14 +168,14 @@ module XeroGateway
     end
     
     # Creates this invoice record (using gateway.create_invoice) with the associated gateway.
-    # If no gateway set, raise a Xero::Invoice::NoGatewayError exception.
+    # If no gateway set, raise a NoGatewayError exception.
     def create
       raise NoGatewayError unless gateway
       gateway.create_invoice(self)
     end
     
     # Updates this invoice record (using gateway.update_invoice) with the associated gateway.
-    # If no gateway set, raise a Xero::Invoice::NoGatewayError exception.
+    # If no gateway set, raise a NoGatewayError exception.
     def update
       raise NoGatewayError unless gateway
       gateway.update_invoice(self)
@@ -244,12 +192,14 @@ module XeroGateway
         b.DueDate Invoice.format_date(self.due_date) if self.due_date
         b.Status self.invoice_status if self.invoice_status
         b.Reference self.reference if self.reference
+        b.BrandingThemeID self.branding_theme_id if self.branding_theme_id
         b.LineAmountTypes self.line_amount_types
         b.LineItems {
           self.line_items.each do |line_item|
             line_item.to_xml(b)
           end
         }
+        b.Url url if url
       }
     end
     
@@ -267,20 +217,24 @@ module XeroGateway
           when "DueDate" then invoice.due_date = parse_date(element.text)
           when "Status" then invoice.invoice_status = element.text
           when "Reference" then invoice.reference = element.text
+          when "BrandingThemeID" then invoice.branding_theme_id = element.text
           when "LineAmountTypes" then invoice.line_amount_types = element.text
           when "LineItems" then element.children.each {|line_item| invoice.line_items_downloaded = true; invoice.line_items << LineItem.from_xml(line_item) }
           when "SubTotal" then invoice.sub_total = BigDecimal.new(element.text)
           when "TotalTax" then invoice.total_tax = BigDecimal.new(element.text)
           when "Total" then invoice.total = BigDecimal.new(element.text)
           when "InvoiceID" then invoice.invoice_id = element.text
-          when "InvoiceNumber" then invoice.invoice_number = element.text            
+          when "InvoiceNumber" then invoice.invoice_number = element.text
           when "Payments" then element.children.each { | payment | invoice.payments << Payment.from_xml(payment) }
           when "AmountDue" then invoice.amount_due = BigDecimal.new(element.text)
           when "AmountPaid" then invoice.amount_paid = BigDecimal.new(element.text)
           when "AmountCredited" then invoice.amount_credited = BigDecimal.new(element.text)
+          when "SentToContact" then invoice.sent_to_contact = (element.text.strip.downcase == "true")
+          when "Url" then invoice.url = element.text
+          when "ValidationErrors" then invoice.errors = element.children.map { |error| Error.parse(error) }
         end
-      end      
+      end
       invoice
-    end    
+    end
   end
 end

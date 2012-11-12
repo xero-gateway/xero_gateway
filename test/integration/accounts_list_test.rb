@@ -21,10 +21,10 @@ class AccountsListTest < Test::Unit::TestCase
   def test_raise_error_on_not_loaded
     accounts_list = @gateway.get_accounts_list(false)
     assert_equal(false, accounts_list.loaded?)
-    assert_raise(XeroGateway::AccountsList::AccountsListNotLoadedError) { accounts_list[200] }
-    assert_raise(XeroGateway::AccountsList::AccountsListNotLoadedError) { accounts_list.find_by_code(200) }
-    assert_raise(XeroGateway::AccountsList::AccountsListNotLoadedError) { accounts_list.find_all_by_type('EXPENSE') }
-    assert_raise(XeroGateway::AccountsList::AccountsListNotLoadedError) { accounts_list.find_all_by_tax_type('OUTPUT') }
+    assert_raise(XeroGateway::AccountsListNotLoadedError) { accounts_list[200] }
+    assert_raise(XeroGateway::AccountsListNotLoadedError) { accounts_list.find_by_code(200) }
+    assert_raise(XeroGateway::AccountsListNotLoadedError) { accounts_list.find_all_by_type('EXPENSE') }
+    assert_raise(XeroGateway::AccountsListNotLoadedError) { accounts_list.find_all_by_tax_type('OUTPUT') }
   end
   
   # Test simple lookup by account code (from cache).

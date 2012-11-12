@@ -28,6 +28,8 @@ class GetInvoicesTest < Test::Unit::TestCase
     assert !result.request_params.nil?
     assert !result.response_xml.nil?  
     assert result.invoices.collect {|i| i.invoice_number}.include?(invoice.invoice_number)
+    assert result.invoices[0].sent_to_contact == true
+    assert result.invoices[1].sent_to_contact == false
   end
   
   def test_get_invoices_with_modified_since_date

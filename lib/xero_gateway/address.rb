@@ -3,8 +3,7 @@ module XeroGateway
     
     ADDRESS_TYPE = {
       'STREET' =>     'Street',
-      'POBOX' =>      'PO Box',
-      'DEFAULT' =>    'Default address type'
+      'POBOX' =>      'PO Box'
     } unless defined?(ADDRESS_TYPE)
     
     # Any errors that occurred when the #valid? method called.
@@ -16,7 +15,7 @@ module XeroGateway
       @errors ||= []
       
       params = {
-        :address_type => "DEFAULT"
+        :address_type => "POBOX"
       }.merge(params)
       
       params.each do |k,v|

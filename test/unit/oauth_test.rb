@@ -42,12 +42,16 @@ class OAuthTest < Test::Unit::TestCase
     xero = XeroGateway::OAuth.new('token', 'secret')
     consumer = OAuth::Consumer.new('token', 'secret')
     xero.stubs(:consumer).returns(consumer)
-    
-    access_token = mock('access token', :token => 'atoken', :secret => 'asecret')
+
+    access_token = mock('access token')
+    access_token.expects(:token).twice.returns('atoken')
+    access_token.expects(:secret).twice.returns('asecret')
+    access_token.stubs(:params).returns({})
+
     request_token = mock('request token')
     request_token.expects(:get_access_token).returns(access_token)
     OAuth::RequestToken.expects(:new).with(consumer, 'rtoken', 'rsecret').returns(request_token)
-    
+
     xero.authorize_from_request('rtoken', 'rsecret')
     assert xero.access_token.is_a? OAuth::AccessToken
     assert_equal "atoken",  xero.access_token.token
@@ -81,9 +85,14 @@ class OAuthTest < Test::Unit::TestCase
     consumer = OAuth::Consumer.new('token', 'secret')
     xero.stubs(:consumer).returns(consumer)
     
-    access_token = mock('access token', :token => 'atoken', :secret => 'asecret')
+    access_token = mock('access token')
+    access_token.expects(:token).twice.returns('atoken')
+    access_token.expects(:secret).twice.returns('asecret')
+    access_token.stubs(:params).returns({})
+
     request_token = mock('request token')
     request_token.expects(:get_access_token).with(:oauth_verifier => "verifier").returns(access_token)
+
     OAuth::RequestToken.expects(:new).with(consumer, 'rtoken', 'rsecret').returns(request_token)
     
     xero.authorize_from_request('rtoken', 'rsecret', :oauth_verifier => "verifier")

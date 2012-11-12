@@ -1,4 +1,8 @@
 module XeroGateway
+  class NoGatewayError < StandardError; end
+  class AccountsListNotLoadedError < StandardError; end
+  class InvalidLineItemError < StandardError; end
+
   class ApiException < StandardError
     
     def initialize(type, message, request_xml, response_xml)
@@ -41,6 +45,7 @@ module XeroGateway
   end
   
   class InvoiceNotFoundError < StandardError; end
-
+  class BankTransactionNotFoundError < StandardError; end
   class CreditNoteNotFoundError < StandardError; end
+  class ManualJournalNotFoundError < StandardError; end
 end

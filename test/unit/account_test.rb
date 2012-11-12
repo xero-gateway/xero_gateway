@@ -18,18 +18,30 @@ class AccountTest < Test::Unit::TestCase
     assert_equal account, result_account
   end
   
+  def test_build_and_parse_xml_for_bank_accounts
+    account = create_test_account(:type => 'BANK', :currency_code => 'NZD')
+    account_as_xml = account.to_xml
+    assert_match 'CurrencyCode', account_as_xml.to_s
+
+    account_element = REXML::XPath.first(REXML::Document.new(account_as_xml), "/Account")
+    result_account = XeroGateway::Account.from_xml(account_element)
+    assert_equal 'BANK', result_account.type
+    assert_equal 'NZD', result_account.currency_code
+    assert_equal account, result_account
+  end
   
   private
   
-  def create_test_account
+  def create_test_account(options={})
     account = XeroGateway::Account.new(:account_id => "57cedda9")
     account.code = "200"
     account.name = "Sales"
-    account.type = "REVENUE"
+    account.type = options[:type] || "REVENUE"
     account.tax_type = "OUTPUT"
     account.description = "Income from any normal business activity"
     account.enable_payments_to_account = false
-    
+    account.currency_code = options[:currency_code] if options[:currency_code]
+
     account
   end
 end

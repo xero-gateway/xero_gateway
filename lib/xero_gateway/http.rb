@@ -70,7 +70,7 @@ module XeroGateway
           when 200
             response.plain_body
           when 400
-            handle_error!(body, response)  
+            handle_error!(body, response)
           when 401
             handle_oauth_error!(response)
           when 404
@@ -106,7 +106,7 @@ module XeroGateway
         raw_response.gsub! '<?xml version="1.0" encoding="utf-16"?>', ''
         
         doc = REXML::Document.new(raw_response, :ignore_whitespace_nodes => :all)
-        
+
         if doc.root.name == "ApiException"
 
           raise ApiException.new(doc.root.elements["Type"].text, 
@@ -125,6 +125,7 @@ module XeroGateway
       def handle_object_not_found!(response, request_url)
         case(request_url)
           when /Invoices/ then raise InvoiceNotFoundError.new("Invoice not found in Xero.")
+          when /BankTransactions/ then raise BankTransactionNotFoundError.new("Bank Transaction not found in Xero.")
           when /CreditNotes/ then raise CreditNoteNotFoundError.new("Credit Note not found in Xero.")
           else raise ObjectNotFound.new(request_url)
         end

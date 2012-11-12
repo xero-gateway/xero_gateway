@@ -7,7 +7,7 @@ module XeroGateway
     attr_accessor :client, :xero_url, :logger
     
     extend Forwardable
-    def_delegators :client, :request_token, :access_token, :authorize_from_request, :authorize_from_access, :authorization_expires_at
+    def_delegators :client, :request_token, :access_token, :authorize_from_request, :authorize_from_access, :expires_at, :authorization_expires_at
 
     #
     # The consumer key and secret here correspond to those provided
@@ -230,7 +230,7 @@ module XeroGateway
         end
       }
       
-      response_xml = http_put(@client, "#{@xero_url}/Invoices", request_xml, {})
+      response_xml = http_put(@client, "#{@xero_url}/Invoices?SummarizeErrors=false", request_xml, {})
 
       response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/invoices'})
       response.invoices.each_with_index do | response_invoice, index |
@@ -349,6 +349,125 @@ module XeroGateway
       response
     end
 
+    # Creates a bank transaction in Xero based on a bank transaction object.
+    #
+    # Bank transaction and line item totals are calculated automatically.
+    #
+    # Usage :
+    #
+    #    bank_transaction = XeroGateway::BankTransaction.new({
+    #      :type => "RECEIVE",
+    #      :date => 1.month.from_now,
+    #      :reference => "YOUR INVOICE NUMBER",
+    #    })
+    #    bank_transaction.contact = XeroGateway::Contact.new(:name => "THE NAME OF THE CONTACT")
+    #    bank_transaction.contact.phone.number = "12345"
+    #    bank_transaction.contact.address.line_1 = "LINE 1 OF THE ADDRESS"
+    #    bank_transaction.line_items << XeroGateway::LineItem.new(
+    #      :description => "THE DESCRIPTION OF THE LINE ITEM",
+    #      :unit_amount => 100,
+    #      :tax_amount => 12.5,
+    #      :tracking_category => "THE TRACKING CATEGORY FOR THE LINE ITEM",
+    #      :tracking_option => "THE TRACKING OPTION FOR THE LINE ITEM"
+    #    )
+    #    bank_transaction.bank_account = XeroGateway::Account.new(:code => 'BANK-ABC)
+    #
+    #    create_bank_transaction(bank_transaction)
+    def create_bank_transaction(bank_transaction)
+      save_bank_transaction(bank_transaction)
+    end
+
+    #
+    # Updates an existing Xero bank transaction
+    #
+    # Usage :
+    #
+    # bank_transaction = xero_gateway.get_bank_transaction(some_bank_transaction_id)
+    # bank_transaction.due_date = Date.today
+    #
+    # xero_gateway.update_bank_transaction(bank_transaction)
+    def update_bank_transaction(bank_transaction)
+      raise "bank_transaction_id is required for updating bank transactions" if bank_transaction.bank_transaction_id.nil?
+      save_bank_transaction(bank_transaction)
+    end
+
+    # Retrieves all bank transactions from Xero
+    #
+    # Usage : get_bank_transactions
+    #         get_bank_transactions(:bank_transaction_id => " 297c2dc5-cc47-4afd-8ec8-74990b8761e9")
+    #
+    # Note  : modified_since is in UTC format (i.e. Brisbane is UTC+10)
+    def get_bank_transactions(options = {})
+      request_params = {}
+      request_params[:BankTransactionID]  = options[:bank_transaction_id] if options[:bank_transaction_id]
+      request_params[:ModifiedAfter]      = options[:modified_since] if options[:modified_since]
+
+      response_xml = http_get(@client, "#{@xero_url}/BankTransactions", request_params)
+
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/BankTransactions'})
+    end
+
+    # Retrieves a single bank transaction
+    #
+    # Usage : get_bank_transaction("297c2dc5-cc47-4afd-8ec8-74990b8761e9") # By ID
+    #         get_bank_transaction("OIT-12345") # By number
+    def get_bank_transaction(bank_transaction_id)
+      request_params = {}
+      url = "#{@xero_url}/BankTransactions/#{URI.escape(bank_transaction_id)}"
+      response_xml = http_get(@client, url, request_params)
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/BankTransaction'})
+    end
+
+    # Creates a manual journal in Xero based on a manual journal object.
+    #
+    # Manual journal and line item totals are calculated automatically.
+    #
+    # Usage : # TODO
+
+    def create_manual_journal(manual_journal)
+      save_manual_journal(manual_journal)
+    end
+
+    #
+    # Updates an existing Xero manual journal
+    #
+    # Usage :
+    #
+    # manual_journal = xero_gateway.get_manual_journal(some_manual_journal_id)
+    #
+    # xero_gateway.update_manual_journal(manual_journal)
+    def update_manual_journal(manual_journal)
+      raise "manual_journal_id is required for updating manual journals" if manual_journal.manual_journal_id.nil?
+      save_manual_journal(manual_journal)
+    end
+
+    # Retrieves all manual journals from Xero
+    #
+    # Usage : get_manual_journal
+    #         getmanual_journal(:manual_journal_id => " 297c2dc5-cc47-4afd-8ec8-74990b8761e9")
+    #
+    # Note  : modified_since is in UTC format (i.e. Brisbane is UTC+10)
+    def get_manual_journals(options = {})
+      request_params = {}
+      request_params[:ManualJournalID]  = options[:manual_journal_id] if options[:manual_journal_id]
+      request_params[:ModifiedAfter]      = options[:modified_since] if options[:modified_since]
+
+      response_xml = http_get(@client, "#{@xero_url}/ManualJournals", request_params)
+
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/ManualJournals'})
+    end
+
+    # Retrieves a single manual journal
+    #
+    # Usage : get_manual_journal("297c2dc5-cc47-4afd-8ec8-74990b8761e9") # By ID
+    #         get_manual_journal("OIT-12345") # By number
+    def get_manual_journal(manual_journal_id)
+      request_params = {}
+      url = "#{@xero_url}/ManualJournals/#{URI.escape(manual_journal_id)}"
+      response_xml = http_get(@client, url, request_params)
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/ManualJournal'})
+    end
+
     #
     # Gets all accounts for a specific organization in Xero.
     #
@@ -457,6 +576,62 @@ module XeroGateway
       response
     end
 
+    # Create or update a bank transaction record based on if it has an bank_transaction_id.
+    def save_bank_transaction(bank_transaction)
+      request_xml = bank_transaction.to_xml
+      response_xml = nil
+      create_or_save = nil
+
+      if bank_transaction.bank_transaction_id.nil?
+        # Create new bank transaction record.
+        response_xml = http_put(@client, "#{@xero_url}/BankTransactions", request_xml, {})
+        create_or_save = :create
+      else
+        # Update existing bank transaction record.
+        response_xml = http_post(@client, "#{@xero_url}/BankTransactions", request_xml, {})
+        create_or_save = :save
+      end
+
+      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => "#{create_or_save == :create ? 'PUT' : 'POST'}/BankTransactions"})
+
+      # Xero returns bank transactions inside an <BankTransactions> tag, even though there's only ever
+      # one for this request
+      response.response_item = response.bank_transactions.first
+
+      if response.success? && response.bank_transaction && response.bank_transaction.bank_transaction_id
+        bank_transaction.bank_transaction_id = response.bank_transaction.bank_transaction_id
+      end
+
+      response
+    end
+
+    # Create or update a manual journal record based on if it has an manual_journal_id.
+    def save_manual_journal(manual_journal)
+      request_xml = manual_journal.to_xml
+      response_xml = nil
+      create_or_save = nil
+
+      if manual_journal.manual_journal_id.nil?
+        # Create new manual journal record.
+        response_xml = http_put(@client, "#{@xero_url}/ManualJournals", request_xml, {})
+        create_or_save = :create
+      else
+        # Update existing manual journal record.
+        response_xml = http_post(@client, "#{@xero_url}/ManualJournals", request_xml, {})
+        create_or_save = :save
+      end
+
+      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => "#{create_or_save == :create ? 'PUT' : 'POST'}/ManualJournals"})
+
+      # Xero returns manual journals inside an <ManualJournals> tag, even though there's only ever
+      # one for this request
+      response.response_item = response.manual_journals.first
+
+      manual_journal.manual_journal_id = response.manual_journal.manual_journal_id if response.success? && response.manual_journal && response.manual_journal.manual_journal_id
+
+      response
+    end
+
     def parse_response(raw_response, request = {}, options = {})
 
       response = XeroGateway::Response.new
@@ -476,15 +651,27 @@ module XeroGateway
           when "DateTimeUTC" then response.date_time = element.text
           when "Contact" then response.response_item = Contact.from_xml(element, self)
           when "Invoice" then response.response_item = Invoice.from_xml(element, self, {:line_items_downloaded => options[:request_signature] != "GET/Invoices"})
+          when "BankTransaction"
+            response.response_item = BankTransaction.from_xml(element, self, {:line_items_downloaded => options[:request_signature] != "GET/BankTransactions"})
+          when "ManualJournal"
+            response.response_item = ManualJournal.from_xml(element, self, {:journal_lines_downloaded => options[:request_signature] != "GET/ManualJournals"})
           when "Contacts" then element.children.each {|child| response.response_item << Contact.from_xml(child, self) }
           when "Invoices" then element.children.each {|child| response.response_item << Invoice.from_xml(child, self, {:line_items_downloaded => options[:request_signature] != "GET/Invoices"}) }
+          when "BankTransactions"
+            element.children.each do |child|
+              response.response_item << BankTransaction.from_xml(child, self, {:line_items_downloaded => options[:request_signature] != "GET/BankTransactions"})
+            end
+          when "ManualJournals"
+            element.children.each do |child|
+              response.response_item << ManualJournal.from_xml(child, self, {:journal_lines_downloaded => options[:request_signature] != "GET/ManualJournals"})
+            end
           when "CreditNotes" then element.children.each {|child| response.response_item << CreditNote.from_xml(child, self, {:line_items_downloaded => options[:request_signature] != "GET/CreditNotes"}) }
           when "Accounts" then element.children.each {|child| response.response_item << Account.from_xml(child) }
           when "TaxRates" then element.children.each {|child| response.response_item << TaxRate.from_xml(child) }
           when "Currencies" then element.children.each {|child| response.response_item << Currency.from_xml(child) }
           when "Organisations" then response.response_item = Organisation.from_xml(element.children.first) # Xero only returns the Authorized Organisation
           when "TrackingCategories" then element.children.each {|child| response.response_item << TrackingCategory.from_xml(child) }
-          when "Errors" then element.children.each { |error| parse_error(error, response) }
+          when "Errors" then response.errors = element.children.map { |error| Error.parse(error) }
         end
       end if response_element
     
@@ -499,13 +686,5 @@ module XeroGateway
       response
     end    
 
-    def parse_error(error_element, response)
-      response.errors << Error.new(
-          :description => REXML::XPath.first(error_element, "Description").text,
-          :date_time => REXML::XPath.first(error_element, "//DateTime").text,
-          :type => REXML::XPath.first(error_element, "//ExceptionType").text,
-          :message => REXML::XPath.first(error_element, "//Message").text           
-      )
-    end
   end  
 end
