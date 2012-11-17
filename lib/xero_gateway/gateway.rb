@@ -150,16 +150,28 @@ module XeroGateway
 
     # Retrieves a single invoice
     #
+    # You can get a PDF-formatted invoice by specifying :pdf as the format argument
+    #
     # Usage : get_invoice("297c2dc5-cc47-4afd-8ec8-74990b8761e9") # By ID
     #         get_invoice("OIT-12345") # By number
-    def get_invoice(invoice_id_or_number)
+    def get_invoice(invoice_id_or_number, format = :xml)
       request_params = {}
+      headers        = {}
+
+      headers.merge!("Accept" => "application/pdf") if format == :pdf
 
       url  = "#{@xero_url}/Invoices/#{URI.escape(invoice_id_or_number)}"
 
-      response_xml = http_get(@client, url, request_params)
+      response = http_get(@client, url, request_params, headers)
 
-      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/Invoice'})
+      if format == :pdf
+        Tempfile.open(invoice_id_or_number) do |f|
+          f.write(response)
+          f
+        end
+      else
+        parse_response(response, {:request_params => request_params}, {:request_signature => 'GET/Invoice'})
+      end
     end
 
     # Factory method for building new Invoice objects associated with this gateway.
