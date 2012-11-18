@@ -1,3 +1,9 @@
+h2. 2.1.0, released 19/11/2012
+
+* Add ability to create payments via the API
+* Allow creation of Payments via the API
+* Add check for valid invoice_type
+
 h2. 2.0.19, released 13/07/2012
 
 * Handle additional payment fields (payment_id, currency_rate)
