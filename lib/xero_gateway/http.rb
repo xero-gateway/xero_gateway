@@ -68,7 +68,11 @@ module XeroGateway
 
         case response.code.to_i
           when 200
-            response.plain_body
+            if RUBY_VERSION >= "1.9"
+              response.plain_body.force_encoding("UTF-8")
+            else
+              response.plain_body
+            end
           when 400
             handle_error!(body, response)
           when 401
