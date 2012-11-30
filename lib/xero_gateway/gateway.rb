@@ -43,6 +43,7 @@ module XeroGateway
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/contacts'})
     end
 
+
     # Retrieve a contact from Xero
     # Usage get_contact_by_id(contact_id)
     def get_contact_by_id(contact_id)
@@ -124,6 +125,47 @@ module XeroGateway
         contacts[index].contact_id = response_contact.contact_id if response_contact && response_contact.contact_id
       end
       response
+    end
+
+    def get_employees(options= {})
+      request_params = {}
+
+      if !options[:updated_after].nil?
+        warn '[warning] :updated_after is depracated in XeroGateway#get_employees.  Use :modified_since'
+        options[:modified_since] = options.delete(:updated_after)
+      end
+
+      request_params[:EmployeeID]    = options[:employee_id] if options[:employee_id]
+      request_params[:OrderBy]       = options[:order] if options[:order]
+      request_params[:ModifiedAfter] = options[:modified_since] if options[:modified_since]
+      request_params[:where]         = options[:where] if options[:where]
+
+      response_xml = http_get(@client, "#{@xero_url}/Employees", request_params)
+
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/employees'})
+    end
+
+    # Retrieve an employee from Xero
+    # Usage get_employee_by_id(employee_id)
+    def get_contact_by_id(employee_id)
+      get_employee(employee_id)
+    end
+
+    def build_employee(employee = {})
+      case employee
+        when Employee then   employee.gateway = self
+        when Hash then       employee = Employee.new(employee.merge({:gateway => self}))
+      end
+      employee
+    end
+
+    def create_employee(employee)
+      save_employee(employee)
+    end
+
+    def update_employee(employee)
+      raise "employee_id is required for updating employees" if employee.employee_id.nil?
+      save_employee(employee)
     end
 
     # Retrieves all invoices from Xero
@@ -552,6 +594,13 @@ module XeroGateway
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/contact'})
     end
 
+    def get_employee(employee_id = nil)
+      request_params = { :employeeID => employee_id }
+      response_xml = http_get(@client, "#{@xero_url}/Employees/#{URI.escape(employee_id)}", request_params)
+
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/employee'})
+    end
+
     # Create or update a contact record based on if it has a contact_id or contact_number.
     def save_contact(contact)
       request_xml = contact.to_xml
@@ -570,6 +619,26 @@ module XeroGateway
 
       response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => "#{create_or_save == :create ? 'PUT' : 'POST'}/contact"})
       contact.contact_id = response.contact.contact_id if response.contact && response.contact.contact_id
+      response
+    end
+
+    def save_employee(employee)
+      request_xml = employee.to_xml
+
+      response_xml = nil
+      create_or_save = nil
+      if employee.employee_id.nil?
+        # Create new contact record.
+        response_xml = http_put(@client, "#{@xero_url}/Employees", request_xml, {})
+        create_or_save = :create
+      else
+        # Update existing contact record.
+        response_xml = http_post(@client, "#{@xero_url}/Employees", request_xml, {})
+        create_or_save = :save
+      end
+
+      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => "#{create_or_save == :create ? 'PUT' : 'POST'}/employee"})
+      employee.employee_id = response.employee.employee_id if response.employee && response.employee.employee_id
       response
     end
 
@@ -676,12 +745,14 @@ module XeroGateway
           when "ProviderName" then response.provider = element.text
           when "DateTimeUTC" then response.date_time = element.text
           when "Contact" then response.response_item = Contact.from_xml(element, self)
+          when "Employee" then response.response_item = Employee.from_xml(element, self)
           when "Invoice" then response.response_item = Invoice.from_xml(element, self, {:line_items_downloaded => options[:request_signature] != "GET/Invoices"})
           when "BankTransaction"
             response.response_item = BankTransaction.from_xml(element, self, {:line_items_downloaded => options[:request_signature] != "GET/BankTransactions"})
           when "ManualJournal"
             response.response_item = ManualJournal.from_xml(element, self, {:journal_lines_downloaded => options[:request_signature] != "GET/ManualJournals"})
           when "Contacts" then element.children.each {|child| response.response_item << Contact.from_xml(child, self) }
+          when "Employees" then element.children.each {|child| response.response_item << Employee.from_xml(child, self) }
           when "Invoices" then element.children.each {|child| response.response_item << Invoice.from_xml(child, self, {:line_items_downloaded => options[:request_signature] != "GET/Invoices"}) }
           when "BankTransactions"
             element.children.each do |child|
