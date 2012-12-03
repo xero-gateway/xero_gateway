@@ -76,7 +76,7 @@ module XeroGateway
         
     def to_xml(b = Builder::XmlMarkup.new)
       b.Employee {
-        b.EmployeeId self.employee_id if self.employee_id
+        b.EmployeeID self.employee_id if self.employee_id
         b.FirstName self.first_name if self.first_name
         b.LastName self.last_name if self.last_name
         b.ExternalLink self.external_link if self.external_link
@@ -88,7 +88,7 @@ module XeroGateway
       employee = Employee.new(:gateway => gateway)
       employee_element.children.each do |element|
         case(element.name)
-          when "EmployeeId" then employee.employee_id = element.text
+          when "EmployeeID" then employee.employee_id = element.text
           when "Status" then employee.status = element.text
           when "FirstName" then employee.first_name = element.text
           when "LastName" then employee.last_name = element.text
