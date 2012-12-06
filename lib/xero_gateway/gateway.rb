@@ -168,6 +168,23 @@ module XeroGateway
       save_employee(employee)
     end
 
+    def update_employees(employees)
+      b = Builder::XmlMarkup.new
+      request_xml = b.Contacts {
+        employees.each do | employee |
+          employee.to_xml(b)
+        end
+      }
+
+      response_xml = http_post(@client, "#{@xero_url}/Employees", request_xml, {})
+
+      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'POST/employees'})
+      response.employees.each_with_index do | response_employee, index |
+        employees[index].employee_id = response_employee.employee_id if response_employee && response_employee.employee_id
+      end
+      response
+    end
+
     # Retrieves all invoices from Xero
     #
     # Usage : get_invoices
