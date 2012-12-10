@@ -15,7 +15,7 @@ module XeroGateway
     # Any errors that occurred when the #valid? method called.
     attr_reader :errors
     
-    attr_accessor :employee_id, :status, :first_name, :last_name, :email, :external_link
+    attr_accessor :employee_id, :status, :first_name, :last_name, :email, :external_link, :email
         
     def initialize(params = {})
       @errors ||= []
@@ -79,6 +79,7 @@ module XeroGateway
         b.EmployeeID self.employee_id if self.employee_id
         b.FirstName self.first_name if self.first_name
         b.LastName self.last_name if self.last_name
+        b.EmailAddress self.email if self.email
         b.ExternalLink self.external_link if self.external_link
       }
     end
@@ -93,13 +94,14 @@ module XeroGateway
           when "FirstName" then employee.first_name = element.text
           when "LastName" then employee.last_name = element.text
           when "ExternalLink" then employee.external_link = element.text
+          when "EmailAddress" then contact.email = element.text
         end
       end
       employee
     end
     
     def ==(other)
-      [ :employee_id, :status, :first_name, :last_name ].each do |field|
+      [ :employee_id, :status, :first_name, :last_name, :email ].each do |field|
         return false if send(field) != other.send(field)
       end
       return true
