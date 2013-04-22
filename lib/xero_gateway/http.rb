@@ -111,19 +111,18 @@ module XeroGateway
 
         doc = REXML::Document.new(raw_response, :ignore_whitespace_nodes => :all)
 
-        if doc.root.name == "ApiException"
+        if doc.root.nil? || doc.root.name != "ApiException"
+
+          raise "Unparseable 400 Response: #{raw_response}"
+
+        else
 
           raise ApiException.new(doc.root.elements["Type"].text,
                                  doc.root.elements["Message"].text,
                                  request_xml,
                                  raw_response)
 
-        else
-
-          raise "Unparseable 400 Response: #{raw_response}"
-
         end
-
       end
 
       def handle_object_not_found!(response, request_url)
