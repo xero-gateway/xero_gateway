@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Employee">
+  <xs:complexType>
+    <xs:sequence>
+      <xs:element name="EmployeeID" minOccurs="0" maxOccurs="1" type="xs:string" />
+      <xs:element name="Status" minOccurs="0" maxOccurs="1" type="xs:string" />
+      <xs:element name="Name" minOccurs="0" maxOccurs="1" type="xs:string" />
+      <xs:element name="FirstName" minOccurs="0" maxOccurs="1" type="xs:string" />
+      <xs:element name="LastName" minOccurs="0" maxOccurs="1" type="xs:string" />
+      <xs:element name="ExternalLink" minOccurs="0" maxOccurs="1" type="xs:string" />
+      <xs:element name="UpdatedDateUTC" minOccurs="0" maxOccurs="1" type="xs:dateTime" />
+    </xs:sequence>
+    <xs:attribute name="status" type="xs:string" use="optional" />
+  </xs:complexType>
+  </xs:element>
+</xs:schema>

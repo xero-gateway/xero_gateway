@@ -147,7 +147,7 @@ module XeroGateway
 
     # Retrieve an employee from Xero
     # Usage get_employee_by_id(employee_id)
-    def get_contact_by_id(employee_id)
+    def get_employee_by_id(employee_id)
       get_employee(employee_id)
     end
 

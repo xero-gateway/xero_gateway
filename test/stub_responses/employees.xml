@@ -1,0 +1,17 @@
+<Response xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Id>ff81d9d2-3935-4be8-b532-e8388e84eebd</Id>
+  <Status>OK</Status>
+  <ProviderName>Xero Gateway Test</ProviderName>
+  <DateTimeUTC>2009-10-18T09:16:55.688585Z</DateTimeUTC>
+  <Employees>
+    <Employee>
+      <EmployeeID>514ad9aa-8e4b-4a0a-859a-9f72658eeadc</EmployeeID>
+      <FirstName>Homer</FirstName>
+      <LastName>Simpson</LastName>
+      <ExternalLink>
+        <Url>http://twitter.com/#!/search/Homer+Simpson</Url>
+        <Description>Go to Twitter</Description>
+      </ExternalLink>
+    </Employee>
+  </Employees>
+</Response>

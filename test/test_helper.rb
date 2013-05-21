@@ -91,6 +91,16 @@ module TestHelper
     contact
   end
   
+  def dummy_employee
+    unique_id = Time.now.to_f
+    employee = XeroGateway::Employee.new({
+      :employee_id => unique_id,
+      :first_name => STUB_XERO_CALLS ? "EMPLOYEE FIRST NAME" : "THE FIRST NAME OF THE EMPLOYEE #{unique_id}",
+      :last_name => STUB_XERO_CALLS ? "EMPLOYEE LAST NAME" : "THE LAST NAME OF THE EMPLOYEE #{unique_id}"
+    })
+
+    employee
+  end
   def get_file_as_string(filename)
     data = ''
     f = File.open(File.dirname(__FILE__) + "/stub_responses/" + filename, "r") 
@@ -174,6 +184,17 @@ module TestHelper
     contact.address = XeroGateway::Address.new(stripped_address)
     contact.phone = XeroGateway::Phone.new(stripped_phone)
     contact
+  end
+
+  def create_test_employee(employee_params={})
+    employee_params = {
+      :employee_id => '00000000-0000-0000-0000-000000000000',
+      :first_name => "EMPLOYEE FIRST NAME",
+      :last_name => "EMPLOYEE LAST NAME"
+    }.merge(employee_params)
+
+    employee = XeroGateway::Employee.new(employee_params)
+    employee
   end
 
   def create_test_manual_journal(params={}, journal_line_params={})
