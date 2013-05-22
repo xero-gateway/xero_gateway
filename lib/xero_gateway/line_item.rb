@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__), 'account')
 module XeroGateway
   class LineItem
     include Money
-    
+
     TAX_TYPE = Account::TAX_TYPE unless defined?(TAX_TYPE)
 
     # Any errors that occurred when the #valid? method called.
@@ -11,65 +11,65 @@ module XeroGateway
 
     # All accessible fields
     attr_accessor :line_item_id, :description, :quantity, :unit_amount, :item_code, :tax_type, :tax_amount, :account_code, :tracking
-        
+
     def initialize(params = {})
       @errors ||= []
       @tracking ||= []
       @quantity = 1
       @unit_amount = BigDecimal.new('0')
-      
+
       params.each do |k,v|
         self.send("#{k}=", v)
       end
     end
-    
+
     # Validate the LineItem record according to what will be valid by the gateway.
     #
-    # Usage: 
+    # Usage:
     #  line_item.valid?     # Returns true/false
-    #  
+    #
     #  Additionally sets line_item.errors array to an array of field/error.
     def valid?
       @errors = []
-      
+
       if !line_item_id.nil? && line_item_id !~ GUID_REGEX
         @errors << ['line_item_id', 'must be blank or a valid Xero GUID']
       end
-      
+
       unless description
         @errors << ['description', "can't be blank"]
       end
-            
+
       if tax_type && !TAX_TYPE[tax_type]
         @errors << ['tax_type', "must be one of #{TAX_TYPE.keys.join('/')}"]
       end
-      
+
       @errors.size == 0
     end
-    
+
     def has_tracking?
       return false if tracking.nil?
-      
+
       if tracking.is_a?(Array)
         return tracking.any?
       else
         return tracking.is_a?(TrackingCategory)
       end
     end
-    
+
     # Deprecated (but API for setter remains).
     #
     # As line_amount must equal quantity * unit_amount for the API call to pass, this is now
     # automatically calculated in the line_amount method.
     def line_amount=(value)
     end
-    
+
     # Calculate the line_amount as quantity * unit_amount as this value must be correct
     # for the API call to succeed.
     def line_amount
       quantity * unit_amount
     end
-    
+
     def to_xml(b = Builder::XmlMarkup.new)
       b.LineItem {
         b.Description description
@@ -78,7 +78,6 @@ module XeroGateway
         b.ItemCode item_code if item_code
         b.TaxType tax_type if tax_type
         b.TaxAmount tax_amount if tax_amount
-        b.LineAmount line_amount if line_amount
         b.AccountCode account_code if account_code
         if has_tracking?
           b.Tracking {
@@ -92,7 +91,7 @@ module XeroGateway
         end
       }
     end
-    
+
     def self.from_xml(line_item_element)
       line_item = LineItem.new
       line_item_element.children.each do |element|
@@ -113,7 +112,7 @@ module XeroGateway
         end
       end
       line_item
-    end    
+    end
 
     def ==(other)
       [:description, :quantity, :unit_amount, :tax_type, :tax_amount, :line_amount, :account_code, :item_code].each do |field|
@@ -121,5 +120,5 @@ module XeroGateway
       end
       return true
     end
-  end  
+  end
 end
