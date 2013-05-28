@@ -192,7 +192,7 @@ module XeroGateway
 
       request_params[:EmployeeID]    = options[:employee_id] if options[:employee_id]
       
-      response_xml = http_get(@client, "#{@xero_url}/Employees", request_params)
+      response_xml = http_get(@client, "https://api.xero.com/payroll.xro/1.0/Employees", request_params)
 
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/Employees'})
     end
