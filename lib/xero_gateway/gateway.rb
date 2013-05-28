@@ -13,7 +13,7 @@ module XeroGateway
     # The consumer key and secret here correspond to those provided
     # to you by Xero inside the API Previewer.
     def initialize(consumer_key, consumer_secret, options = {})
-      @xero_url = options[:xero_url] || "https://api.xero.com/api.xro/2.0"
+      @xero_url = options[:xero_url] || "https://api.xero.com/payroll.xro/1.0"
       @client   = OAuth.new(consumer_key, consumer_secret, options)
     end
 
@@ -192,7 +192,7 @@ module XeroGateway
 
       request_params[:EmployeeID]    = options[:employee_id] if options[:employee_id]
       
-      response_xml = http_get(@client, "https://api.xero.com/payroll.xro/1.0/Employees", request_params)
+      response_xml = http_get(@client, "#{@xero_url}/Employees", request_params)
 
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/Employees'})
     end
