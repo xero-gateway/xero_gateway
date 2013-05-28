@@ -116,7 +116,7 @@ module TestHelper
       :title => "Mr"
     })
 
-    employee
+    user
   end
 
   def get_file_as_string(filename)
