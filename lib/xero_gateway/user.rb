@@ -6,7 +6,9 @@ module XeroGateway
     # Any errors that occurred when the #valid? method called.
     attr_reader :errors
     
-    attr_accessor :user_id, :first_name
+    attr_accessor :user_id, :first_name, :date_of_birth, :email, :first_name, :gender, :home_phone,
+                  :known_as, :last_name, :marital_status, :middle_name, :nationality, :notes, :personal_email,
+                  :personal_mobile_number, :tax_file_number, :title, :trading_name
         
     def initialize(params = {})
       @errors ||= []
@@ -36,7 +38,7 @@ module XeroGateway
 
         end
       end
-      employee
+      user
     end
     
     def ==(other)
