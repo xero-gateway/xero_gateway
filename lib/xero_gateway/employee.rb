@@ -15,7 +15,7 @@ module XeroGateway
     # Any errors that occurred when the #valid? method called.
     attr_reader :errors
 
-    attr_accessor :employee_id, :status, :first_name, :last_name, :email, :external_link, :date_of_birth, :gender
+    attr_accessor :employee_id, :status, :first_name, :last_name, :email, :external_link
 
     def initialize(params = {})
       @errors ||= []
@@ -95,18 +95,6 @@ module XeroGateway
           when "LastName" then employee.last_name = element.text
           when "ExternalLink" then employee.external_link = element.text
           when "EmailAddress" then contact.email = element.text
-        end
-      end
-      employee
-    end
-
-    # Take some Employees element to send out to User - PVT: 49575441
-    def self.from_xml_to_user(employee_element, gateway = nil)
-      employee = Employee.new(:gateway => gateway)
-      employee_element.children.each do |element|
-        case(element.name)
-          when "DateOfBirth" then employee.date_of_birth = element.text
-          when "Gender"      then employee.gender        = element.text
         end
       end
       employee

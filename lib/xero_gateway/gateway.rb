@@ -192,9 +192,9 @@ module XeroGateway
 
       request_params[:EmployeeID]    = options[:employee_id] if options[:employee_id]
       
-      response_xml = http_get(@client, "#{@xero_url}/Users", request_params)
+      response_xml = http_get(@client, "#{@xero_url}/Employees", request_params)
 
-      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/users'})
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/employees'})
     end
 
     # Retrieves all invoices from Xero
