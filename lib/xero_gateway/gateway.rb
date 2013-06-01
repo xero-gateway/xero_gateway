@@ -14,6 +14,7 @@ module XeroGateway
     # to you by Xero inside the API Previewer.
     def initialize(consumer_key, consumer_secret, options = {})
       @xero_url = options[:xero_url] || "https://api.xero.com/api.xro/2.0"
+      @xero_payroll_url = options[:xero_payroll_url] || "https://api.xero.com/payroll.xro/1.0"
       @client   = OAuth.new(consumer_key, consumer_secret, options)
     end
 
@@ -145,6 +146,24 @@ module XeroGateway
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/employees'})
     end
 
+    def get_payroll_employees(options= {})
+      request_params = {}
+
+      if !options[:updated_after].nil?
+        warn '[warning] :updated_after is depracated in XeroGateway#get_payroll_employees.  Use :modified_since'
+        options[:modified_since] = options.delete(:updated_after)
+      end
+
+      request_params[:EmployeeID]    = options[:employee_id] if options[:employee_id]
+      request_params[:OrderBy]       = options[:order] if options[:order]
+      request_params[:ModifiedAfter] = options[:modified_since] if options[:modified_since]
+      request_params[:where]         = options[:where] if options[:where]
+
+      response_xml = http_get(@client, "#{@xero_payroll_url}/Employees", request_params)
+
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/employees'}, true)
+    end
+
     # Retrieve an employee from Xero
     # Usage get_employee_by_id(employee_id)
     def get_employee_by_id(employee_id)
@@ -183,18 +202,6 @@ module XeroGateway
         employees[index].employee_id = response_employee.employee_id if response_employee && response_employee.employee_id
       end
       response
-    end
-
-    # Retrieves users from Xero
-    # Initial code
-    def get_users(options = {})
-      request_params = {}
-
-      request_params[:EmployeeID]    = options[:employee_id] if options[:employee_id]
-      
-      response_xml = http_get(@client, "#{@xero_url}/Employees", request_params)
-
-      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/employees'})
     end
 
     # Retrieves all invoices from Xero
@@ -756,7 +763,7 @@ module XeroGateway
       response
     end
 
-    def parse_response(raw_response, request = {}, options = {})
+    def parse_response(raw_response, request = {}, options = {}, payroll_api = false)
 
       response = XeroGateway::Response.new
 
@@ -781,7 +788,15 @@ module XeroGateway
           when "ManualJournal"
             response.response_item = ManualJournal.from_xml(element, self, {:journal_lines_downloaded => options[:request_signature] != "GET/ManualJournals"})
           when "Contacts" then element.children.each {|child| response.response_item << Contact.from_xml(child, self) }
-          when "Employees" then element.children.each {|child| response.response_item << Employee.from_xml(child, self) }
+          #when "Employees" then element.children.each {|child| response.response_item << Employee.from_xml(child, self) }
+          when "Employees" 
+            then
+              if payroll_api
+                element.children.each {|child| response.response_item << Payroll::Employee.from_xml(child, self) }
+              else
+                element.children.each {|child| response.response_item << Employee.from_xml(child, self) }
+              end
+
           when "Invoices" then element.children.each {|child| response.response_item << Invoice.from_xml(child, self, {:line_items_downloaded => options[:request_signature] != "GET/Invoices"}) }
           when "BankTransactions"
             element.children.each do |child|
@@ -797,7 +812,6 @@ module XeroGateway
           when "Currencies" then element.children.each {|child| response.response_item << Currency.from_xml(child) }
           when "Organisations" then response.response_item = Organisation.from_xml(element.children.first) # Xero only returns the Authorized Organisation
           when "TrackingCategories" then element.children.each {|child| response.response_item << TrackingCategory.from_xml(child) }
-          when "Users" then element.children.each {|child| response.response_item << User.from_xml(child) }
           when "Errors" then response.errors = element.children.map { |error| Error.parse(error) }
         end
       end if response_element
