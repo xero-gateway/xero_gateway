@@ -102,21 +102,21 @@ module TestHelper
     employee
   end
 
-  def dummy_user
+  def dummy_payroll_employee
     unique_id = Time.now.to_f
-    user = XeroGateway::Employee.new({
+    employee = XeroGateway::Payroll::Employee.new({
       :employee_id => unique_id,
-      :first_name => STUB_XERO_CALLS ? "USER FIRST NAME" : "THE FIRST NAME OF THE USER #{unique_id}",
-      :last_name => STUB_XERO_CALLS ? "USER LAST NAME" : "THE LAST NAME OF THE USER #{unique_id}",
+      :first_name => STUB_XERO_CALLS ? "EMPLOYEE FIRST NAME" : "THE FIRST NAME OF THE EMPLOYEE #{unique_id}",
+      :last_name => STUB_XERO_CALLS ? "EMPLOYEE LAST NAME" : "THE LAST NAME OF THE EMPLOYEE #{unique_id}",
       :date_of_birth =>  30.years.ago,
       :email => STUB_XERO_CALLS ? "user@xero.com" : "user_#{unique_id}@xero.com",
-      :gender => M,
-      :middle_name => STUB_XERO_CALLS ? "USER MIDDLE NAME" : "THE MIDDLE NAME OF THE USER #{unique_id}",
+      :gender => "M",
+      :middle_name => STUB_XERO_CALLS ? "EMPLOYEE MIDDLE NAME" : "THE MIDDLE NAME OF THE EMPLOYEE #{unique_id}",
       :tax_file_number => 123123123,
       :title => "Mr"
     })
 
-    user
+    employee
   end
 
   def get_file_as_string(filename)

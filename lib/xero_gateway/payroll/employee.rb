@@ -47,6 +47,29 @@ module XeroGateway::Payroll
       @errors.size == 0
     end
 
+    # General purpose create/save method.
+    def save
+      if employee_id.nil?
+        create
+      else
+        update
+      end
+    end
+
+    # Creates this employee record (using gateway.create_payroll_employee) with the associated gateway.
+    # If no gateway set, raise a NoGatewayError exception.
+    def create
+      raise NoGatewayError unless gateway
+      gateway.create_payroll_employee(self)
+    end
+
+    # Creates this employee record (using gateway.update_payroll_employee) with the associated gateway.
+    # If no gateway set, raise a NoGatewayError exception.
+    def update
+      raise NoGatewayError unless gateway
+      gateway.update_payroll_employee(self)
+    end
+
     def to_xml(b = Builder::XmlMarkup.new)
       b.Employee {
       	b.EmployeeID self.employee_id if self.employee_id

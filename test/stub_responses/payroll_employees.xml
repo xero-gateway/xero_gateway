@@ -17,14 +17,28 @@
       <StartDate>2012-01-30T00:00:00</StartDate>  
       <OrdinaryEarningsRateID>72e962d1-fcac-4083-8a71-742bb3e7ae14</OrdinaryEarningsRateID>  
       <PayrollCalendarID>cb8e4706-2fdc-4170-aebd-0ffb855557f5</PayrollCalendarID>  
-      <UpdatedDateUTC>2013-04-01T23:02:36</UpdatedDateUTC>  
+      <UpdatedDateUTC>2013-04-01T23:02:36</UpdatedDateUTC>
+      <HomeAddress>  
+        <AddressLine1>123 Main St</AddressLine1>  
+        <City>St. Kilda</City>  
+        <Region>VIC</Region>  
+        <PostalCode>3182</PostalCode>  
+        <Country>AUSTRALIA</Country>  
+      </HomeAddress>  
     </Employee>  
     <Employee>  
       <EmployeeID>007ebe02-4696-4453-a37d-fcca764a35a2</EmployeeID>  
       <FirstName>John</FirstName>  
       <LastName>Smith</LastName>  
       <Status>ACTIVE</Status>  
-      <UpdatedDateUTC>2013-04-01T23:27:35</UpdatedDateUTC>  
+      <UpdatedDateUTC>2013-04-01T23:27:35</UpdatedDateUTC>
+      <HomeAddress>  
+        <AddressLine1>123 Main St</AddressLine1>  
+        <City>St. Kilda</City>  
+        <Region>VIC</Region>  
+        <PostalCode>3182</PostalCode>  
+        <Country>AUSTRALIA</Country>  
+      </HomeAddress>
     </Employee>  
     <Employee>  
       <EmployeeID>de8599f6-04da-429a-a0cd-74c0da042c2b</EmployeeID>  
@@ -39,6 +53,13 @@
       <OrdinaryEarningsRateID>72e962d1-fcac-4083-8a71-742bb3e7ae14</OrdinaryEarningsRateID>  
       <PayrollCalendarID>97e0784f-6c3e-4371-a177-f93fbada3c58</PayrollCalendarID>  
       <UpdatedDateUTC>2013-04-01T23:02:36</UpdatedDateUTC>  
+      <HomeAddress>  
+        <AddressLine1>123 Main St</AddressLine1>  
+        <City>St. Kilda</City>  
+        <Region>VIC</Region>  
+        <PostalCode>3182</PostalCode>  
+        <Country>AUSTRALIA</Country>  
+      </HomeAddress>
     </Employee>  
     <Employee>  
       <EmployeeID>33c0dccf-cc2d-44ef-97d7-64041ca914cc</EmployeeID>  
