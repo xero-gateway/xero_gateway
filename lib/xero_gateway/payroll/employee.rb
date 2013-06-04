@@ -1,6 +1,6 @@
-module XeroGateway
+module XeroGateway::Payroll
   class Employee
-    include Dates
+    # include Dates
 
     GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ unless defined?(GUID_REGEX)
 
@@ -15,7 +15,8 @@ module XeroGateway
     # Any errors that occurred when the #valid? method called.
     attr_reader :errors
 
-    attr_accessor :employee_id, :status, :first_name, :last_name, :email, :external_link
+    attr_accessor :employee_id, :first_name, :date_of_birth, :email, :first_name, :gender, :last_name,
+                  :middle_name, :tax_file_number, :title
 
     def initialize(params = {})
       @errors ||= []
@@ -55,53 +56,56 @@ module XeroGateway
       end
     end
 
-    # Creates this employee record (using gateway.create_employee) with the associated gateway.
+    # Creates this employee record (using gateway.create_payroll_employee) with the associated gateway.
     # If no gateway set, raise a NoGatewayError exception.
-    # def create
-    #   raise NoGatewayError unless gateway
-    #   gateway.create_employee(self)
-    # end
-
     def create
       raise NoGatewayError unless gateway
-      gateway.create_employee(self)
+      gateway.create_payroll_employee(self)
     end
 
-    # Creates this employee record (using gateway.update_employee) with the associated gateway.
+    # Creates this employee record (using gateway.update_payroll_employee) with the associated gateway.
     # If no gateway set, raise a NoGatewayError exception.
-    # def update
-    #   raise NoGatewayError unless gateway
-    #   gateway.update_employee(self)
-    # end
+    def update
+      raise NoGatewayError unless gateway
+      gateway.update_payroll_employee(self)
+    end
 
     def to_xml(b = Builder::XmlMarkup.new)
       b.Employee {
-        b.EmployeeID self.employee_id if self.employee_id
+      	b.EmployeeID self.employee_id if self.employee_id
         b.FirstName self.first_name if self.first_name
+        b.DateOfBirth self.date_of_birth if self.date_of_birth
+        b.Email self.email if self.email
+        b.FirstName self.first_name if self.first_name
+        b.Gender self.gender if self.gender
         b.LastName self.last_name if self.last_name
-        b.EmailAddress self.email if self.email
-        b.ExternalLink self.external_link if self.external_link
+        b.MiddleNames self.middle_name if self.middle_name
+        b.TaxFileNumber self.tax_file_number if self.tax_file_number
+        b.Title self.title if self.title
       }
     end
-
-    # Take a Employee element and convert it into an Employee object
+    
+    # Should add other fields based on Pivotal: 49575441
     def self.from_xml(employee_element, gateway = nil)
-      employee = Employee.new(:gateway => gateway)
+      employee = Employee.new
       employee_element.children.each do |element|
         case(element.name)
-          when "EmployeeID" then employee.employee_id = element.text
-          when "Status" then employee.status = element.text
+        	when "EmployeeID" then employee.employee_id = element.text
+          when "DateOfBirth" then employee.date_of_birth = element.text
+          when "Email" then employee.email = element.text
           when "FirstName" then employee.first_name = element.text
+          when "Gender" then employee.gender = element.text
           when "LastName" then employee.last_name = element.text
-          when "ExternalLink" then employee.external_link = element.text
-          when "EmailAddress" then contact.email = element.text
+          when "MiddleNames" then employee.middle_name = element.text
+          when "TaxFileNumber" then employee.tax_file_number = element.text
+          when "Title" then employee.title = element.text
         end
       end
       employee
     end
 
     def ==(other)
-      [ :employee_id, :status, :first_name, :last_name, :email ].each do |field|
+      [ :employee_id, :first_name, :date_of_birth, :email, :first_name, :gender, :last_name, :middle_name, :tax_file_number, :title ].each do |field|
         return false if send(field) != other.send(field)
       end
       return true

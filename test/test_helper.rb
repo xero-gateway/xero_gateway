@@ -101,6 +101,24 @@ module TestHelper
 
     employee
   end
+
+  def dummy_payroll_employee
+    unique_id = Time.now.to_f
+    employee = XeroGateway::Payroll::Employee.new({
+      :employee_id => unique_id,
+      :first_name => STUB_XERO_CALLS ? "EMPLOYEE FIRST NAME" : "THE FIRST NAME OF THE EMPLOYEE #{unique_id}",
+      :last_name => STUB_XERO_CALLS ? "EMPLOYEE LAST NAME" : "THE LAST NAME OF THE EMPLOYEE #{unique_id}",
+      :date_of_birth =>  30.years.ago,
+      :email => STUB_XERO_CALLS ? "user@xero.com" : "user_#{unique_id}@xero.com",
+      :gender => "M",
+      :middle_name => STUB_XERO_CALLS ? "EMPLOYEE MIDDLE NAME" : "THE MIDDLE NAME OF THE EMPLOYEE #{unique_id}",
+      :tax_file_number => 123123123,
+      :title => "Mr"
+    })
+
+    employee
+  end
+
   def get_file_as_string(filename)
     data = ''
     f = File.open(File.dirname(__FILE__) + "/stub_responses/" + filename, "r") 
