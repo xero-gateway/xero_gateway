@@ -31,6 +31,14 @@ module XeroGateway::Payroll
       # @home_address ||= {}
     end
 
+    def build_home_address(params = {})
+      self.home_address = gateway ? gateway.build_payroll_employee_address(params) : Address.new(params)
+    end
+    
+    def home_address
+      @home_address ||= build_home_address
+    end
+
     # Validate the Employee record according to what will be valid by the gateway.
     #
     # Usage:
@@ -85,6 +93,7 @@ module XeroGateway::Payroll
         b.MiddleNames self.middle_name if self.middle_name
         b.TaxFileNumber self.tax_file_number if self.tax_file_number
         b.Title self.title if self.title
+        home_address.to_xml(b)
       }
     end
     
@@ -92,7 +101,6 @@ module XeroGateway::Payroll
     def self.from_xml(employee_element, gateway = nil)
       employee = Employee.new
       employee_element.children.each do |element|
-        puts "#{element.name}"
         case(element.name)
         	when "EmployeeID" then employee.employee_id = element.text
           when "DateOfBirth" then employee.date_of_birth = element.text
@@ -103,7 +111,7 @@ module XeroGateway::Payroll
           when "MiddleNames" then employee.middle_name = element.text
           when "TaxFileNumber" then employee.tax_file_number = element.text
           when "Title" then employee.title = element.text
-          when "HomeAddress" then element.children.each { |home_address_element| employee.home_address["#{home_address_element.name}"] = home_address_element.text}
+          when "HomeAddress" then employee.home_address = Address.from_xml(element)
         end
       end
       employee

@@ -242,6 +242,14 @@ module XeroGateway
       response
     end
 
+    def build_payroll_employee_address(address = {})
+      case address
+        when Address then   address.gateway = self
+        when Hash then      address = Payroll::Address.new(address.merge({:gateway => self}))
+      end
+      address
+    end
+
     # Retrieves all invoices from Xero
     #
     # Usage : get_invoices
