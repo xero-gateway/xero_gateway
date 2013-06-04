@@ -679,7 +679,7 @@ module XeroGateway
       request_params = { :employeeID => employee_id }
       response_xml = http_get(@client, "#{@xero_payroll_url}/Employees/#{URI.escape(employee_id)}", request_params)
 
-      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/employee'})
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/employee'}, true)
     end
 
     # Create or update a contact record based on if it has a contact_id or contact_number.
