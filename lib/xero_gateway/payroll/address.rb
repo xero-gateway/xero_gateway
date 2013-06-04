@@ -38,7 +38,6 @@ module XeroGateway::Payroll
     def self.from_xml(address_element, gateway = nil)
       address = Address.new
       address_element.children.each do |element|
-      	puts "#{element.name}"
         case(element.name)
           when "AddressLine1" then address.address_line1 = element.text
           when "AddressLine2" then address.address_line2 = element.text
