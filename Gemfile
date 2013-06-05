@@ -1,7 +1,7 @@
 source "http://rubygems.org"
 
-gem 'builder', '>= 3.2.0'
-gem 'oauth',   '>= 0.4.7'
+gem 'builder', '~> 3.0.0'
+gem 'oauth',   '~> 0.4.0'
 gem 'activesupport'
 
 group :test do
