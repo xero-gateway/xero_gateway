@@ -1,5 +1,5 @@
 module XeroGateway::Payroll
-  class Address
+  class HomeAddress
     # include Dates
 
     GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ unless defined?(GUID_REGEX)
@@ -36,7 +36,7 @@ module XeroGateway::Payroll
     
     # Should add other fields based on Pivotal: 49575441
     def self.from_xml(address_element, gateway = nil)
-      address = Address.new
+      address = HomeAddress.new
       address_element.children.each do |element|
         case(element.name)
           when "AddressLine1" then address.address_line1 = element.text

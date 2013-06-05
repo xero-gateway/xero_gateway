@@ -16,9 +16,7 @@ module XeroGateway::Payroll
     attr_reader :errors
 
     attr_accessor :employee_id, :first_name, :date_of_birth, :email, :first_name, :gender, :last_name,
-                  :middle_name, :tax_file_number, :title,
-                  # Adding HomeAddress fields/elements
-                  :home_address
+                  :middle_name, :tax_file_number, :title, :home_address
 
     def initialize(params = {})
       @errors ||= []
@@ -27,12 +25,10 @@ module XeroGateway::Payroll
       params.each do |k,v|
         self.send("#{k}=", v)
       end
-
-      # @home_address ||= {}
     end
 
     def build_home_address(params = {})
-      self.home_address = gateway ? gateway.build_payroll_employee_address(params) : Address.new(params)
+      self.home_address = gateway ? gateway.build_payroll_employee_address(params) : HomeAddress.new(params)
     end
     
     def home_address
@@ -97,7 +93,6 @@ module XeroGateway::Payroll
       }
     end
     
-    # Should add other fields based on Pivotal: 49575441
     def self.from_xml(employee_element, gateway = nil)
       employee = Employee.new
       employee_element.children.each do |element|
@@ -111,7 +106,7 @@ module XeroGateway::Payroll
           when "MiddleNames" then employee.middle_name = element.text
           when "TaxFileNumber" then employee.tax_file_number = element.text
           when "Title" then employee.title = element.text
-          when "HomeAddress" then employee.home_address = Address.from_xml(element)
+          when "HomeAddress" then employee.home_address = HomeAddress.from_xml(element)
         end
       end
       employee
