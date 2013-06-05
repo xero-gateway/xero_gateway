@@ -1,9 +1,9 @@
 Gem::Specification.new do |s|
   s.name     = "xero_gateway"
-  s.version  = "3.0.1"
-  s.date     = "2013-07-04"
+  s.version  = "3.0.2"
+  s.date     = "2013-06-05"
   s.summary  = "Enables ruby based applications to communicate with the Xero API"
-  s.email    = "github@thinkei.com"
+  s.email    = "dave@thinkei.com"
   s.homepage = "http://github.com/Thinkei/xero_gateway"
   s.description = "Enables ruby based applications to communicate with the Xero API, including the new payroll-API"
   s.has_rdoc = false

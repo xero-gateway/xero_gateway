@@ -1,7 +1,7 @@
 source "http://rubygems.org"
 
-gem 'builder', '>= 2.1.2'
-gem 'oauth',   '>= 0.3.6'
+gem 'builder', '>= 3.2.0'
+gem 'oauth',   '>= 0.4.7'
 gem 'activesupport'
 
 group :test do
@@ -9,4 +9,5 @@ group :test do
   gem 'mocha'
   gem 'shoulda'
   gem 'libxml-ruby'
+  gem 'rake'
 end
