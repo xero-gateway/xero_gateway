@@ -16,7 +16,7 @@ module XeroGateway::Payroll
     attr_reader :errors
 
     attr_accessor :employee_id, :first_name, :date_of_birth, :email, :first_name, :gender, :last_name,
-                  :middle_name, :tax_file_number, :title
+                  :middle_name, :tax_file_number, :title, :home_address
 
     def initialize(params = {})
       @errors ||= []
@@ -27,6 +27,13 @@ module XeroGateway::Payroll
       end
     end
 
+    def build_home_address(params = {})
+      self.home_address = gateway ? gateway.build_payroll_employee_address(params) : HomeAddress.new(params)
+    end
+    
+    def home_address
+      @home_address ||= build_home_address
+    end
 
     # Validate the Employee record according to what will be valid by the gateway.
     #
@@ -82,10 +89,10 @@ module XeroGateway::Payroll
         b.MiddleNames self.middle_name if self.middle_name
         b.TaxFileNumber self.tax_file_number if self.tax_file_number
         b.Title self.title if self.title
+        home_address.to_xml(b)
       }
     end
     
-    # Should add other fields based on Pivotal: 49575441
     def self.from_xml(employee_element, gateway = nil)
       employee = Employee.new
       employee_element.children.each do |element|
@@ -99,13 +106,14 @@ module XeroGateway::Payroll
           when "MiddleNames" then employee.middle_name = element.text
           when "TaxFileNumber" then employee.tax_file_number = element.text
           when "Title" then employee.title = element.text
+          when "HomeAddress" then employee.home_address = HomeAddress.from_xml(element)
         end
       end
       employee
     end
 
     def ==(other)
-      [ :employee_id, :first_name, :date_of_birth, :email, :first_name, :gender, :last_name, :middle_name, :tax_file_number, :title ].each do |field|
+      [ :employee_id, :first_name, :date_of_birth, :email, :first_name, :gender, :last_name, :middle_name, :tax_file_number, :title, :home_address ].each do |field|
         return false if send(field) != other.send(field)
       end
       return true

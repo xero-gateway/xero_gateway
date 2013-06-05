@@ -211,7 +211,7 @@ module XeroGateway
     def build_payroll_employee(employee = {})
       case employee
         when Employee then   employee.gateway = self
-        when Hash then       employee = Employee.new(employee.merge({:gateway => self}))
+        when Hash then       employee = Payroll::Employee.new(employee.merge({:gateway => self}))
       end
       employee
     end
@@ -227,7 +227,7 @@ module XeroGateway
 
     def update_payroll_employees(employees)
       b = Builder::XmlMarkup.new
-      request_xml = b.Contacts {
+      request_xml = b.Employees {
         employees.each do | employee |
           employee.to_xml(b)
         end
@@ -235,11 +235,19 @@ module XeroGateway
 
       response_xml = http_post(@client, "#{@xero_payroll_url}/Employees", request_xml, {})
 
-      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'POST/employees'})
+      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'POST/employees'}, true)
       response.employees.each_with_index do | response_payroll_employee, index |
         employees[index].employee_id = response_payroll_employee.employee_id if response_employee && response_payroll_employee.employee_id
       end
       response
+    end
+
+    def build_payroll_employee_address(address = {})
+      case address
+        when Address then   address.gateway = self
+        when Hash then      address = Payroll::HomeAddress.new(address.merge({:gateway => self}))
+      end
+      address
     end
 
     # Retrieves all invoices from Xero
@@ -738,7 +746,7 @@ module XeroGateway
         create_or_save = :save
       end
 
-      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => "#{create_or_save == :create ? 'PUT' : 'POST'}/employee"})
+      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => "#{create_or_save == :create ? 'PUT' : 'POST'}/employee"}, true)
       
       employee.employee_id = response.employee.employee_id if response.employee && response.employee.employee_id
       response
