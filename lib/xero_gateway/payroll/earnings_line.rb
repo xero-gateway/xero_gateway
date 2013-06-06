@@ -1,5 +1,5 @@
 module XeroGateway::Payroll
-  class EarningLine
+  class EarningsLine
     
     GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ unless defined?(GUID_REGEX)
     
@@ -20,7 +20,7 @@ module XeroGateway::Payroll
     end
     
     def to_xml(b = Builder::XmlMarkup.new)
-      b.EarningLine {
+      b.EarningsLine {
       	b.NumberOfUnitsPerWeek self.number_of_units_per_week if self.number_of_units_per_week
         b.AnnualSalary self.annual_salary if self.annual_salary
         b.RatePerUnit self.rate_per_unit if self.rate_per_unit
@@ -29,8 +29,8 @@ module XeroGateway::Payroll
     end
     
     def self.from_xml(earnings_line_element, gateway = nil)
-      earnings_line = EarningLine.new
-      bank_account_element.children.each do |element|
+      earnings_line = EarningsLine.new
+      earnings_line_element.children.each do |element|
         case(element.name)
           when "NumberOfUnitsPerWeek" then earnings_line.number_of_units_per_week = element.text
           when "AnnualSalary" then  earnings_line.annual_salary = element.text
