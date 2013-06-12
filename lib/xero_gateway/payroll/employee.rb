@@ -112,8 +112,8 @@ module XeroGateway::Payroll
         b.Mobile self.mobile if self.mobile
         b.Phone self.phone if self.phone
         b.TerminationDate self.termination_date if self.termination_date
-        b.BankAccounts self.bank_account unless self.bank_accounts.blank?
-        b.SuperMemberships self.bank_account unless self.bank_accounts.blank?
+        b.BankAccounts self.bank_accounts unless self.bank_accounts.blank?
+        b.SuperMemberships self.super_memberships unless self.super_memberships.blank?
         b.PayTemplate self.pay_template unless self.pay_template.blank?
         home_address.to_xml(b)
       }
