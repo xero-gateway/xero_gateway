@@ -9,7 +9,7 @@ XERO_KEYS = YAML.load_file(File.dirname(__FILE__) + '/xero_keys.yml')
 gateway = XeroGateway::Gateway.new(XERO_KEYS["xero_consumer_key"], XERO_KEYS["xero_consumer_secret"])
 
 # authorize in browser specific to payroll-API
-%x(open #{gateway.request_token.authorize_url}"&scope=payroll.employees")
+%x(open #{gateway.request_token.authorize_url}"&scope=payroll.employees,payroll.superfunds")
 
 puts "Enter the verification code from Xero?"
 oauth_verifier = gets.chomp
