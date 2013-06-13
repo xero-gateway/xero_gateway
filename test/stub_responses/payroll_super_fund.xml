@@ -1,0 +1,14 @@
+<Response xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <SuperFunds>  
+    <SuperFund>  
+    <ABN>11001032511</ABN>  
+    <AccountName>Test</AccountName>  
+    <AccountNumber>111222333</AccountNumber>  
+    <BSB>159357</BSB>  
+    <EmployerNumber>999555666</EmployerNumber>  
+    <Name>Clive Monk Superannuation Fund</Name>  
+    <SuperFundID>9cb36648-0ff3-4df6-8ec2-858d2fe19f6d</SuperFundID>  
+    <Type>SMSF</Type>  
+  </SuperFund> 
+  </SuperFunds>  
+</Response>

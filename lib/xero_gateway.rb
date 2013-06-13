@@ -47,3 +47,4 @@ require File.join(File.dirname(__FILE__), 'xero_gateway', 'payroll','bank_accoun
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'payroll','super_membership')
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'payroll','pay_template')
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'payroll','earnings_line')
+require File.join(File.dirname(__FILE__), 'xero_gateway', 'payroll','super_fund')

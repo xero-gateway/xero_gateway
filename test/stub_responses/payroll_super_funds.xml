@@ -1,0 +1,43 @@
+<Response xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<SuperFunds>
+	  <SuperFund>  
+	    <ABN>11001032511</ABN>  
+	    <AccountName>Test</AccountName>  
+	    <AccountNumber>111222333</AccountNumber>  
+	    <BSB>159357</BSB>  
+	    <EmployerNumber>999555666</EmployerNumber>  
+	    <Name>Clive Monk Superannuation Fund</Name>  
+	    <SuperFundID>9cb36648-0ff3-4df6-8ec2-858d2fe19f6d</SuperFundID>  
+	    <Type>SMSF</Type>  
+    </SuperFund>   
+	  <SuperFund>  
+	    <SuperFundID>9531b699-9265-4cfc-bb99-f768f7f11d30</SuperFundID>  
+	    <Name>Accountants Super (Professional Associations Superannuation Fund)</Name>  
+	    <Type>REGULATED</Type>  
+	    <ABN>78984178687</ABN>  
+	    <SPIN>PSL0002AU</SPIN>  
+	    <EmployerNumber>31243242</EmployerNumber>  
+	    <UpdatedDateUTC>2013-02-15T03:14:04</UpdatedDateUTC>  
+	  </SuperFund>  
+	  <SuperFund>  
+	    <SuperFundID>e08d60d1-c31f-4a2a-b0fd-dfdc7b531ab6</SuperFundID>  
+	    <Name>Medical and Associated Professions Superannuation Fund</Name>  
+	    <Type>REGULATED</Type>  
+	    <ABN>70815369818</ABN>  
+	    <SPIN>SMF0126AU</SPIN>  
+	    <EmployerNumber>12345</EmployerNumber>  
+	    <UpdatedDateUTC>2013-02-15T03:14:04</UpdatedDateUTC>  
+	  </SuperFund>  
+	  <SuperFund>  
+	    <SuperFundID>48d9d081-dc79-4729-8643-8482c3b28ce0</SuperFundID>  
+	    <Name>what what is</Name>  
+	    <Type>SMSF</Type>  
+	    <ABN>32319338078</ABN>  
+	    <EmployerNumber>324324</EmployerNumber>  
+	    <BSB>234324</BSB>  
+	    <AccountNumber>234234234</AccountNumber>  
+	    <AccountName>33333333</AccountName>  
+	    <UpdatedDateUTC>2013-03-21T05:40:02</UpdatedDateUTC>  
+	  </SuperFund>  
+	</SuperFunds>
+</Response>

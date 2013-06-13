@@ -15,7 +15,7 @@ module XeroGateway::Payroll
     # Any errors that occurred when the #valid? method called.
     attr_reader :errors
 
-    attr_accessor :employee_id, :first_name, :date_of_birth, :email, :first_name, :gender, :last_name,
+    attr_accessor :employee_id, :first_name, :date_of_birth, :email, :gender, :last_name,
                   :middle_name, :tax_file_number, :title, :start_date, :occupation, :mobile, 
                   :phone, :termination_date, :home_address, :bank_accounts, :super_memberships, :pay_template
 
@@ -102,7 +102,6 @@ module XeroGateway::Payroll
         b.FirstName self.first_name if self.first_name
         b.DateOfBirth self.date_of_birth if self.date_of_birth
         b.Email self.email if self.email
-        b.FirstName self.first_name if self.first_name
         b.Gender self.gender if self.gender
         b.LastName self.last_name if self.last_name
         b.MiddleNames self.middle_name if self.middle_name
@@ -113,8 +112,8 @@ module XeroGateway::Payroll
         b.Mobile self.mobile if self.mobile
         b.Phone self.phone if self.phone
         b.TerminationDate self.termination_date if self.termination_date
-        b.BankAccounts self.bank_account unless self.bank_accounts.blank?
-        b.SuperMemberships self.bank_account unless self.bank_accounts.blank?
+        b.BankAccounts self.bank_accounts unless self.bank_accounts.blank?
+        b.SuperMemberships self.super_memberships unless self.super_memberships.blank?
         b.PayTemplate self.pay_template unless self.pay_template.blank?
         home_address.to_xml(b)
       }
@@ -148,7 +147,7 @@ module XeroGateway::Payroll
     end
 
     def ==(other)
-      [ :employee_id, :first_name, :date_of_birth, :email, :first_name, :gender, :last_name, :middle_name, :tax_file_number, 
+      [ :employee_id, :first_name, :date_of_birth, :email, :gender, :last_name, :middle_name, :tax_file_number, 
       :title, :start_date, :occupation, :mobile, :phone, :termination_date, :home_address, :bank_accounts ].each do |field|
         return false if send(field) != other.send(field)
       end
