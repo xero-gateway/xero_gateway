@@ -1,11 +1,11 @@
 Gem::Specification.new do |s|
   s.name     = "xero_gateway"
-  s.version  = "3.0.3"
-  s.date     = "2013-06-05"
+  s.version  = "3.0.4"
+  s.date     = "2013-06-16"
   s.summary  = "Enables ruby based applications to communicate with the Xero API"
   s.email    = "dave@thinkei.com"
   s.homepage = "http://github.com/Thinkei/xero_gateway"
-  s.description = "Enables ruby based applications to communicate with the Xero API, including the new payroll-API"
+  s.description = "Includes payroll-employees and payroll-superfunds"
   s.has_rdoc = false
   s.authors  = ["Tim Connor", "Nik Wakelin", "ThinkEI"]
   s.files = ["Gemfile", "LICENSE", "Rakefile", "README.textile", "xero_gateway.gemspec"] + Dir['**/*.rb'] + Dir['**/*.crt']
