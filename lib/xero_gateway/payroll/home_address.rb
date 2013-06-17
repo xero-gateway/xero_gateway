@@ -3,6 +3,10 @@ module XeroGateway::Payroll
     # include Dates
 
     GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ unless defined?(GUID_REGEX)
+    
+    STATE_ABBREVIATIONS = [
+      "ACT", "NSW", "NT", "QLD","SA", "TAS", "VIC", "WA"
+    ]unless defined?(STATE_ABBREVIATIO)
 
     # Xero::Gateway associated with this employee.
     attr_accessor :gateway
@@ -19,6 +23,28 @@ module XeroGateway::Payroll
       params.each do |k,v|
         self.send("#{k}=", v)
       end
+    end
+    
+    def valid?
+      @errors = []
+
+      if address_line1.blank?
+        @errors << ['address_line1', 'must be blank']
+      end
+
+      if city.blank?
+        @errors << ['city', 'must be blank']
+      end
+      
+      if postal_code.blank?
+        @errors << ['postal_code', 'must be blank']
+      end
+      
+      if !region.blank? && !STATE_ABBREVIATIONS.include?(region)
+        @errors << ['region', "must be blank or a valid state abbreviation"]
+      end 
+            
+      @errors.size == 0
     end
 
     def to_xml(b = Builder::XmlMarkup.new)

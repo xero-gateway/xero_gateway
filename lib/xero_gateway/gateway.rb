@@ -215,7 +215,7 @@ module XeroGateway
       end
       employee
     end
-
+    
     def create_payroll_employee(employee)
       save_payroll_employee(employee)
     end
@@ -250,7 +250,7 @@ module XeroGateway
       address
     end
 
-    def get_payroll_super_funds (options= {})
+    def get_payroll_super_funds(options= {})
       request_params = {}
 
       request_params[:SuperFundId]   = options[:super_fund_id] if options[:super_fund_id]
@@ -757,21 +757,9 @@ module XeroGateway
     end
 
     def save_payroll_employee(employee)
-      request_xml = employee.to_xml
-
-      response_xml = nil
-      create_or_save = nil
-      if employee.employee_id.nil?
-        # Create new contact record.
-        response_xml = http_put(@client, "#{@xero_payroll_url}/Employees", request_xml, {})
-        create_or_save = :create
-      else
-        # Update existing contact record.
-        response_xml = http_post(@client, "#{@xero_payroll_url}/Employees", request_xml, {})
-        create_or_save = :save
-      end
-
-      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => "#{create_or_save == :create ? 'PUT' : 'POST'}/employee"}, true)
+      request_xml = employee.to_xml     
+      response_xml = http_post(@client, "#{@xero_payroll_url}/Employees", request_xml, {})
+      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => "POST/employee"}, true)
       
       employee.employee_id = response.employee.employee_id if response.employee && response.employee.employee_id
       response

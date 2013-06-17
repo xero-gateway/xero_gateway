@@ -8,7 +8,7 @@ module XeroGateway::Payroll
     # Any errors that occurred when the #valid? method called.
     attr_reader :errors
     
-    attr_accessor :super_fund_id, :employee_number
+    attr_accessor :super_fund_id, :employee_number, :super_membership_id
     
      def initialize(params = {})
       @errors ||= []
@@ -23,6 +23,7 @@ module XeroGateway::Payroll
       b.SuperMembership {
       	b.SuperFundID self.super_fund_id if self.super_fund_id
         b.EmployeeNumber self.employee_number if self.employee_number
+        b.SuperMembershipID self.super_membership_id if self.super_membership_id 
       }
     end
     
@@ -32,13 +33,14 @@ module XeroGateway::Payroll
         case(element.name)
           when "SuperFundID" then super_membership.super_fund_id = element.text
           when "EmployeeNumber" then  super_membership.employee_number = element.text
+          when "SuperMembershipID" then super_membership.super_membership_id = element.text 
         end
       end
       super_membership
     end
 
     def ==(other)
-      [ :super_fund_id, :employee_number ].each do |field|
+      [ :super_fund_id, :employee_number, :super_membership_id ].each do |field|
         return false if send(field) != other.send(field)
       end
       return true
