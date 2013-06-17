@@ -89,6 +89,14 @@ class GatewayTest < Test::Unit::TestCase
       end
     end
 
+    should "handle payroll employee not found" do
+      XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("api_exception.xml"), :code => "404"))
+
+      assert_raises XeroGateway::EmployeeNotFoundError do
+        @gateway.get_payroll_employee_by_id('unknown-employee-id')
+      end
+    end
+    
   end
 
   def test_unknown_error_handling
