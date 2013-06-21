@@ -37,7 +37,6 @@ module XeroGateway::Payroll
     end
 
     def build_home_address(params = {})
-      #self.home_address = gateway ? gateway.build_payroll_employee_address(params) : HomeAddress.new(params)
       self.home_address = gateway ? gateway.build_payroll_employee_address(params) : HomeAddress.new(params)
     end
 
