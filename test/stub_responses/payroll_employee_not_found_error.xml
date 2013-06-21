@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<Response xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+  <Errors>
+    <Error>
+      <Description>Employee ID not found</Description>
+      <Exception>
+        <DateTime>2008-12-05T21:03:15.4445759Z</DateTime>
+        <ExceptionType>Xero.API.Library.Exceptions.ObjectDoesNotExistException</ExceptionType>
+        <Message>Employee ID not found</Message>
+        <Source>Xero.API.Library</Source>
+        <StackTrace>   at Xero.API.Library.Services.InvoiceService.GetInvoice(Guid organisationID, String bankTransactionID) in D:\Projects\network\project\Xero.API.Library\Services\BankTransactionService.cs:line 508   at Xero.API.Web.Controllers.BankTransactionController.Get(String apiKey, String xeroKey, String bankTransactionID, String bankTransactionID) in D:\Projects\network\project\Xero.API.Web\Controllers\BankTransactionController.cs:line 37</StackTrace>
+      </Exception>
+    </Error>
+  </Errors>
+  <ID>eaf9db6c-d3b2-49e8-939a-d9f23cc7c412</ID>
+  <Status>InternalServerError</Status>
+  <ProviderName>YOUR PROVIDER</ProviderName>
+  <DateTimeUTC>2008-12-05T21:03:15.3508067Z</DateTimeUTC>
+</Response>
