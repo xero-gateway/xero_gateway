@@ -3,6 +3,8 @@ require File.dirname(__FILE__) + '/../test_helper'
 class GetPayrollEmployeesTest < Test::Unit::TestCase
   include TestHelper
 
+  INVALID_PAYROLL_EMPLOYEE_ID = "9157d509-4d61-46f1-bb6c-zzzzxxxx1234" unless defined?(INVALID_PAYROLL_EMPLOYEE_ID)
+
   def setup
     @gateway = XeroGateway::Gateway.new(CONSUMER_KEY, CONSUMER_SECRET)
 
@@ -12,6 +14,9 @@ class GetPayrollEmployeesTest < Test::Unit::TestCase
       @gateway.stubs(:http_get).with {|client, url, params| url =~ /Employees$/ }.returns(get_file_as_string("payroll_employees.xml"))
       @gateway.stubs(:http_put).with {|client, url, body, params| url =~ /Employees$/ }.returns(get_file_as_string("payroll_employee.xml"))
       @gateway.stubs(:http_post).with {|client, url, body, params| url =~ /Employees$/ }.returns(get_file_as_string("payroll_employee.xml"))
+
+      # Get a bank transaction with an invalid ID. 
+      @gateway.stubs(:http_get).with {|client, url, params| url =~ Regexp.new("BankTransactions/#{INVALID_PAYROLL_EMPLOYEE_ID}") }.returns(get_file_as_string("payroll_employee_not_found_error.xml"))
     end
   end
 

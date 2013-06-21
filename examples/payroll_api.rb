@@ -45,3 +45,12 @@ pp "**** employee"
 pp employee
 pp "**** saving employee"
 gateway.create_payroll_employee(employee)
+
+# Try and get invalid payroll employee by ID
+pp "**** get_payroll_employee_by_id with invalid ID"
+begin
+  response = gateway.get_payroll_employee_by_id("123123123123123")
+rescue XeroGateway::EmployeeNotFoundError => e
+  pp "**** exception response"
+  pp e
+end
