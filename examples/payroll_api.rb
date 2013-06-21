@@ -37,3 +37,13 @@ pp gateway.get_payroll_super_fund_by_id(payroll_employee.response_item.super_mem
 # Retrieves all Super Funds
 pp "**** get_payroll_super_funds"
 pp gateway.get_payroll_super_funds
+
+# Try and get invalid payroll employee by ID
+pp "**** get_payroll_employee_by_id with invalid ID"
+begin
+  response = gateway.get_payroll_employee_by_id("123123123123123")
+rescue XeroGateway::EmployeeNotFoundError => e
+  pp "**** exception response"
+  pp e
+end
+

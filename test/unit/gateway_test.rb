@@ -96,7 +96,7 @@ class GatewayTest < Test::Unit::TestCase
         @gateway.get_payroll_employee_by_id('unknown-employee-id')
       end
     end
-    
+
   end
 
   def test_unknown_error_handling

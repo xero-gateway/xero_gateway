@@ -16,7 +16,7 @@ module XeroGateway::Payroll
     attr_reader :errors
 
     attr_accessor :employee_id, :first_name, :date_of_birth, :email, :gender, :last_name,
-                  :middle_name, :tax_file_number, :title, :start_date, :occupation, :mobile, 
+                  :middle_name, :tax_file_number, :title, :start_date, :occupation, :mobile,
                   :phone, :termination_date, :home_address, :bank_accounts, :super_memberships, :pay_template
 
     def initialize(params = {})
@@ -26,7 +26,7 @@ module XeroGateway::Payroll
       params.each do |k,v|
         self.send("#{k}=", v)
       end
-      
+
       @bank_accounts ||= []
       @super_memberships ||= []
       @pay_template ||= {}
@@ -35,11 +35,11 @@ module XeroGateway::Payroll
     def build_home_address(params = {})
       self.home_address = gateway ? gateway.build_payroll_employee_address(params) : HomeAddress.new(params)
     end
-    
+
     def home_address
       @home_address ||= build_home_address
     end
-    
+
     # Validate the Employee record according to what will be valid by the gateway.
     #
     # Usage:
@@ -57,19 +57,19 @@ module XeroGateway::Payroll
       if status && !EMPLOYEE_STATUS[status]
         @errors << ['status', "must be one of #{EMPLOYEE_STATUS.keys.join('/')}"]
       end
-      
+
       if occupation && occupation.length > 50
         @errors << ['occupation', "is too long (maximum is 50 characters)"]
       end
-      
+
       if mobile && mobile.length > 50
         @errors << ['mobile', "is too long (maximum is 50 characters)"]
-      end 
+      end
 
       if phone && phone.length > 50
         @errors << ['phone', "is too long (maximum is 50 characters)"]
       end
-            
+
       @errors.size == 0
     end
 
@@ -118,7 +118,7 @@ module XeroGateway::Payroll
         home_address.to_xml(b)
       }
     end
-    
+
     def self.from_xml(employee_element, gateway = nil)
       employee = Employee.new
       employee_element.children.each do |element|
@@ -147,7 +147,7 @@ module XeroGateway::Payroll
     end
 
     def ==(other)
-      [ :employee_id, :first_name, :date_of_birth, :email, :gender, :last_name, :middle_name, :tax_file_number, 
+      [ :employee_id, :first_name, :date_of_birth, :email, :gender, :last_name, :middle_name, :tax_file_number,
       :title, :start_date, :occupation, :mobile, :phone, :termination_date, :home_address, :bank_accounts ].each do |field|
         return false if send(field) != other.send(field)
       end
