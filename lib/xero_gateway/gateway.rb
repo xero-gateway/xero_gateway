@@ -215,7 +215,7 @@ module XeroGateway
       end
       employee
     end
-    
+
     def create_payroll_employee(employee)
       save_payroll_employee(employee)
     end
@@ -757,10 +757,10 @@ module XeroGateway
     end
 
     def save_payroll_employee(employee)
-      request_xml = employee.to_xml     
+      request_xml = employee.to_xml
       response_xml = http_post(@client, "#{@xero_payroll_url}/Employees", request_xml, {})
       response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => "POST/employee"}, true)
-      
+
       employee.employee_id = response.employee.employee_id if response.employee && response.employee.employee_id
       response
     end
@@ -875,7 +875,7 @@ module XeroGateway
           when "ManualJournal"
             response.response_item = ManualJournal.from_xml(element, self, {:journal_lines_downloaded => options[:request_signature] != "GET/ManualJournals"})
           when "Contacts" then element.children.each {|child| response.response_item << Contact.from_xml(child, self) }
-          when "Employees" 
+          when "Employees"
             then
               if payroll_api
                 element.children.each {|child| response.response_item << Payroll::Employee.from_xml(child, self) }

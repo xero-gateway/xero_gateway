@@ -37,3 +37,11 @@ pp gateway.get_payroll_super_fund_by_id(payroll_employee.response_item.super_mem
 # Retrieves all Super Funds
 pp "**** get_payroll_super_funds"
 pp gateway.get_payroll_super_funds
+
+# Push employee details via Payroll API
+pp "**** pushing payroll employees"
+employee = gateway.build_payroll_employee({first_name: "Dominic", last_name: "Wroblewski", gender: "M", title: "Mr", mobile: "07872388552"})
+pp "**** employee"
+pp employee
+pp "**** saving employee"
+gateway.create_payroll_employee(employee)
