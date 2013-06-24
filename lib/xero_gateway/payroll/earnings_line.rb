@@ -26,7 +26,7 @@ module XeroGateway::Payroll
     def to_xml(b = Builder::XmlMarkup.new)
       b.EarningsLine {
         b.EarningsRateID self.earnings_rate_id if self.earnings_rate_id
-        b.CalculationType if self.calculation_type
+        b.CalculationType self.calculation_type if self.calculation_type
       	b.NumberOfUnitsPerWeek self.number_of_units_per_week if self.number_of_units_per_week
         b.AnnualSalary self.annual_salary if self.annual_salary
         b.RatePerUnit self.rate_per_unit if self.rate_per_unit

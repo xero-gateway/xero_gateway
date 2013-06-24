@@ -97,24 +97,24 @@ gateway.update_payroll_employee(employee)
 pp "**** employee with super memberships"
 pp employee
 
-# # Update employee's pay template via Payroll API
-# pp "**** Update payroll employee with pay template"
-# employee.pay_template = XeroGateway::Payroll::PayTemplate.new(
-#  :earnings_lines => [
-#    XeroGateway::Payroll::EarningsLine.new(
-#      :number_of_units_per_week => 38.0000, 
-#      :annual_salary => 40000.0, 
-#      :rate_per_unit => 40.0000, 
-#      :normal_number_of_units => 37000.00, 
-#      :earnings_rate_id => "a24dd671-afd3-49bf-a60e-88acd7faa9e4", 
-#      :calculation_type => "ANNUALSALARY"
-#    )
-#  ]
-# )
-# pp "**** update employee with pay template"
-# gateway.update_payroll_employee(employee)
-# pp "**** employee with pay template"
-# pp employee
+# Update employee's pay template via Payroll API
+pp "**** Update payroll employee with pay template"
+employee.pay_template = XeroGateway::Payroll::PayTemplate.new(
+ :earnings_lines => [
+   XeroGateway::Payroll::EarningsLine.new(
+     :number_of_units_per_week => 38.0000,
+     :annual_salary => 40000.0,
+     :rate_per_unit => 40.0000,
+     :normal_number_of_units => 37000.00,
+     :earnings_rate_id => "a3d39287-631c-4da7-8362-04484a290493",
+     :calculation_type => "ANNUALSALARY"
+   )
+ ]
+)
+pp "**** update employee with pay template"
+gateway.update_payroll_employee(employee)
+pp "**** employee with pay template"
+pp employee
 
 # Update employee's tax declaration via Payroll API
 pp "**** Update payroll employee with tax declaration"
