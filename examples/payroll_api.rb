@@ -33,7 +33,8 @@ pp payroll_employee.response_item.home_address.address_line1
 # Retrieves Employee Super details
 pp "**** get_payroll_super_fund_by_id"
 pp payroll_employee.response_item.super_memberships
-#check if the emploree have "super_memberships" or not
+
+#check if the employee have "super_memberships" or not
 if payroll_employee.response_item.super_memberships.blank?
 	payroll_employee = gateway.get_payroll_employee_by_id(payroll_employees[1])
 end
@@ -59,8 +60,8 @@ employee.home_address = XeroGateway::Payroll::HomeAddress.new(
     :address_line2 => "Apt Address Line 2", 
     :address_line3 => "This is Address line 3", 
     :city => "My city", 
-    :postal_code => "332421", 
-    :region => "My Region", 
+    :postal_code => "2060", 
+    :region => "NSW", 
     :country => "Australia"
   )
 gateway.update_payroll_employee(employee)
@@ -96,7 +97,6 @@ gateway.update_payroll_employee(employee)
 pp "**** employee with super memberships"
 pp employee
 
-
 # # Update employee's pay template via Payroll API
 # pp "**** Update payroll employee with pay template"
 # employee.pay_template = XeroGateway::Payroll::PayTemplate.new(
@@ -116,7 +116,6 @@ pp employee
 # pp "**** employee with pay template"
 # pp employee
 
-
 # Update employee's tax declaration via Payroll API
 pp "**** Update payroll employee with tax declaration"
 employee.tax_declaration = XeroGateway::Payroll::TaxDeclaration.new(
@@ -135,7 +134,6 @@ employee.tax_declaration = XeroGateway::Payroll::TaxDeclaration.new(
 gateway.update_payroll_employee(employee)
 pp "**** employee with tax declaration"
 pp employee
-
 
 # Try and get invalid payroll employee by ID
 pp "**** get_payroll_employee_by_id with invalid ID"
