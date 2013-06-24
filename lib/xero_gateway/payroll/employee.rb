@@ -41,7 +41,7 @@ module XeroGateway::Payroll
     def home_address
       @home_address ||= build_home_address
     end
-    
+
     # Validate the Employee record according to what will be valid by the gateway.
     #
     # Usage:
@@ -59,7 +59,7 @@ module XeroGateway::Payroll
       if status && !EMPLOYEE_STATUS[status]
         @errors << ['status', "must be one of #{EMPLOYEE_STATUS.keys.join('/')}"]
       end
-      
+
       if occupation && occupation.length > 50
         @errors << ['occupation', "is too long (maximum is 50 characters)"]
       end
@@ -71,7 +71,7 @@ module XeroGateway::Payroll
       if phone && phone.length > 50
         @errors << ['phone', "is too long (maximum is 50 characters)"]
       end
-            
+
       @errors.size == 0
     end
 
@@ -88,7 +88,7 @@ module XeroGateway::Payroll
     # If no gateway set, raise a NoGatewayError exception.
     def create
       raise NoGatewayError unless gateway
-s
+
       gateway.create_payroll_employee(self)
     end
 

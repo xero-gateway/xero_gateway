@@ -215,7 +215,7 @@ module XeroGateway
       end
       employee
     end
-  
+
     def create_payroll_employee(employee)
       save_payroll_employee(employee)
     end
