@@ -145,3 +145,11 @@ rescue XeroGateway::EmployeeNotFoundError => e
   pp "**** exception response"
   pp e
 end
+
+# Update an existing Employee based on EmployeeID
+pp "**** update_payroll_employee"
+timestamp = Time.now.to_s.split
+middle_name = "#{timestamp[0]} #{timestamp[1]}"
+employee = gateway.build_payroll_employee({employee_id: payroll_employees.first, middle_name: middle_name})
+pp "Updated middle_name: " + middle_name
+gateway.update_payroll_employee(employee)
