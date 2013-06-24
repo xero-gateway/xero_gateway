@@ -48,3 +48,4 @@ require File.join(File.dirname(__FILE__), 'xero_gateway', 'payroll','super_membe
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'payroll','pay_template')
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'payroll','earnings_line')
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'payroll','super_fund')
+require File.join(File.dirname(__FILE__), 'xero_gateway', 'payroll','tax_declaration')

@@ -23,7 +23,11 @@ module XeroGateway::Payroll
     
     def to_xml(b = Builder::XmlMarkup.new)
       b.PayTemplate {
-      	b.EarningsLines self.earnings_lines if self.earnings_lines
+      	b.EarningsLines{
+      	  self.earnings_lines.each do |earnings_line|
+      	    earnings_line.to_xml(b)
+      	  end
+      	} unless self.earnings_lines.blank?
       }
     end
     

@@ -8,7 +8,7 @@ module XeroGateway::Payroll
     # Any errors that occurred when the #valid? method called.
     attr_reader :errors
     
-    attr_accessor :statement_text, :account_name, :bsb, :account_number, :reminder, :percentage, :amount
+    attr_accessor :statement_text, :account_name, :bsb, :account_number, :remainder, :percentage, :amount
     
      def initialize(params = {})
       @errors ||= []
@@ -25,7 +25,7 @@ module XeroGateway::Payroll
         b.AccountName self.account_name if self.account_name
         b.BSB self.bsb if self.bsb
         b.AccountNumber self.account_number if self.account_number
-        b.Remainder self.reminder if self.reminder
+        b.Remainder self.remainder if self.remainder
         b.Percentage self.percentage if self.percentage
       }
     end

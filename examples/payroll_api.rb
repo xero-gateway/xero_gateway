@@ -32,6 +32,12 @@ pp payroll_employee.response_item.home_address.address_line1
 
 # Retrieves Employee Super details
 pp "**** get_payroll_super_fund_by_id"
+pp payroll_employee.response_item.super_memberships
+#check if the emploree have "super_memberships" or not
+if payroll_employee.response_item.super_memberships.blank?
+	payroll_employee = gateway.get_payroll_employee_by_id(payroll_employees[1])
+end
+
 pp gateway.get_payroll_super_fund_by_id(payroll_employee.response_item.super_memberships.first.super_fund_id)
 
 # Retrieves all Super Funds
@@ -45,6 +51,91 @@ pp "**** employee"
 pp employee
 pp "**** saving employee"
 gateway.create_payroll_employee(employee)
+
+# Update employee's home address via Payroll API
+pp "**** Update payroll employee with bank account"
+employee.home_address = XeroGateway::Payroll::HomeAddress.new(
+    :address_line1 => "Address line 1 St", 
+    :address_line2 => "Apt Address Line 2", 
+    :address_line3 => "This is Address line 3", 
+    :city => "My city", 
+    :postal_code => "332421", 
+    :region => "My Region", 
+    :country => "Australia"
+  )
+gateway.update_payroll_employee(employee)
+pp "**** employee with bank account"
+pp employee
+
+# Update employee's bank account via Payroll API
+pp "**** Update payroll employee with bank account"
+employee.bank_accounts = [
+  XeroGateway::Payroll::BankAccount.new(
+    :statement_text => "This is StatText", 
+    :account_name => "XYZ Name", 
+    :bsb => 987650, 
+    :account_number => "987120000", 
+    :remainder => true
+  )
+]
+gateway.update_payroll_employee(employee)
+pp "**** employee with bank account"
+pp employee
+
+
+# Update employee's super memberships via Payroll API
+pp "**** Update payroll employee with super memberships" 
+employee.super_memberships = [
+  XeroGateway::Payroll::SuperMembership.new(
+    :super_fund_id => "#{payroll_employee.response_item.super_memberships.first.super_fund_id}", 
+    :employee_number => "1234",     
+    :super_membership_id => "#{payroll_employee.response_item.super_memberships.first.super_membership_id}"
+  )
+]
+gateway.update_payroll_employee(employee)
+pp "**** employee with super memberships"
+pp employee
+
+
+# # Update employee's pay template via Payroll API
+# pp "**** Update payroll employee with pay template"
+# employee.pay_template = XeroGateway::Payroll::PayTemplate.new(
+#  :earnings_lines => [
+#    XeroGateway::Payroll::EarningsLine.new(
+#      :number_of_units_per_week => 38.0000, 
+#      :annual_salary => 40000.0, 
+#      :rate_per_unit => 40.0000, 
+#      :normal_number_of_units => 37000.00, 
+#      :earnings_rate_id => "a24dd671-afd3-49bf-a60e-88acd7faa9e4", 
+#      :calculation_type => "ANNUALSALARY"
+#    )
+#  ]
+# )
+# pp "**** update employee with pay template"
+# gateway.update_payroll_employee(employee)
+# pp "**** employee with pay template"
+# pp employee
+
+
+# Update employee's tax declaration via Payroll API
+pp "**** Update payroll employee with tax declaration"
+employee.tax_declaration = XeroGateway::Payroll::TaxDeclaration.new(
+  :employment_basis => "FULLTIME", 
+  :tfn_pending_or_exemption_held => false, 
+  :tax_file_number => 123123129, 
+  :australian_resident_for_tax_purposes => true, 
+  :tax_free_threshold_claimed => true, 
+  :tax_offset_estimated_amount => 10,
+  :has_help_debt => true, 
+  :has_sfss_debt => true, 
+  :upward_variation_tax_withholding_amount => 50, 
+  :eligible_to_receive_leave_loading => true,
+  :approved_withholding_variation_percentage => 10
+)
+gateway.update_payroll_employee(employee)
+pp "**** employee with tax declaration"
+pp employee
+
 
 # Try and get invalid payroll employee by ID
 pp "**** get_payroll_employee_by_id with invalid ID"
