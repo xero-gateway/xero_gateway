@@ -1,15 +1,15 @@
 module XeroGateway::Payroll
   class PayTemplate
-    
+
     GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ unless defined?(GUID_REGEX)
-    
+
     attr_accessor :gateway
-    
+
     # Any errors that occurred when the #valid? method called.
     attr_reader :errors
-    
+
     attr_accessor :earnings_lines
-    
+
      def initialize(params = {})
       @errors ||= []
 
@@ -20,7 +20,7 @@ module XeroGateway::Payroll
 
       @earnings_lines ||= []
     end
-    
+
     def to_xml(b = Builder::XmlMarkup.new)
       b.PayTemplate {
       	b.EarningsLines{
@@ -30,7 +30,7 @@ module XeroGateway::Payroll
       	} unless self.earnings_lines.blank?
       }
     end
-    
+
     def self.from_xml(pay_template_element, gateway = nil)
       pay_template = PayTemplate.new
       pay_template_element.children.each do |element|

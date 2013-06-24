@@ -1,15 +1,15 @@
 module XeroGateway::Payroll
   class BankAccount
-    
+
     GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ unless defined?(GUID_REGEX)
-    
+
     attr_accessor :gateway
-    
+
     # Any errors that occurred when the #valid? method called.
     attr_reader :errors
-    
+
     attr_accessor :statement_text, :account_name, :bsb, :account_number, :remainder, :percentage, :amount
-    
+
      def initialize(params = {})
       @errors ||= []
 
@@ -18,7 +18,7 @@ module XeroGateway::Payroll
         self.send("#{k}=", v)
       end
     end
-    
+
     def to_xml(b = Builder::XmlMarkup.new)
       b.BankAccount {
       	b.StatementText self.statement_text if self.statement_text
@@ -29,16 +29,16 @@ module XeroGateway::Payroll
         b.Percentage self.percentage if self.percentage
       }
     end
-    
+
     def self.from_xml(bank_account_element, gateway = nil)
       bank_account = BankAccount.new
       bank_account_element.children.each do |element|
         case(element.name)
           when "StatementText" then bank_account.statement_text = element.text
           when "AccountName" then  bank_account.account_name = element.text
-          when "BSB" then bank_account.bsb = element.text 
-          when "AccountNumber" then bank_account.account_number = element.text 
-          when "Reminder" then bank_account.reminder = element.text 
+          when "BSB" then bank_account.bsb = element.text
+          when "AccountNumber" then bank_account.account_number = element.text
+          when "Reminder" then bank_account.reminder = element.text
           when "Percentage" then bank_account.percentage = element.text
         end
       end

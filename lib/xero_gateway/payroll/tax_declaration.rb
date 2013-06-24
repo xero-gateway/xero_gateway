@@ -1,4 +1,4 @@
-module XeroGateway::Payroll 
+module XeroGateway::Payroll
   class TaxDeclaration
     GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ unless defined?(GUID_REGEX)
 
@@ -9,18 +9,18 @@ module XeroGateway::Payroll
       'LABOURHIRE',
       'SUPERINCOMESTREAM'
     ] unless defined?(EMPLOYMENT_BASIS)
-    
+
     # Xero::Gateway associated with this tax_declaration.
     attr_accessor :gateway
 
     # Any errors that occurred when the #valid? method called.
     attr_reader :errors
-    
-    attr_accessor :employment_basis, :tfn_pending_or_exemption_held, :tax_file_number, 
+
+    attr_accessor :employment_basis, :tfn_pending_or_exemption_held, :tax_file_number,
       :australian_resident_for_tax_purposes, :tax_free_threshold_claimed, :tax_offset_estimated_amount,
       :has_help_debt, :has_sfss_debt, :upward_variation_tax_withholding_amount, :eligible_to_receive_leave_loading,
       :approved_withholding_variation_percentage, :updated_date_utc, :employee_id
-      
+
     def initialize(params = {})
       @errors ||= []
 
@@ -29,7 +29,7 @@ module XeroGateway::Payroll
         self.send("#{k}=", v)
       end
     end
-    
+
     # Validate the TaxDeclaration record according to what will be valid by the gateway.
     #
     # Usage:
@@ -39,14 +39,14 @@ module XeroGateway::Payroll
     # TO DO : others fields validation
     def valid?
       @errors = []
-            
+
       if employment_basis && !EMPLOYEE_STATUS.include?(employment_basis)
         @errors << ['employment_basis', "is invalid"]
-      end 
-      
+      end
+
       @errors.size == 0
     end
-      
+
     def to_xml(b = Builder::XmlMarkup.new)
       b.TaxDeclaration{
         b.EmployeeID if self.employee_id
@@ -63,7 +63,7 @@ module XeroGateway::Payroll
         b.ApprovedWithholdingVariationPercentage self.approved_withholding_variation_percentage if self.approved_withholding_variation_percentage
       }
     end
-    
+
     def self.from_xml(tax_declaration_element, gateway = nil)
       tax_declaration = TaxDeclaration.new
       tax_declaration_element.children.each do |element|
@@ -83,7 +83,7 @@ module XeroGateway::Payroll
       end
       tax_declaration
     end
-    
+
     def ==(other) [ :employment_basis, :tfn_pending_or_exemption_held, :tax_file_number, :australian_resident_for_tax_purposes, :tax_free_threshold_claimed, :tax_offset_estimated_amount, :has_help_debt, :has_sfss_debt, :upward_variation_tax_withholding_amount, :eligible_to_receive_leave_loading, :approved_withholding_variation_percentage, :updated_date_utc ].each do |field|
         return false if send(field) != other.send(field)
       end

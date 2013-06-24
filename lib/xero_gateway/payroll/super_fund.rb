@@ -33,7 +33,7 @@ module XeroGateway::Payroll
         b.AccountName self.account_name if self.account_name
       }
     end
-    
+
     def self.from_xml(super_fund_element, gateway = nil)
       super_fund = SuperFund.new
       super_fund_element.children.each do |element|

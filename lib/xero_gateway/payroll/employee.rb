@@ -18,7 +18,7 @@ module XeroGateway::Payroll
     attr_reader :errors
 
     attr_accessor :employee_id, :first_name, :date_of_birth, :email, :gender, :last_name,
-                  :middle_name, :title, :start_date, :occupation, :mobile, 
+                  :middle_name, :title, :start_date, :occupation, :mobile,
                   :phone, :termination_date, :home_address, :bank_accounts, :super_memberships, :pay_template,
                   :tax_declaration
 
