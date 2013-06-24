@@ -237,7 +237,7 @@ module XeroGateway
 
       response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'POST/employees'}, true)
       response.employees.each_with_index do | response_payroll_employee, index |
-        employees[index].employee_id = response_payroll_employee.employee_id if response_employee && response_payroll_employee.employee_id
+        employees[index].employee_id = response_payroll_employee.employee_id if response_payroll_employee && response_payroll_employee.employee_id
       end
       response
     end
