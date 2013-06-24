@@ -250,7 +250,7 @@ module XeroGateway
       address
     end
 
-    def get_payroll_super_funds (options= {})
+    def get_payroll_super_funds(options= {})
       request_params = {}
 
       request_params[:SuperFundId]   = options[:super_fund_id] if options[:super_fund_id]
@@ -758,21 +758,9 @@ module XeroGateway
 
     def save_payroll_employee(employee)
       request_xml = employee.to_xml
+      response_xml = http_post(@client, "#{@xero_payroll_url}/Employees", request_xml, {})
+      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => "POST/employee"}, true)
 
-      response_xml = nil
-      create_or_save = nil
-      if employee.employee_id.nil?
-        # Create new contact record.
-        response_xml = http_put(@client, "#{@xero_payroll_url}/Employees", request_xml, {})
-        create_or_save = :create
-      else
-        # Update existing contact record.
-        response_xml = http_post(@client, "#{@xero_payroll_url}/Employees", request_xml, {})
-        create_or_save = :save
-      end
-
-      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => "#{create_or_save == :create ? 'PUT' : 'POST'}/employee"}, true)
-      
       employee.employee_id = response.employee.employee_id if response.employee && response.employee.employee_id
       response
     end
@@ -887,7 +875,7 @@ module XeroGateway
           when "ManualJournal"
             response.response_item = ManualJournal.from_xml(element, self, {:journal_lines_downloaded => options[:request_signature] != "GET/ManualJournals"})
           when "Contacts" then element.children.each {|child| response.response_item << Contact.from_xml(child, self) }
-          when "Employees" 
+          when "Employees"
             then
               if payroll_api
                 element.children.each {|child| response.response_item << Payroll::Employee.from_xml(child, self) }

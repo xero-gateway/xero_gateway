@@ -38,6 +38,14 @@ pp gateway.get_payroll_super_fund_by_id(payroll_employee.response_item.super_mem
 pp "**** get_payroll_super_funds"
 pp gateway.get_payroll_super_funds
 
+# Push employee details via Payroll API
+pp "**** pushing payroll employees"
+employee = gateway.build_payroll_employee({first_name: "Dominic", last_name: "Wroblewski", gender: "M", title: "Mr", mobile: "07872388552"})
+pp "**** employee"
+pp employee
+pp "**** saving employee"
+gateway.create_payroll_employee(employee)
+
 # Try and get invalid payroll employee by ID
 pp "**** get_payroll_employee_by_id with invalid ID"
 begin
@@ -47,3 +55,10 @@ rescue XeroGateway::EmployeeNotFoundError => e
   pp e
 end
 
+# Update an existing Employee based on EmployeeID
+pp "**** update_payroll_employee"
+timestamp = Time.now.to_s.split
+middle_name = "#{timestamp[0]} #{timestamp[1]}"
+employee = gateway.build_payroll_employee({employee_id: payroll_employees.first, middle_name: middle_name})
+pp "Updated middle_name: " + middle_name
+gateway.update_payroll_employee(employee)
