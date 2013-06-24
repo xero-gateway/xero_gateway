@@ -3,7 +3,7 @@ module XeroGateway::Payroll
     # include Dates
 
     GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ unless defined?(GUID_REGEX)
-    
+
     STATE_ABBREVIATIONS = [
       "ACT", "NSW", "NT", "QLD","SA", "TAS", "VIC", "WA"
     ]unless defined?(STATE_ABBREVIATIO)
@@ -24,7 +24,7 @@ module XeroGateway::Payroll
         self.send("#{k}=", v)
       end
     end
-    
+
     def valid?
       @errors = []
 
@@ -35,15 +35,15 @@ module XeroGateway::Payroll
       if city.blank?
         @errors << ['city', 'must be blank']
       end
-      
+
       if postal_code.blank?
         @errors << ['postal_code', 'must be blank']
       end
-      
+
       if !region.blank? && !STATE_ABBREVIATIONS.include?(region)
         @errors << ['region', "must be blank or a valid state abbreviation"]
-      end 
-            
+      end
+
       @errors.size == 0
     end
 
@@ -59,7 +59,7 @@ module XeroGateway::Payroll
         b.Country self.country if self.country
       }
     end
-    
+
     # Should add other fields based on Pivotal: 49575441
     def self.from_xml(address_element, gateway = nil)
       address = HomeAddress.new
