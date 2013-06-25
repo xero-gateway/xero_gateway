@@ -148,6 +148,8 @@ end
 pp "**** update_payroll_employee"
 timestamp = Time.now.to_s.split
 middle_name = "#{timestamp[0]} #{timestamp[1]}"
-employee = gateway.build_payroll_employee({employee_id: payroll_employees.first, middle_name: middle_name})
-pp "Updated middle_name: " + middle_name
+employee = gateway.build_payroll_employee({employee_id: payroll_employees.first, middle_name: middle_name, start_date: 2.day.ago})
 gateway.update_payroll_employee(employee)
+updated_employee = gateway.get_payroll_employee_by_id(payroll_employees.first)
+pp "Updated middle_name: " + updated_employee.response_item.middle_name
+pp "Updated start_date: #{updated_employee.response_item.start_date}"
