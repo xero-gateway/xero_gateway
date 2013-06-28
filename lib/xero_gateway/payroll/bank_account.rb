@@ -21,7 +21,7 @@ module XeroGateway::Payroll
 
     def to_xml(b = Builder::XmlMarkup.new)
       b.BankAccount {
-      	b.StatementText self.statement_text if self.statement_text
+        b.StatementText self.statement_text if self.statement_text
         b.AccountName self.account_name if self.account_name
         b.BSB self.bsb if self.bsb
         b.AccountNumber self.account_number if self.account_number
@@ -38,7 +38,7 @@ module XeroGateway::Payroll
           when "AccountName" then  bank_account.account_name = element.text
           when "BSB" then bank_account.bsb = element.text
           when "AccountNumber" then bank_account.account_number = element.text
-          when "Reminder" then bank_account.reminder = element.text
+          when "Remainder" then bank_account.remainder = element.text
           when "Percentage" then bank_account.percentage = element.text
         end
       end
@@ -46,7 +46,7 @@ module XeroGateway::Payroll
     end
 
     def ==(other)
-      [ :statement_text, :account_name, :bsb, :account_number, :reminder, :percentage, :amount ].each do |field|
+      [ :statement_text, :account_name, :bsb, :account_number, :remainder, :percentage, :amount ].each do |field|
         return false if send(field) != other.send(field)
       end
       return true
