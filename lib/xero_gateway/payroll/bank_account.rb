@@ -27,6 +27,7 @@ module XeroGateway::Payroll
         b.AccountNumber self.account_number if self.account_number
         b.Remainder self.remainder if !self.remainder.nil?
         b.Percentage self.percentage if self.percentage
+        b.Amount self.amount if self.amount
       }
     end
 
@@ -40,6 +41,7 @@ module XeroGateway::Payroll
           when "AccountNumber" then bank_account.account_number = element.text
           when "Remainder" then bank_account.remainder = element.text
           when "Percentage" then bank_account.percentage = element.text
+          when "Amount" then bank_account.amount = element.text
         end
       end
       bank_account
