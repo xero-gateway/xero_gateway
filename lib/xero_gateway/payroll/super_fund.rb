@@ -9,7 +9,7 @@ module XeroGateway::Payroll
     # Any errors that occurred when the #valid? method called.
     attr_reader :errors
 
-    attr_accessor :super_fund_id, :type, :name, :abn, :bsb, :account_number, :account_name
+    attr_accessor :super_fund_id, :type, :name, :abn, :bsb, :account_number, :account_name, :employer_number
 
     def initialize(params = {})
       @errors ||= []
@@ -18,9 +18,7 @@ module XeroGateway::Payroll
       params.each do |k,v|
         self.send("#{k}=", v)
       end
-
     end
-
 
     def to_xml(b = Builder::XmlMarkup.new)
       b.SuperFund {
@@ -31,6 +29,7 @@ module XeroGateway::Payroll
         b.BSB self.bsb if self.bsb
         b.AccountNumber self.account_number if self.account_number
         b.AccountName self.account_name if self.account_name
+        b.EmployerNumber self.employer_number if self.employer_number
       }
     end
 
@@ -45,13 +44,14 @@ module XeroGateway::Payroll
           when "BSB" then super_fund.bsb = element.text
           when "AccountNumber" then super_fund.account_number = element.text
           when "AccountName" then super_fund.account_name = element.text
+          when "EmployerNumber" then super_fund.employer_number = element.text
         end
       end
       super_fund
     end
 
     def ==(other)
-      [ :super_fund_id, :type, :name, :abn, :bsb, :account_number, :account_name ].each do |field|
+      [ :super_fund_id, :type, :name, :abn, :bsb, :account_number, :account_name, :employer_number ].each do |field|
         return false if send(field) != other.send(field)
       end
       return true

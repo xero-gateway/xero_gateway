@@ -17,7 +17,7 @@ class GetPayrollSuperFundTest < Test::Unit::TestCase
   def test_payroll_get_super_fund
     # Make sure there is an super_fund in Xero to retrieve
     super_funds = @gateway.get_payroll_super_funds.response_item
-    
+
     result = @gateway.get_payroll_super_fund_by_id(super_funds.first.super_fund_id)
     assert !result.request_params.nil?
     assert !result.response_xml.nil?
@@ -27,5 +27,6 @@ class GetPayrollSuperFundTest < Test::Unit::TestCase
     assert_equal result.response_item.bsb, "159357"
     assert_equal result.response_item.account_name, "Test"
     assert_equal result.response_item.account_number, "111222333"
+    assert_equal result.response_item.employer_number, "999555666"
   end
 end
