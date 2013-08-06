@@ -7,7 +7,7 @@ class PayrollEmployeeTest < Test::Unit::TestCase
 
   # Tests that the XML generated from a employee object validates against the Xero XSD
   def test_build_xml
-    employee = create_test_employee
+    employee = create_test_payroll_employee
 
     message = employee.to_xml
 
@@ -17,7 +17,7 @@ class PayrollEmployeeTest < Test::Unit::TestCase
 
   # Tests that a employee can be converted into XML that Xero can understand, and then converted back to a employee
   def test_build_and_parse_xml
-    employee = create_test_employee
+    employee = create_test_payroll_employee
 
     # Generate the XML message
     employee_as_xml = employee.to_xml
@@ -34,7 +34,7 @@ class PayrollEmployeeTest < Test::Unit::TestCase
 
   private
 
-  def create_test_employee
+  def create_test_payroll_employee
     employee = XeroGateway::Payroll::Employee.new(:employee_id => "55555")
     employee.first_name = "EMPLOYEE FIRST NAME"
     employee.last_name = "EMPLOYEE LAST NAME"

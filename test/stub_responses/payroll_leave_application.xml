@@ -1,0 +1,25 @@
+<Response xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+  <Id>8e349f85-face-42e9-bdf0-7f1bfb0f804c</Id>
+  <Status>OK</Status>
+  <ProviderName>Xero API Previewer</ProviderName>
+  <DateTimeUTC>2013-07-02T23:08:14.6484737Z</DateTimeUTC>
+  <LeaveApplications>
+    <LeaveApplication>
+      <LeaveApplicationID>fdc2fe8e-6118-44e2-a80c-b85ee469a927</LeaveApplicationID>
+      <EmployeeID>f4045df9-e1c7-493f-9d14-b7a013ed76b2</EmployeeID>
+      <LeaveTypeID>93c037f5-0c57-41c4-968e-524872933310</LeaveTypeID>
+      <LeavePeriods>
+        <LeavePeriod>
+          <PayPeriodStartDate>2013-06-20T00:00:00</PayPeriodStartDate>
+          <PayPeriodEndDate>2013-07-03T00:00:00</PayPeriodEndDate>
+          <LeavePeriodStatus>SCHEDULED</LeavePeriodStatus>
+          <NumberOfUnits>7.5000</NumberOfUnits>
+        </LeavePeriod>
+      </LeavePeriods>
+      <Title>My single leave_application</Title>
+      <Description>This is tes </Description>
+      <StartDate>2013-06-26T00:00:00</StartDate>
+      <EndDate>2013-06-29T00:00:00</EndDate>
+    </LeaveApplication>
+  </LeaveApplications>
+</Response>

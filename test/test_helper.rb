@@ -252,4 +252,25 @@ module TestHelper
     manual_journal
   end
 
+  def dummy_payroll_leave_application
+    leave_type_id = Time.now.to_f - 1.minute
+    payroll_employee_id = Time.now.to_f - 2.minute
+    leave_application = XeroGateway::Payroll::LeaveApplication.new(
+                        {:leave_type_id => leave_type_id.to_i,
+                         :employee_id => payroll_employee_id.to_i,
+                         :title => "My leave_application",
+                         :start_date => Date.today,
+                         :end_date => Date.today + 1.week,
+                         :description => "My Description",
+                         :leave_periods => [XeroGateway::Payroll::LeavePeriod.new(
+                                                :number_of_units => 3,
+                                                :pay_period_end_date => Date.today + 1.month,
+                                                :pay_period_start_date => Date.today,
+                                                :leave_period_status => "SCHEDULED"
+                                              )  
+                                            ]
+                        })
+    leave_application
+  end
+
 end
