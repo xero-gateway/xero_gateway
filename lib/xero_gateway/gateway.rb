@@ -1009,6 +1009,9 @@ module XeroGateway
           when "SuperFunds" then element.children.each {|child| response.response_item << Payroll::SuperFund.from_xml(child, self) }
           when "LeaveApplications" then element.children.each {|child| response.response_item << Payroll::LeaveApplication.from_xml(child, self)}
           when "PayItems" then response.response_item = Payroll::PayItem.from_xml(element, self)
+          when "Payslip" then response.response_item = Payroll::Payslip.from_xml(element, self)
+          when "PayrollCalendars" then element.children.each {|child| response.response_item << Payroll::PayrollCalendar.from_xml(child, self) }
+          when "PayRuns" then element.children.each {|child| response.response_item << Payroll::PayRun.from_xml(child, self) }
           when "Errors" then response.errors = element.children.map { |error| Error.parse(error) }
         end
       end if response_element
