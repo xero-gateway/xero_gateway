@@ -56,5 +56,3 @@ require File.join(File.dirname(__FILE__), 'xero_gateway', 'payroll','leave_type'
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'payroll','reimbursement_type')
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'payroll','leave_application')
 require File.join(File.dirname(__FILE__), 'xero_gateway', 'payroll','leave_period')
-require File.join(File.dirname(__FILE__), 'xero_gateway', 'payroll','payroll_calendar')
-require File.join(File.dirname(__FILE__), 'xero_gateway', 'payroll','pay_run')
