@@ -132,6 +132,7 @@ module XeroGateway
           when /BankTransactions/ then raise BankTransactionNotFoundError.new("Bank Transaction not found in Xero.")
           when /CreditNotes/ then raise CreditNoteNotFoundError.new("Credit Note not found in Xero.")
           when /Employees/ then raise EmployeeNotFoundError.new("Employee ID not found.")
+          when /Payslip/ then raise PayslipNotFoundError.new("Payslip not found")
           else raise ObjectNotFound.new(request_url)
         end
       end

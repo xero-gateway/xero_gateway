@@ -1,0 +1,34 @@
+<Response xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+  <Id>573ecb49-5c7e-4313-898c-f7208e2b65a8</Id>
+  <Status>OK</Status>
+  <DateTimeUTC>2013-07-09T02:33:55.6235469Z</DateTimeUTC>
+  <Payslip>
+    <EmployeeID>x342d509-4d61-46f1-bb6c-f3c68c308a48</EmployeeID>
+    <PayslipID>p2d3f1bf6-79a2-4e8c-a485-9f6ff671b3ac</PayslipID>
+    <FirstName>John</FirstName>
+    <LastName>Smith</LastName>
+    <Tax>1000.00</Tax>
+    <NetPay>2000.30</NetPay>
+    <UpdatedDateUTC>2013-07-06T16:29:28</UpdatedDateUTC>
+    <EarningsLines />
+    <LeaveEarningsLines />
+    <TimesheetEarningsLines>
+      <EarningsLine>
+        <EarningsRateID>ed3332-631c-4da7-8362-04484a290493</EarningsRateID>
+        <RatePerUnit>10.0000</RatePerUnit>
+        <NumberOfUnits>300.3000</NumberOfUnits>
+      </EarningsLine>
+    </TimesheetEarningsLines>
+    <DeductionLines />
+    <LeaveAccrualLines />
+    <ReimbursementLines />
+    <SuperannuationLines />
+    <TaxLines>
+      <TaxLine>
+        <PayslipTaxLineID>364134-c20b-4626-b934-383bdfc84fcd</PayslipTaxLineID>
+        <Description>Foreign resident</Description>
+        <Amount>1222.00</Amount>
+      </TaxLine>
+    </TaxLines>
+  </Payslip>
+</Response>
