@@ -22,5 +22,5 @@ payroll_pay_runs = gateway.get_payroll_pay_runs.response_item
 pp payroll_pay_runs
 
 pp "**** Get Payroll PayRuns By ID"
-payroll_pay_run = gateway.get_payroll_pay_run_by_id(payroll_pay_runs.pay_run_id).response_item
+payroll_pay_run = gateway.get_payroll_pay_run_by_id(payroll_pay_runs.first.pay_run_id).response_item
 pp payroll_pay_run

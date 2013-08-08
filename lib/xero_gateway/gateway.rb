@@ -773,7 +773,7 @@ module XeroGateway
 
     def get_payroll_pay_run_by_id(pay_run_id = nil)
       request_params = { :PayRunID => pay_run_id }
-      response_xml = http_get(@client, "#{@xero_payroll_url}/PayRun/#{URI.escape(pay_run_id)}", request_params)
+      response_xml = http_get(@client, "#{@xero_payroll_url}/PayRuns/#{URI.escape(pay_run_id)}", request_params)
 
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/pay_run'}, true)
     end
