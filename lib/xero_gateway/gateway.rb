@@ -778,6 +778,13 @@ module XeroGateway
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/pay_run'}, true)
     end
 
+    def get_payroll_payslip_by_id(payslip_id)
+      request_params = { :PayslipID => payslip_id }
+      response_xml = http_get(@client, "#{@xero_payroll_url}/Payslip/#{URI.escape(payslip_id)}", request_params)
+
+      parse_response(response_xml, {:request_params => {}}, {:request_signature => 'GET/payslip'}, true)
+    end
+
     private
 
     def get_contact(contact_id = nil, contact_number = nil)
