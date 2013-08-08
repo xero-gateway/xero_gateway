@@ -726,6 +726,13 @@ module XeroGateway
       parse_response(response_xml, {:request_params => {}}, {:request_signature => 'GET/pay_items'}, true)
     end
 
+    def get_payroll_payslip_by_id(payslip_id)
+      request_params = { :PayslipID => payslip_id }
+      response_xml = http_get(@client, "#{@xero_payroll_url}/Payslip/#{URI.escape(payslip_id)}", request_params)
+
+      parse_response(response_xml, {:request_params => {}}, {:request_signature => 'GET/payslip'}, true)
+    end
+
     private
 
     def get_contact(contact_id = nil, contact_number = nil)
@@ -957,6 +964,7 @@ module XeroGateway
           when "SuperFunds" then element.children.each {|child| response.response_item << Payroll::SuperFund.from_xml(child, self) }
           when "LeaveApplications" then element.children.each {|child| response.response_item << Payroll::LeaveApplication.from_xml(child, self)}
           when "PayItems" then response.response_item = Payroll::PayItem.from_xml(element, self)
+          when "Payslip" then response.response_item = Payroll::Payslip.from_xml(element, self)
           when "Errors" then response.errors = element.children.map { |error| Error.parse(error) }
         end
       end if response_element
