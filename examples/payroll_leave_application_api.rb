@@ -53,7 +53,7 @@ new_payroll_leave_application = gateway.build_payroll_leave_application({:leave_
 																																									    :pay_period_end_date => Date.today + 1.month,
 																																									    :pay_period_start_date => Date.today,
 																																									    :leave_period_status => "SCHEDULED"
-																																									  )  
+																																									  )
 																																									]
 																															})
 
@@ -70,9 +70,10 @@ pp payroll_leave_application
 # Update A Leave Application
 pp "**** Update A Leave Application"
 pp "**** Old Leave Application Description: #{payroll_leave_applications.first.description}"
-leave_application = gateway.build_payroll_leave_application({employee_id: payroll_leave_applications.first.employee_id, 
-																														 end_date: payroll_leave_applications.first.start_date.to_datetime + 1.week, 
-																														 leave_application_id: payroll_leave_applications.first.leave_application_id, 
+leave_application = gateway.build_payroll_leave_application({employee_id: payroll_leave_applications.first.employee_id,
+																														 start_date: payroll_leave_applications.first.start_date.to_datetime,
+																														 end_date: payroll_leave_applications.first.start_date.to_datetime + 1.week,
+																														 leave_application_id: payroll_leave_applications.first.leave_application_id,
 																														 description: "New Leave Application Description"})
 pp leave_application.to_xml
 gateway.update_payroll_leave_application(leave_application)
