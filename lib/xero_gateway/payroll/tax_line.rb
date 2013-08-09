@@ -8,7 +8,7 @@ module XeroGateway::Payroll
     # Any errors that occurred when the #valid? method called.
     attr_reader :errors
 
-    attr_accessor :tax_type_name, :description, :amount, :liability_account; :payslip_tax_line_id
+    attr_accessor :tax_type_name, :description, :amount, :liability_account, :payslip_tax_line_id
 
     def initialize(params = {})
       @errors ||= []
