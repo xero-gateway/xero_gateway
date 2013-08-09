@@ -23,7 +23,7 @@ module XeroGateway::Payroll
       b.SuperannuationLine{
         b.SuperMembershipID self.super_membership_id if self.super_membership_id
         b.ContributionType self.contribution_type if self.contribution_type
-        b.CalculationTyoe self.calculation_type if self.calculation_type
+        b.CalculationType self.calculation_type if self.calculation_type
         b.MinimumMonthlyEarnings self.minimum_monthly_earnings if self.minimum_monthly_earnings
         b.ExpenseAccountCode self.expense_account_code if self.expense_account_code
         b.LiabilityAccountCode self.liability_account_code if self.liability_account_code
@@ -39,7 +39,7 @@ module XeroGateway::Payroll
         case (element.name)
           when "SuperMembershipID" then superannuation_line.super_membership_id = element.text
           when "ContributionType" then superannuation_line.contribution_type = element.text
-          when "CalculationTyoe" then superannuation_line.calculation_type = element.text
+          when "CalculationType" then superannuation_line.calculation_type = element.text
           when "MinimumMonthlyEarnings" then superannuation_line.minimum_monthly_earnings = element.text
           when "ExpenseAccountCode" then superannuation_line.expense_account_code = element.text
           when "LiabilityAccountCode" then superannuation_line.liability_account_code = element.text
