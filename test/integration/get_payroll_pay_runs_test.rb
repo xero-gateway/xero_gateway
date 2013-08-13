@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
-class GetPayrollPayunsTest < Test::Unit::TestCase
+class GetPayrollPayRunsTest < Test::Unit::TestCase
   include TestHelper
 
   def setup

@@ -8,7 +8,7 @@ class GetPayrollPayRunTest < Test::Unit::TestCase
 
     if STUB_XERO_CALLS
       @gateway.xero_payroll_url = "DUMMY_URL"
-      @gateway.stubs(:http_get).with {|client, url, params| url =~ /PayRun\/[^\/]+$/ }.returns(get_file_as_string("payroll_pay_run.xml"))
+      @gateway.stubs(:http_get).with {|client, url, params| url =~ /PayRuns\/[^\/]+$/ }.returns(get_file_as_string("payroll_pay_run.xml"))
     end
   end
 
