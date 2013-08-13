@@ -12,7 +12,7 @@ module XeroGateway::Payroll
     # Any errors that occurred when the #valid? method called.
     attr_reader :errors
 
-    attr_accessor :number_of_units_per_week, :annual_salary, :rate_per_unit, :normal_number_of_units, :earnings_rate_id, :calculation_type, :number_of_units
+    attr_accessor :number_of_units_per_week, :annual_salary, :rate_per_unit, :normal_number_of_units, :earnings_rate_id, :calculation_type, :number_of_units, :fixed_amount
 
      def initialize(params = {})
       @errors ||= []
@@ -32,6 +32,7 @@ module XeroGateway::Payroll
         b.RatePerUnit self.rate_per_unit if self.rate_per_unit
         b.NormalNumberOfUnits self.normal_number_of_units if self.normal_number_of_units
         b.NumberOfUnits self.number_of_units if self.number_of_units
+        b.FixedAmount self.fixed_amount if self.fixed_amount
       }
     end
 
@@ -46,13 +47,14 @@ module XeroGateway::Payroll
           when "EarningsRateID" then earnings_line.earnings_rate_id = element.text
           when "CalculationType" then earnings_line.calculation_type = element.text
           when "NumberOfUnits" then earnings_line.number_of_units = element.text
+          when "FixedAmount" then earnings_line.fixed_amount = element.text
         end
       end
       earnings_line
     end
 
     def ==(other)
-      [ :number_of_units_per_week, :annual_salary, :rate_per_unit, :number_of_units, :normal_number_of_units, :earnings_rate_id, :calculation_type ].each do |field|
+      [ :number_of_units_per_week, :annual_salary, :rate_per_unit, :number_of_units, :normal_number_of_units, :earnings_rate_id, :calculation_type, :fixed_amount ].each do |field|
         return false if send(field) != other.send(field)
       end
       return true

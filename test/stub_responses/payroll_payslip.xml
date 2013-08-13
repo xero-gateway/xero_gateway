@@ -10,24 +10,40 @@
     <Tax>1000.00</Tax>
     <NetPay>2000.30</NetPay>
     <UpdatedDateUTC>2013-07-06T16:29:28</UpdatedDateUTC>
-    <EarningsLines />
-    <LeaveEarningsLines />
-    <TimesheetEarningsLines>
+    <EarningsLines>
       <EarningsLine>
-        <EarningsRateID>ed3332-631c-4da7-8362-04484a290493</EarningsRateID>
-        <RatePerUnit>10.0000</RatePerUnit>
-        <NumberOfUnits>300.3000</NumberOfUnits>
+        <EarningsRateID>a3d39287-631c-4da7-8362-04484a290493</EarningsRateID>
+        <RatePerUnit>126.1716</RatePerUnit>
+        <NumberOfUnits>76.0000</NumberOfUnits>
       </EarningsLine>
-    </TimesheetEarningsLines>
+    </EarningsLines>
+    <LeaveEarningsLines />
+    <TimesheetEarningsLines />
     <DeductionLines />
     <LeaveAccrualLines />
     <ReimbursementLines />
-    <SuperannuationLines />
+    <SuperannuationLines>
+      <SuperannuationLine>
+        <ContributionType>SGC</ContributionType>
+        <CalculationType>STATUTORY</CalculationType>
+        <MinimumMonthlyEarnings>450.0000</MinimumMonthlyEarnings>
+        <ExpenseAccountCode>478</ExpenseAccountCode>
+        <LiabilityAccountCode>826</LiabilityAccountCode>
+        <PaymentDateForThisPeriod>2013-07-28T00:00:00</PaymentDateForThisPeriod>
+        <Amount>863.0100</Amount>
+      </SuperannuationLine>
+    </SuperannuationLines>
     <TaxLines>
       <TaxLine>
-        <PayslipTaxLineID>364134-c20b-4626-b934-383bdfc84fcd</PayslipTaxLineID>
-        <Description>Foreign resident</Description>
-        <Amount>1222.00</Amount>
+        <PayslipTaxLineID>0628159f-c1c7-4e3d-83c2-f063d7f0dd68</PayslipTaxLineID>
+        <Description>With tax-free threshold, no leave loading</Description>
+        <Amount>3444.00</Amount>
+        <LiabilityAccount>825</LiabilityAccount>
+      </TaxLine>
+      <TaxLine>
+        <PayslipTaxLineID>bd6386b7-4c8e-45f2-a9ca-32660feb6b3d</PayslipTaxLineID>
+        <Amount>768.00</Amount>
+        <LiabilityAccount>825</LiabilityAccount>
       </TaxLine>
     </TaxLines>
   </Payslip>
