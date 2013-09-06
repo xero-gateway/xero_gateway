@@ -127,6 +127,7 @@ module XeroGateway
           when /Invoices/ then raise InvoiceNotFoundError.new("Invoice not found in Xero.")
           when /BankTransactions/ then raise BankTransactionNotFoundError.new("Bank Transaction not found in Xero.")
           when /CreditNotes/ then raise CreditNoteNotFoundError.new("Credit Note not found in Xero.")
+          when /ManualJournals/ then raise ManualJournalNotFoundError.new("Manual Journal not found in Xero.")
           else raise ObjectNotFound.new(request_url)
         end
       end
