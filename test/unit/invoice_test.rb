@@ -2,6 +2,17 @@ require File.join(File.dirname(__FILE__), '../test_helper.rb')
 
 class InvoiceTest < Test::Unit::TestCase
 
+  context "with line item totals" do
+
+    should "allow setting and reading these as instance variables without downloading line items" do
+      invoice = create_test_invoice(:line_items_downloaded => false, :total => 6969_00)
+
+      assert !invoice.line_items_downloaded?
+      XeroGateway::Invoice.any_instance.expects(:download_line_items).never
+      assert_equal 6969_00, invoice.total
+    end
+  end
+
   context "building and parsing XML" do
     should "work vice versa" do
       invoice = create_test_invoice
@@ -72,7 +83,8 @@ class InvoiceTest < Test::Unit::TestCase
 
   # Tests the total calculation and that setting it manually doesn't modify the data.
   def test_invoice_sub_total_calculation
-    invoice = create_test_invoice
+    invoice = create_test_invoice(:line_items_downloaded => true)
+    assert invoice.line_items_downloaded?
     line_item = invoice.line_items.first
     
     # Make sure that everything adds up to begin with.
@@ -81,7 +93,7 @@ class InvoiceTest < Test::Unit::TestCase
     
     # Change the total and check that it doesn't modify anything.
     invoice.total = expected_total * 10
-    assert_equal(expected_total, invoice.total)
+    assert_equal(expected_total.to_f, invoice.total.to_f)
     
     # Change the quantity of the first line item and make sure that 
     # everything still continues to add up.
