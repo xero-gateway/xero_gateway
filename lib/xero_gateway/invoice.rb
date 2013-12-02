@@ -39,7 +39,6 @@ module XeroGateway
     # All accessible fields
     attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :branding_theme_id, :line_amount_types, :currency_code, :line_items, :contact, :payments, :fully_paid_on, :amount_due, :amount_paid, :amount_credited, :sent_to_contact, :url
 
-    
     def initialize(params = {})
       @errors ||= []
       @payments ||= []
@@ -123,7 +122,13 @@ module XeroGateway
     def line_items_downloaded?
       @line_items_downloaded
     end
-    
+
+    %w(sub_total tax_total total).each do |line_item_total_type|
+      define_method("#{line_item_total_type}=") do |new_total|
+        instance_variable_set("@#{line_item_total_type}", new_total) unless line_items_downloaded?
+      end
+    end
+        
     # If line items are not downloaded, then attempt a download now (if this record was found to begin with).
     def line_items
       if line_items_downloaded?
