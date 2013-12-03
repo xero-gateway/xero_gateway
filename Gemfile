@@ -8,5 +8,5 @@ group :test do
   gem 'i18n' # For fixing undocumented active_support dependency
   gem 'mocha'
   gem 'shoulda'
-  gem 'libxml-ruby'
+  gem 'libxml-ruby', '~> 2.2.2'
 end

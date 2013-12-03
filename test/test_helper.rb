@@ -1,7 +1,7 @@
 require "rubygems"
 
 require 'test/unit'
-require 'mocha'
+require 'mocha/setup'
 require 'shoulda'
 
 require 'libxml'
@@ -13,20 +13,20 @@ module TestHelper
   # environment, and you must have set up a customer key for that account.
   #
   # You can then run the tests against the test environment using the commands (linux or mac):
-  # export STUB_XERO_CALLS=false  
+  # export STUB_XERO_CALLS=false
   # rake test
   # (this probably won't work under OAuth?)
   #
-  
+
   STUB_XERO_CALLS = ENV["STUB_XERO_CALLS"].nil? ? true : (ENV["STUB_XERO_CALLS"] == "true") unless defined? STUB_XERO_CALLS
-  
+
   CONSUMER_KEY    = ENV["CONSUMER_KEY"]    || "fake_key"    unless defined?(CONSUMER_KEY)
   CONSUMER_SECRET = ENV["CONSUMER_SECRET"] || "fake_secret" unless defined?(CONSUMER_SECRET)
-  
+
   # Helper constant for checking regex
   GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ unless defined?(GUID_REGEX)
 
-  
+
   def dummy_invoice(with_line_items = true)
      invoice = XeroGateway::Invoice.new({
        :invoice_type => "ACCREC",
@@ -50,7 +50,7 @@ module TestHelper
      end
      invoice
   end
-      
+
   def dummy_credit_note(with_line_items = true)
      credit_note = XeroGateway::CreditNote.new({
        :type => "ACCRECCREDIT",
@@ -73,7 +73,7 @@ module TestHelper
      end
      credit_note
   end
-      
+
   def dummy_contact
     unique_id = Time.now.to_f
     contact = XeroGateway::Contact.new(:name => STUB_XERO_CALLS ? "CONTACT NAME" : "THE NAME OF THE CONTACT #{unique_id}")
@@ -90,10 +90,10 @@ module TestHelper
 
     contact
   end
-  
+
   def get_file_as_string(filename)
     data = ''
-    f = File.open(File.dirname(__FILE__) + "/stub_responses/" + filename, "r") 
+    f = File.open(File.dirname(__FILE__) + "/stub_responses/" + filename, "r")
     f.each_line do |line|
       data += line
     end
@@ -177,7 +177,7 @@ module TestHelper
   end
 
   def create_test_manual_journal(params={}, journal_line_params={})
-    params = {      
+    params = {
       :date       => Date.today,
       :narration  => 'test narration',
       :status     => 'POSTED'
@@ -202,9 +202,9 @@ module TestHelper
       journal_line_params[1] = {
         :description  => "SECOND LINE",
         :account_code => "200",
-        :line_amount  => BigDecimal.new("-100"),        
+        :line_amount  => BigDecimal.new("-100"),
         :tracking     => XeroGateway::TrackingCategory.new(:name => "blah2", :options => "hello2")
-      }.merge(params_line_1)      
+      }.merge(params_line_1)
 
       # Create line_items from line_item_params
       journal_line_params.each do |journal_line|
