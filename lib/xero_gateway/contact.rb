@@ -1,10 +1,7 @@
 module XeroGateway
   class Contact
     include Dates
-    
-    class Error < RuntimeError; end
-    class NoGatewayError < Error; end
-    
+        
     GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ unless defined?(GUID_REGEX)
     
     CONTACT_STATUS = {
@@ -126,14 +123,14 @@ module XeroGateway
     end
     
     # Creates this contact record (using gateway.create_contact) with the associated gateway.
-    # If no gateway set, raise a Xero::Contact::NoGatewayError exception.
+    # If no gateway set, raise a NoGatewayError exception.
     def create
       raise NoGatewayError unless gateway
       gateway.create_contact(self)
     end
     
     # Creates this contact record (using gateway.update_contact) with the associated gateway.
-    # If no gateway set, raise a Xero::Contact::NoGatewayError exception.
+    # If no gateway set, raise a NoGatewayError exception.
     def update
       raise NoGatewayError unless gateway
       gateway.update_contact(self)
@@ -143,7 +140,7 @@ module XeroGateway
       b.Contact {
         b.ContactID self.contact_id if self.contact_id
         b.ContactNumber self.contact_number if self.contact_number
-        b.Name self.name
+        b.Name self.name if self.name
         b.EmailAddress self.email if self.email
         b.FirstName self.first_name if self.first_name
         b.LastName self.last_name if self.last_name
@@ -157,10 +154,10 @@ module XeroGateway
         b.DefaultCurrency if self.default_currency
         b.Addresses {
           addresses.each { |address| address.to_xml(b) }
-        }
+        } if self.addresses.any?
         b.Phones {
           phones.each { |phone| phone.to_xml(b) }
-        }
+        } if self.phones.any?
       }
     end
     

@@ -4,8 +4,6 @@ module XeroGateway
     include Money
     include LineItemCalculations
     
-    class NoGatewayError < Error; end
-    
     INVOICE_TYPE = {
       'ACCREC' =>           'Accounts Receivable',
       'ACCPAY' =>           'Accounts Payable'
@@ -32,13 +30,14 @@ module XeroGateway
     attr_accessor :gateway
     
     # Any errors that occurred when the #valid? method called.
-    attr_reader :errors
+    # Or errors that were within the XML payload from Xero
+    attr_accessor :errors
 
     # Represents whether the line_items have been downloaded when getting from GET /API.XRO/2.0/INVOICES
     attr_accessor :line_items_downloaded
   
     # All accessible fields
-    attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :line_amount_types, :currency_code, :line_items, :contact, :payments, :fully_paid_on, :amount_due, :amount_paid, :amount_credited, :sent_to_contact, :url
+    attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :branding_theme_id, :line_amount_types, :currency_code, :line_items, :contact, :payments, :fully_paid_on, :amount_due, :amount_paid, :amount_credited, :sent_to_contact, :url
 
     
     def initialize(params = {})
@@ -68,6 +67,10 @@ module XeroGateway
     def valid?
       @errors = []
       
+      if !INVOICE_TYPE[invoice_type]
+        @errors << ['invoice_type', "must be one of #{INVOICE_TYPE.keys.join('/')}"]
+      end
+
       if !invoice_id.nil? && invoice_id !~ GUID_REGEX
         @errors << ['invoice_id', 'must be blank or a valid Xero GUID']
       end
@@ -165,14 +168,14 @@ module XeroGateway
     end
     
     # Creates this invoice record (using gateway.create_invoice) with the associated gateway.
-    # If no gateway set, raise a Xero::Invoice::NoGatewayError exception.
+    # If no gateway set, raise a NoGatewayError exception.
     def create
       raise NoGatewayError unless gateway
       gateway.create_invoice(self)
     end
     
     # Updates this invoice record (using gateway.update_invoice) with the associated gateway.
-    # If no gateway set, raise a Xero::Invoice::NoGatewayError exception.
+    # If no gateway set, raise a NoGatewayError exception.
     def update
       raise NoGatewayError unless gateway
       gateway.update_invoice(self)
@@ -189,6 +192,7 @@ module XeroGateway
         b.DueDate Invoice.format_date(self.due_date) if self.due_date
         b.Status self.invoice_status if self.invoice_status
         b.Reference self.reference if self.reference
+        b.BrandingThemeID self.branding_theme_id if self.branding_theme_id
         b.LineAmountTypes self.line_amount_types
         b.LineItems {
           self.line_items.each do |line_item|
@@ -213,22 +217,24 @@ module XeroGateway
           when "DueDate" then invoice.due_date = parse_date(element.text)
           when "Status" then invoice.invoice_status = element.text
           when "Reference" then invoice.reference = element.text
+          when "BrandingThemeID" then invoice.branding_theme_id = element.text
           when "LineAmountTypes" then invoice.line_amount_types = element.text
           when "LineItems" then element.children.each {|line_item| invoice.line_items_downloaded = true; invoice.line_items << LineItem.from_xml(line_item) }
           when "SubTotal" then invoice.sub_total = BigDecimal.new(element.text)
           when "TotalTax" then invoice.total_tax = BigDecimal.new(element.text)
           when "Total" then invoice.total = BigDecimal.new(element.text)
           when "InvoiceID" then invoice.invoice_id = element.text
-          when "InvoiceNumber" then invoice.invoice_number = element.text            
+          when "InvoiceNumber" then invoice.invoice_number = element.text
           when "Payments" then element.children.each { | payment | invoice.payments << Payment.from_xml(payment) }
           when "AmountDue" then invoice.amount_due = BigDecimal.new(element.text)
           when "AmountPaid" then invoice.amount_paid = BigDecimal.new(element.text)
           when "AmountCredited" then invoice.amount_credited = BigDecimal.new(element.text)
           when "SentToContact" then invoice.sent_to_contact = (element.text.strip.downcase == "true")
           when "Url" then invoice.url = element.text
+          when "ValidationErrors" then invoice.errors = element.children.map { |error| Error.parse(error) }
         end
-      end      
+      end
       invoice
-    end    
+    end
   end
 end

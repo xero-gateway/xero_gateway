@@ -124,7 +124,7 @@ module XeroGateway
     def to_xml(b = Builder::XmlMarkup.new)
       b.ManualJournal {
         b.ManualJournalID manual_journal_id if manual_journal_id
-        b.Narration narration        
+        b.Narration narration
         b.JournalLines {
           self.journal_lines.each do |journal_line|
             journal_line.to_xml(b)

@@ -1,0 +1,96 @@
+<Response xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Id>1c4509e1-e394-430c-9ca5-c28bda07e286</Id>
+  <Status>OK</Status>
+  <ProviderName>Xero Gateway Test</ProviderName>
+  <DateTimeUTC>2012-11-12T20:06:22.3034642Z</DateTimeUTC>
+  <Payments>
+    <Payment>
+      <PaymentID>25fe300b-9dff-40d7-b046-d7f4b68262d3</PaymentID>
+      <Date>2012-11-13T00:00:00</Date>
+      <Amount>500.00</Amount>
+      <Reference>Test Payment</Reference>
+      <CurrencyRate>1.000000</CurrencyRate>
+      <Account>
+        <AccountID>ebd06280-af70-4bed-97c6-7451a454ad85</AccountID>
+        <Code>601</Code>
+        <Name>Savings Account</Name>
+        <Status>ACTIVE</Status>
+        <Type>BANK</Type>
+        <TaxType>NONE</TaxType>
+        <Class>ASSET</Class>
+        <EnablePaymentsToAccount>false</EnablePaymentsToAccount>
+        <ShowInExpenseClaims>false</ShowInExpenseClaims>
+        <BankAccountNumber>3809087654321050</BankAccountNumber>
+        <CurrencyCode>NZD</CurrencyCode>
+        <ReportingCode>ASS</ReportingCode>
+        <ReportingCodeName>Assets</ReportingCodeName>
+      </Account>
+      <Invoice>
+        <Contact>
+          <ContactID>e1120641-c8d5-4e51-962c-52d1d1086a92</ContactID>
+          <Name>Basket Case</Name>
+        </Contact>
+        <Date>2012-11-07T00:00:00</Date>
+        <DueDate>2012-11-17T00:00:00</DueDate>
+        <BrandingThemeID>4c82c365-35cb-467f-bb11-dce1f2f2f67c</BrandingThemeID>
+        <Status>AUTHORISED</Status>
+        <LineAmountTypes>Inclusive</LineAmountTypes>
+        <LineItems>
+          <LineItem>
+            <Description>Project team meeting to discuss dev changes required to your online gift basket ordering system</Description>
+            <UnitAmount>464.55</UnitAmount>
+            <TaxType>OUTPUT2</TaxType>
+            <TaxAmount>60.59</TaxAmount>
+            <LineAmount>464.55</LineAmount>
+            <AccountCode>200</AccountCode>
+            <Quantity>1.0000</Quantity>
+          </LineItem>
+          <LineItem>
+            <Description>Development work - per hour rate</Description>
+            <UnitAmount>90.00</UnitAmount>
+            <TaxType>OUTPUT2</TaxType>
+            <TaxAmount>58.70</TaxAmount>
+            <LineAmount>450.00</LineAmount>
+            <AccountCode>200</AccountCode>
+            <Quantity>5.0000</Quantity>
+          </LineItem>
+        </LineItems>
+        <SubTotal>795.26</SubTotal>
+        <TotalTax>119.29</TotalTax>
+        <Total>914.55</Total>
+        <UpdatedDateUTC>2012-11-12T20:06:22.07</UpdatedDateUTC>
+        <CurrencyCode>NZD</CurrencyCode>
+        <Type>ACCREC</Type>
+        <InvoiceID>8d012c26-1036-430d-b752-f9ac1ceab677</InvoiceID>
+        <InvoiceNumber>INV-0036</InvoiceNumber>
+        <Payments>
+          <Payment>
+            <PaymentID>d040333a-1e86-48e9-80ba-a5e792a909f4</PaymentID>
+            <Date>2012-11-13T00:00:00</Date>
+            <Amount>555.00</Amount>
+            <CurrencyRate>1.000000</CurrencyRate>
+          </Payment>
+          <Payment>
+            <PaymentID>b072dbd0-57b9-44e2-9881-786d5aade4ec</PaymentID>
+            <Date>2012-11-13T00:00:00</Date>
+            <Amount>50.00</Amount>
+            <Reference>Test Payment</Reference>
+            <CurrencyRate>1.000000</CurrencyRate>
+          </Payment>
+          <Payment>
+            <PaymentID>25fe300b-9dff-40d7-b046-d7f4b68262d3</PaymentID>
+            <Date>2012-11-13T00:00:00</Date>
+            <Amount>50.00</Amount>
+            <Reference>Test Payment</Reference>
+            <CurrencyRate>1.000000</CurrencyRate>
+          </Payment>
+        </Payments>
+        <AmountDue>259.55</AmountDue>
+        <AmountPaid>655.00</AmountPaid>
+        <SentToContact>false</SentToContact>
+        <CurrencyRate>1.000000</CurrencyRate>
+        <HasAttachments>false</HasAttachments>
+      </Invoice>
+    </Payment>
+  </Payments>
+</Response>

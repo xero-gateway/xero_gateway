@@ -1,22 +1,22 @@
 module XeroGateway
-  
+
   class Gateway
     include Http
     include Dates
-      
+
     attr_accessor :client, :xero_url, :logger
-    
+
     extend Forwardable
-    def_delegators :client, :request_token, :access_token, :authorize_from_request, :authorize_from_access, :authorization_expires_at
+    def_delegators :client, :request_token, :access_token, :authorize_from_request, :authorize_from_access, :expires_at, :authorization_expires_at
 
     #
     # The consumer key and secret here correspond to those provided
-    # to you by Xero inside the API Previewer. 
+    # to you by Xero inside the API Previewer.
     def initialize(consumer_key, consumer_secret, options = {})
       @xero_url = options[:xero_url] || "https://api.xero.com/api.xro/2.0"
       @client   = OAuth.new(consumer_key, consumer_secret, options)
     end
-  
+
     #
     # Retrieve all contacts from Xero
     #
@@ -34,27 +34,27 @@ module XeroGateway
 
       request_params[:ContactID]     = options[:contact_id] if options[:contact_id]
       request_params[:ContactNumber] = options[:contact_number] if options[:contact_number]
-      request_params[:OrderBy]       = options[:order] if options[:order]      
+      request_params[:OrderBy]       = options[:order] if options[:order]
       request_params[:ModifiedAfter] = options[:modified_since] if options[:modified_since]
       request_params[:where]         = options[:where] if options[:where]
-    
+
       response_xml = http_get(@client, "#{@xero_url}/Contacts", request_params)
-    
+
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/contacts'})
     end
-    
+
     # Retrieve a contact from Xero
-    # Usage get_contact_by_id(contact_id)    
+    # Usage get_contact_by_id(contact_id)
     def get_contact_by_id(contact_id)
       get_contact(contact_id)
     end
 
     # Retrieve a contact from Xero
-    # Usage get_contact_by_id(contact_id)    
+    # Usage get_contact_by_id(contact_id)
     def get_contact_by_number(contact_number)
       get_contact(nil, contact_number)
     end
-    
+
     # Factory method for building new Contact objects associated with this gateway.
     def build_contact(contact = {})
       case contact
@@ -63,11 +63,11 @@ module XeroGateway
       end
       contact
     end
-    
+
     #
     # Creates a contact in Xero
     #
-    # Usage : 
+    # Usage :
     #
     # contact = XeroGateway::Contact.new(:name => "THE NAME OF THE CONTACT #{Time.now.to_i}")
     # contact.email = "whoever@something.com"
@@ -85,24 +85,24 @@ module XeroGateway
     def create_contact(contact)
       save_contact(contact)
     end
-    
+
     #
     # Updates an existing Xero contact
     #
-    # Usage : 
+    # Usage :
     #
     # contact = xero_gateway.get_contact(some_contact_id)
     # contact.email = "a_new_email_ddress"
     #
-    # xero_gateway.update_contact(contact)  
+    # xero_gateway.update_contact(contact)
     def update_contact(contact)
       raise "contact_id or contact_number is required for updating contacts" if contact.contact_id.nil? and contact.contact_number.nil?
       save_contact(contact)
     end
-    
+
     #
     # Updates an array of contacts in a single API operation.
-    # 
+    #
     # Usage :
     #  contacts = [XeroGateway::Contact.new(:name => 'Joe Bloggs'), XeroGateway::Contact.new(:name => 'Jane Doe')]
     #  result = gateway.update_contacts(contacts)
@@ -116,7 +116,7 @@ module XeroGateway
           contact.to_xml(b)
         end
       }
-      
+
       response_xml = http_post(@client, "#{@xero_url}/Contacts", request_xml, {})
 
       response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'POST/contacts'})
@@ -125,7 +125,7 @@ module XeroGateway
       end
       response
     end
-    
+
     # Retrieves all invoices from Xero
     #
     # Usage : get_invoices
@@ -133,12 +133,12 @@ module XeroGateway
     #
     # Note  : modified_since is in UTC format (i.e. Brisbane is UTC+10)
     def get_invoices(options = {})
-      
+
       request_params = {}
-      
+
       request_params[:InvoiceID]     = options[:invoice_id] if options[:invoice_id]
       request_params[:InvoiceNumber] = options[:invoice_number] if options[:invoice_number]
-      request_params[:OrderBy]       = options[:order] if options[:order]      
+      request_params[:OrderBy]       = options[:order] if options[:order]
       request_params[:ModifiedAfter] = options[:modified_since] if options[:modified_since]
 
       request_params[:where]         = options[:where] if options[:where]
@@ -147,21 +147,33 @@ module XeroGateway
 
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/Invoices'})
     end
-    
+
     # Retrieves a single invoice
+    #
+    # You can get a PDF-formatted invoice by specifying :pdf as the format argument
     #
     # Usage : get_invoice("297c2dc5-cc47-4afd-8ec8-74990b8761e9") # By ID
     #         get_invoice("OIT-12345") # By number
-    def get_invoice(invoice_id_or_number)
+    def get_invoice(invoice_id_or_number, format = :xml)
       request_params = {}
-      
-      url  = "#{@xero_url}/Invoices/#{URI.escape(invoice_id_or_number)}"
-       
-      response_xml = http_get(@client, url, request_params)
+      headers        = {}
 
-      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/Invoice'})
+      headers.merge!("Accept" => "application/pdf") if format == :pdf
+
+      url  = "#{@xero_url}/Invoices/#{URI.escape(invoice_id_or_number)}"
+
+      response = http_get(@client, url, request_params, headers)
+
+      if format == :pdf
+        Tempfile.open(invoice_id_or_number) do |f|
+          f.write(response)
+          f
+        end
+      else
+        parse_response(response, {:request_params => request_params}, {:request_signature => 'GET/Invoice'})
+      end
     end
-    
+
     # Factory method for building new Invoice objects associated with this gateway.
     def build_invoice(invoice = {})
       case invoice
@@ -170,12 +182,12 @@ module XeroGateway
       end
       invoice
     end
-  
+
     # Creates an invoice in Xero based on an invoice object.
     #
     # Invoice and line item totals are calculated automatically.
     #
-    # Usage : 
+    # Usage :
     #
     #    invoice = XeroGateway::Invoice.new({
     #      :invoice_type => "ACCREC",
@@ -186,7 +198,7 @@ module XeroGateway
     #    })
     #    invoice.contact = XeroGateway::Contact.new(:name => "THE NAME OF THE CONTACT")
     #    invoice.contact.phone.number = "12345"
-    #    invoice.contact.address.line_1 = "LINE 1 OF THE ADDRESS"    
+    #    invoice.contact.address.line_1 = "LINE 1 OF THE ADDRESS"
     #    invoice.line_items << XeroGateway::LineItem.new(
     #      :description => "THE DESCRIPTION OF THE LINE ITEM",
     #      :unit_amount => 100,
@@ -203,12 +215,12 @@ module XeroGateway
     #
     # Updates an existing Xero invoice
     #
-    # Usage : 
+    # Usage :
     #
     # invoice = xero_gateway.get_invoice(some_invoice_id)
     # invoice.due_date = Date.today
     #
-    # xero_gateway.update_invoice(invoice)  
+    # xero_gateway.update_invoice(invoice)
 
     def update_invoice(invoice)
       raise "invoice_id is required for updating invoices" if invoice.invoice_id.nil?
@@ -217,7 +229,7 @@ module XeroGateway
 
     #
     # Creates an array of invoices with a single API request.
-    # 
+    #
     # Usage :
     #  invoices = [XeroGateway::Invoice.new(...), XeroGateway::Invoice.new(...)]
     #  result = gateway.create_invoices(invoices)
@@ -229,8 +241,8 @@ module XeroGateway
           invoice.to_xml(b)
         end
       }
-      
-      response_xml = http_put(@client, "#{@xero_url}/Invoices", request_xml, {})
+
+      response_xml = http_put(@client, "#{@xero_url}/Invoices?SummarizeErrors=false", request_xml, {})
 
       response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/invoices'})
       response.invoices.each_with_index do | response_invoice, index |
@@ -246,12 +258,12 @@ module XeroGateway
     #
     # Note  : modified_since is in UTC format (i.e. Brisbane is UTC+10)
     def get_credit_notes(options = {})
-      
+
       request_params = {}
-      
+
       request_params[:CreditNoteID]     = options[:credit_note_id] if options[:credit_note_id]
       request_params[:CreditNoteNumber] = options[:credit_note_number] if options[:credit_note_number]
-      request_params[:OrderBy]       = options[:order] if options[:order]      
+      request_params[:OrderBy]       = options[:order] if options[:order]
       request_params[:ModifiedAfter] = options[:modified_since] if options[:modified_since]
 
       request_params[:where]         = options[:where] if options[:where]
@@ -260,21 +272,21 @@ module XeroGateway
 
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/CreditNotes'})
     end
-    
+
     # Retrieves a single credit_note
     #
     # Usage : get_credit_note("297c2dc5-cc47-4afd-8ec8-74990b8761e9") # By ID
     #         get_credit_note("OIT-12345") # By number
     def get_credit_note(credit_note_id_or_number)
       request_params = {}
-      
+
       url  = "#{@xero_url}/CreditNotes/#{URI.escape(credit_note_id_or_number)}"
-       
+
       response_xml = http_get(@client, url, request_params)
 
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/CreditNote'})
     end
-    
+
     # Factory method for building new CreditNote objects associated with this gateway.
     def build_credit_note(credit_note = {})
       case credit_note
@@ -283,12 +295,12 @@ module XeroGateway
       end
       credit_note
     end
-  
+
     # Creates an credit_note in Xero based on an credit_note object.
     #
     # CreditNote and line item totals are calculated automatically.
     #
-    # Usage : 
+    # Usage :
     #
     #    credit_note = XeroGateway::CreditNote.new({
     #      :credit_note_type => "ACCREC",
@@ -299,7 +311,7 @@ module XeroGateway
     #    })
     #    credit_note.contact = XeroGateway::Contact.new(:name => "THE NAME OF THE CONTACT")
     #    credit_note.contact.phone.number = "12345"
-    #    credit_note.contact.address.line_1 = "LINE 1 OF THE ADDRESS"    
+    #    credit_note.contact.address.line_1 = "LINE 1 OF THE ADDRESS"
     #    credit_note.line_items << XeroGateway::LineItem.new(
     #      :description => "THE DESCRIPTION OF THE LINE ITEM",
     #      :unit_amount => 100,
@@ -313,21 +325,21 @@ module XeroGateway
       request_xml = credit_note.to_xml
       response_xml = http_put(@client, "#{@xero_url}/CreditNotes", request_xml)
       response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/credit_note'})
-      
+
       # Xero returns credit_notes inside an <CreditNotes> tag, even though there's only ever
       # one for this request
       response.response_item = response.credit_notes.first
-      
+
       if response.success? && response.credit_note && response.credit_note.credit_note_id
-        credit_note.credit_note_id = response.credit_note.credit_note_id 
+        credit_note.credit_note_id = response.credit_note.credit_note_id
       end
-      
+
       response
     end
-    
+
     #
     # Creates an array of credit_notes with a single API request.
-    # 
+    #
     # Usage :
     #  credit_notes = [XeroGateway::CreditNote.new(...), XeroGateway::CreditNote.new(...)]
     #  result = gateway.create_credit_notes(credit_notes)
@@ -339,7 +351,7 @@ module XeroGateway
           credit_note.to_xml(b)
         end
       }
-      
+
       response_xml = http_put(@client, "#{@xero_url}/CreditNotes", request_xml, {})
 
       response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/credit_notes'})
@@ -475,7 +487,7 @@ module XeroGateway
       response_xml = http_get(@client, "#{xero_url}/Accounts")
       parse_response(response_xml, {}, {:request_signature => 'GET/accounts'})
     end
-    
+
     #
     # Returns a XeroGateway::AccountsList object that makes working with
     # the Xero list of accounts easier and allows caching the results.
@@ -500,7 +512,7 @@ module XeroGateway
       response_xml = http_get(@client, "#{xero_url}/Organisation")
       parse_response(response_xml, {}, {:request_signature => 'GET/organisation'})
     end
-    
+
     #
     # Gets all currencies for a specific organisation in Xero
     #
@@ -508,7 +520,7 @@ module XeroGateway
       response_xml = http_get(@client, "#{xero_url}/Currencies")
       parse_response(response_xml, {}, {:request_signature => 'GET/currencies'})
     end
-    
+
     #
     # Gets all Tax Rates for a specific organisation in Xero
     #
@@ -517,19 +529,33 @@ module XeroGateway
       parse_response(response_xml, {}, {:request_signature => 'GET/tax_rates'})
     end
 
+    #
+    # Create Payment record in Xero
+    #
+    def create_payment(payment)
+      b = Builder::XmlMarkup.new
+
+      request_xml = b.Payments do
+        payment.to_xml(b)
+      end
+
+      response_xml = http_put(@client, "#{xero_url}/Payments", request_xml)
+      parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/payments'})
+    end
+
     private
 
-    def get_contact(contact_id = nil, contact_number = nil)      
+    def get_contact(contact_id = nil, contact_number = nil)
       request_params = contact_id ? { :contactID => contact_id } : { :contactNumber => contact_number }
       response_xml = http_get(@client, "#{@xero_url}/Contacts/#{URI.escape(contact_id||contact_number)}", request_params)
 
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/contact'})
     end
-    
+
     # Create or update a contact record based on if it has a contact_id or contact_number.
     def save_contact(contact)
       request_xml = contact.to_xml
-      
+
       response_xml = nil
       create_or_save = nil
       if contact.contact_id.nil? && contact.contact_number.nil?
@@ -550,7 +576,7 @@ module XeroGateway
     # Create or update an invoice record based on if it has an invoice_id.
     def save_invoice(invoice)
       request_xml = invoice.to_xml
-      
+
       response_xml = nil
       create_or_save = nil
       if invoice.invoice_id.nil?
@@ -564,15 +590,15 @@ module XeroGateway
       end
 
       response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => "#{create_or_save == :create ? 'PUT' : 'POST'}/invoice"})
-      
+
       # Xero returns invoices inside an <Invoices> tag, even though there's only ever
       # one for this request
       response.response_item = response.invoices.first
-      
+
       if response.success? && response.invoice && response.invoice.invoice_id
-        invoice.invoice_id = response.invoice.invoice_id 
+        invoice.invoice_id = response.invoice.invoice_id
       end
-      
+
       response
     end
 
@@ -637,12 +663,12 @@ module XeroGateway
       response = XeroGateway::Response.new
 
       doc = REXML::Document.new(raw_response, :ignore_whitespace_nodes => :all)
-      
+
       # check for responses we don't understand
       raise UnparseableResponse.new(doc.root.name) unless doc.root.name == "Response"
 
       response_element = REXML::XPath.first(doc, "/Response")
-          
+
       response_element.children.reject { |e| e.is_a? REXML::Text }.each do |element|
         case(element.name)
           when "ID" then response.response_id = element.text
@@ -671,28 +697,20 @@ module XeroGateway
           when "Currencies" then element.children.each {|child| response.response_item << Currency.from_xml(child) }
           when "Organisations" then response.response_item = Organisation.from_xml(element.children.first) # Xero only returns the Authorized Organisation
           when "TrackingCategories" then element.children.each {|child| response.response_item << TrackingCategory.from_xml(child) }
-          when "Errors" then element.children.each { |error| parse_error(error, response) }
+          when "Errors" then response.errors = element.children.map { |error| Error.parse(error) }
         end
       end if response_element
-    
+
       # If a single result is returned don't put it in an array
       if response.response_item.is_a?(Array) && response.response_item.size == 1
         response.response_item = response.response_item.first
       end
-    
+
       response.request_params = request[:request_params]
       response.request_xml    = request[:request_xml]
       response.response_xml   = raw_response
       response
-    end    
-
-    def parse_error(error_element, response)
-      response.errors << Error.new(
-          :description => REXML::XPath.first(error_element, "Description").text,
-          :date_time => REXML::XPath.first(error_element, "//DateTime").text,
-          :type => REXML::XPath.first(error_element, "//ExceptionType").text,
-          :message => REXML::XPath.first(error_element, "//Message").text           
-      )
     end
-  end  
+
+  end
 end

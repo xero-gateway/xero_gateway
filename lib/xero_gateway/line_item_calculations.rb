@@ -1,9 +1,5 @@
 module XeroGateway
   module LineItemCalculations
-
-    class Error < RuntimeError; end
-    class InvalidLineItemError < Error; end
-
     def add_line_item(params = {})
       line_item = nil
       case params

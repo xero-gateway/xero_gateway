@@ -229,7 +229,7 @@ class InvoiceTest < Test::Unit::TestCase
 
     # Test that pushing anything else into add_line_item fails.
     ["invalid", 100, nil, []].each do | invalid_object |
-      assert_raise(XeroGateway::Invoice::InvalidLineItemError) { invoice.add_line_item(invalid_object) }
+      assert_raise(XeroGateway::InvalidLineItemError) { invoice.add_line_item(invalid_object) }
       assert_equal(2, invoice.line_items.size)
     end
   end
@@ -240,8 +240,9 @@ class InvoiceTest < Test::Unit::TestCase
   end
 
   def test_optional_params
-    invoice = create_test_invoice(:url => 'http://example.com')
+    invoice = create_test_invoice(:url => 'http://example.com', :branding_theme_id => 'a94a78db-5cc6-4e26-a52b-045237e56e6e')
     assert_equal 'http://example.com', invoice.url
+    assert_equal 'a94a78db-5cc6-4e26-a52b-045237e56e6e', invoice.branding_theme_id
   end
 
   private

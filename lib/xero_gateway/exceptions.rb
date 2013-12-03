@@ -1,4 +1,8 @@
 module XeroGateway
+  class NoGatewayError < StandardError; end
+  class AccountsListNotLoadedError < StandardError; end
+  class InvalidLineItemError < StandardError; end
+
   class ApiException < StandardError
     
     def initialize(type, message, request_xml, response_xml)

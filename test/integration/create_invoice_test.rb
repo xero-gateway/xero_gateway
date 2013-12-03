@@ -33,6 +33,12 @@ class CreateInvoiceTest < Test::Unit::TestCase
     example_invoice = dummy_invoice.dup
     assert_equal true, example_invoice.valid?, "invoice is invalid - errors:\n\t#{example_invoice.errors.map { | error | "#{error[0]} #{error[1]}"}.join("\n\t")}"
   end
+
+  def test_create_invoice_invalid_with_invalid_invoice_type
+    example_invoice = dummy_invoice.dup
+    example_invoice.invoice_type = "ABC"
+    assert_equal false, example_invoice.valid?
+  end
   
   private
   

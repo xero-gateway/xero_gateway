@@ -8,6 +8,7 @@ require "oauth"
 require 'oauth/signature/rsa/sha1'
 require "forwardable"
 require "active_support/all"
+require "tempfile"
 
 require File.join(File.dirname(__FILE__), 'oauth', 'oauth_consumer')
 
