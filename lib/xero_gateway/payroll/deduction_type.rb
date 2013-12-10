@@ -49,7 +49,6 @@ module XeroGateway::Payroll
       b.DeductionType{
         b.Name self.name if self.name
         b.AccountCode self.account_code if self.account_code
-        b.TypeOfUnits self.type_of_units if self.type_of_units
         b.ReducesTax self.reduces_tax if self.reduces_tax
         b.ReducesSuper self.reduces_super if self.reduces_super
         b.DeductionTypeID self.deduction_type_id if self.deduction_type_id
