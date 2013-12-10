@@ -1,4 +1,6 @@
 module XeroGateway::Payroll
+  class NoGatewayError < StandardError; end
+
   class LeaveType 
   
     GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ unless defined?(GUID_REGEX)
@@ -16,7 +18,21 @@ module XeroGateway::Payroll
       params.each do |k,v|
         self.send("#{k}=", v)
       end 
-    end    
+    end
+
+    def save
+      raise NoGatewayError unless gateway
+
+      pay_item = gateway.get_payroll_pay_items.response_item
+      pay_item.gateway = gateway
+
+      if leave_type_id
+        pay_item.leave_types.delete_if {|obj| obj.leave_type_id == leave_type_id }
+      end
+      pay_item.leave_types << self
+
+      pay_item.save
+    end
     
     # Validate the LeaveType record according to what will be valid by the gateway.
     #

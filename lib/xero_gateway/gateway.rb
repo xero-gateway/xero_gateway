@@ -726,6 +726,14 @@ module XeroGateway
       parse_response(response_xml, {:request_params => {}}, {:request_signature => 'GET/pay_items'}, true)
     end
 
+    def save_payroll_pay_items(pay_item)
+      request_xml = pay_item.to_xml
+
+      response_xml = http_post(@client, "#{@xero_url}/PayItems", request_xml, {})
+
+      parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => "POST/pay_items"})
+    end
+
     def get_payroll_calendars(options= {})
       request_params = {}
 

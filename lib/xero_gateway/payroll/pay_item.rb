@@ -1,4 +1,6 @@
 module XeroGateway::Payroll
+  class NoGatewayError < StandardError; end
+
   class PayItem
     attr_accessor :gateway
 
@@ -21,28 +23,34 @@ module XeroGateway::Payroll
       @reimbursement_types ||= []
     end
 
+    def save
+      raise NoGatewayError unless gateway
+
+      gateway.save_payroll_pay_items(self)
+    end
+
     def to_xml(b = Builder::XmlMarkup.new)
       b.PayItems {
-      	b.EarningsRates{
-      	  self.earnings_rates.each do |earning_rate|
-      	    earning_rate.to_xml(b)
-      	  end
-      	} unless self.earnings_rates.blank?
-      	b.DeductionTypes{
-      	  self.deduction_types.each do |deduction_type|
-      	    deduction_type.to_xml(b)
-      	  end
-      	} unless self.deduction_types.blank?
-      	b.LeaveTypes{
-      	  self.leave_types.each do |leave_type|
-      	    leave_type.to_xml(b)
-      	  end
-      	} unless self.leave_types.blank?
-      	b.ReimbursementTypes{
-      	  self.reimbursement_types.each do |reimbursement_type|
-      	    reimbursement_type.to_xml(b)
-      	  end
-      	} unless self.reimbursement_types.blank?
+        b.EarningsRates{
+          self.earnings_rates.each do |earning_rate|
+            earning_rate.to_xml(b)
+          end
+        } unless self.earnings_rates.blank?
+        b.DeductionTypes{
+          self.deduction_types.each do |deduction_type|
+            deduction_type.to_xml(b)
+          end
+        } unless self.deduction_types.blank?
+        b.LeaveTypes{
+          self.leave_types.each do |leave_type|
+            leave_type.to_xml(b)
+          end
+        } unless self.leave_types.blank?
+        b.ReimbursementTypes{
+          self.reimbursement_types.each do |reimbursement_type|
+            reimbursement_type.to_xml(b)
+          end
+        } unless self.reimbursement_types.blank?
       }
     end
 
