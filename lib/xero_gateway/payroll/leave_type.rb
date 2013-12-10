@@ -73,7 +73,7 @@ module XeroGateway::Payroll
         b.TypeOfUnits self.type_of_units if self.type_of_units
         b.IsPaidLeave self.is_paid_leave if self.is_paid_leave
         b.ShowOnPayslip self.show_on_payslip if self.show_on_payslip
-        b.LeaveTypeId self.leave_type_id if self.leave_type_id
+        b.LeaveTypeID self.leave_type_id if self.leave_type_id
         b.NormalEntitlement self.normal_entitlement if self.normal_entitlement
         b.LeaveLoadingRate self.leave_loading_rate if self.leave_loading_rate
       }
