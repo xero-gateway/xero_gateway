@@ -69,10 +69,10 @@ module XeroGateway::Payroll
     
     def to_xml(b = Builder::XmlMarkup.new)
       b.LeaveType {
-      	b.Name self.name if self.name
-        b.TypeOfUnits self.type_of_units if self.type_of_units
-        b.IsPaidLeave self.is_paid_leave if self.is_paid_leave
-        b.ShowOnPayslip self.show_on_payslip if self.show_on_payslip
+      	b.Name self.name
+        b.TypeOfUnits self.type_of_units
+        b.IsPaidLeave self.is_paid_leave
+        b.ShowOnPayslip self.show_on_payslip
         b.LeaveTypeID self.leave_type_id if self.leave_type_id
         b.NormalEntitlement self.normal_entitlement if self.normal_entitlement
         b.LeaveLoadingRate self.leave_loading_rate if self.leave_loading_rate
