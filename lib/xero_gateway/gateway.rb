@@ -792,6 +792,15 @@ module XeroGateway
       parse_response(response_xml, {:request_params => {}}, {:request_signature => 'GET/payslip'}, true)
     end
 
+    def save_payroll_leave_application(leave_application)
+      request_xml = leave_application.to_xml
+      response_xml = http_post(@client, "#{@xero_payroll_url}/LeaveApplications", request_xml, {})
+      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => "POST/leaveapplications"}, true)
+
+      leave_application.leave_application_id = response.response_item.leave_application_id if response.success?
+      response
+    end
+
     private
 
     def get_contact(contact_id = nil, contact_number = nil)
@@ -875,15 +884,6 @@ module XeroGateway
       response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => "POST/employee"}, true)
 
       employee.employee_id = response.employee.employee_id if response.employee && response.employee.employee_id
-      response
-    end
-
-    def save_payroll_leave_application(leave_application)
-      request_xml = leave_application.to_xml
-      response_xml = http_post(@client, "#{@xero_payroll_url}/LeaveApplications", request_xml, {})
-      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => "POST/leaveapplications"}, true)
-
-      leave_application.leave_application_id = response.response_item.leave_application_id if response.success?
       response
     end
 
