@@ -120,7 +120,7 @@ module XeroGateway::Payroll
           self.bank_accounts.each do |bank_account|
             bank_account.to_xml(b)
           end
-        } unless self.bank_accounts.blank?
+        }
         b.SuperMemberships{
           self.super_memberships.each do |super_membership|
             super_membership.to_xml(b)
