@@ -31,7 +31,11 @@ module XeroGateway::Payroll
       end
       pay_item.leave_types << self
 
-      pay_item.save
+      response = pay_item.save
+      new_leave_type = response.response_item.leave_types.find do |leave_type|
+        leave_type.name == name
+      end
+      self.leave_type_id = new_leave_type.leave_type_id if new_leave_type
     end
     
     # Validate the LeaveType record according to what will be valid by the gateway.
