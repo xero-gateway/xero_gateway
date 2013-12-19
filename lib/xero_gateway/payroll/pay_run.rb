@@ -49,6 +49,7 @@ module XeroGateway::Payroll
     end
 
     def self.from_xml(pay_run_element, gateway = nil)
+      @gateway = gateway
       pay_run = PayRun.new
       pay_run_element.children.each do |element|
         case (element.name)
@@ -78,5 +79,12 @@ module XeroGateway::Payroll
       return true
     end
 
+    def draft?
+      pay_run_status == 'DRAFT'
+    end
+
+    def posted?
+      pay_run_status == 'POSTED'
+    end
   end
 end
