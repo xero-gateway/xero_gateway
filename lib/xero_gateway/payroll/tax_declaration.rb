@@ -65,6 +65,7 @@ module XeroGateway::Payroll
     end
 
     def self.from_xml(tax_declaration_element, gateway = nil)
+      @gateway = gateway
       tax_declaration = TaxDeclaration.new
       tax_declaration_element.children.each do |element|
         case(element.name)

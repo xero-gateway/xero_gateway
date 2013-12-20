@@ -1,23 +1,23 @@
 module XeroGateway::Payroll
   class NoGatewayError < StandardError; end
 
-  class LeaveType 
-  
+  class LeaveType
+
     GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ unless defined?(GUID_REGEX)
-    
+
     attr_accessor :gateway
-    
+
     # Any errors that occurred when the #valid? method called.
-    attr_reader :errors    
+    attr_reader :errors
     attr_accessor :name, :type_of_units, :is_paid_leave, :show_on_payslip, :leave_type_id, :normal_entitlement, :leave_loading_rate
-    
+
     def initialize(params = {})
       @errors ||= []
 
       params = {}.merge(params)
       params.each do |k,v|
         self.send("#{k}=", v)
-      end 
+      end
     end
 
     def save
@@ -37,7 +37,7 @@ module XeroGateway::Payroll
       end
       self.leave_type_id = new_leave_type.leave_type_id if new_leave_type
     end
-    
+
     # Validate the LeaveType record according to what will be valid by the gateway.
     #
     # Usage:
@@ -47,30 +47,30 @@ module XeroGateway::Payroll
     # TO DO : others fields validation
     def valid?
       @errors = []
-      
+
       if !leave_type_id.blank? && leave_type_id !~ GUID_REGEX
         @errors << ['employee_id', 'invalid ID']
       end
-      
+
       if name.blank?
         @errors << ['name', "can't be blank"]
-      end 
-      
+      end
+
       if type_of_units.blank?
         @errors << ['type_of_units', "can't be blank"]
-      end 
-      
+      end
+
       if is_paid_leave.blank?
         @errors << ['is_paid_leave', "can't be blank"]
-      end 
-      
+      end
+
       if show_on_payslip.blank?
         @errors << ['show_on_payslip', "can't be blank"]
-      end 
-      
+      end
+
       @errors.size == 0
-    end 
-    
+    end
+
     def to_xml(b = Builder::XmlMarkup.new)
       b.LeaveType {
       	b.Name self.name
@@ -82,8 +82,9 @@ module XeroGateway::Payroll
         b.LeaveLoadingRate self.leave_loading_rate if self.leave_loading_rate
       }
     end
-    
+
     def self.from_xml(leave_type_element, gateway = nil)
+      @gateway = gateway
       leave_type = LeaveType.new
       leave_type_element.children.each do |element|
         case(element.name)
@@ -94,11 +95,11 @@ module XeroGateway::Payroll
           when "LeaveTypeID" then leave_type.leave_type_id = element.text
           when "NormalEntitlement" then leave_type.normal_entitlement = element.text
           when "LeaveLoadingRate" then leave_type.leave_loading_rate = element.text
-        end 
-      end 
+        end
+      end
       leave_type
-    end 
-    
+    end
+
     def ==(other) [ :name, :type_of_units, :is_paid_leave, :show_on_payslip, :leave_type_id, :normal_entitlement, :leave_loading_rate ].each do |field|
         return false if send(field) != other.send(field)
       end

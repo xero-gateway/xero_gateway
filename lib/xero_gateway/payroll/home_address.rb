@@ -62,6 +62,7 @@ module XeroGateway::Payroll
 
     # Should add other fields based on Pivotal: 49575441
     def self.from_xml(address_element, gateway = nil)
+      @gateway = gateway
       address = HomeAddress.new
       address_element.children.each do |element|
         case(element.name)

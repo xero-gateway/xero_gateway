@@ -34,6 +34,11 @@ module XeroGateway::Payroll
       @leave_earnings_lines ||= []
     end
 
+    def total_help_component_taxt
+      help_component_tax = tax_lines.select {|obj| obj[:tax_type_name] == "HELP Component" }
+      help_component_tax.sum {|a| a.amount }
+    end
+
     def to_xml(b = Builder::XmlMarkup.new)
       b.Payslip{
         b.EmployeeID self.employee_id if self.employee_id
@@ -92,6 +97,7 @@ module XeroGateway::Payroll
     end
 
     def self.from_xml(payslip_element, gateway = nil)
+      @gateway = gateway
       payslip = Payslip.new
       payslip_element.children.each do |element|
         case (element.name)

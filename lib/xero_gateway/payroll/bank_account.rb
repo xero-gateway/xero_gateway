@@ -32,6 +32,7 @@ module XeroGateway::Payroll
     end
 
     def self.from_xml(bank_account_element, gateway = nil)
+      @gateway = gateway
       bank_account = BankAccount.new
       bank_account_element.children.each do |element|
         case(element.name)
