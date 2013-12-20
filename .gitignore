@@ -2,3 +2,5 @@
 .rvmrc
 .rbenv-version
 examples/xero_keys.yml
+.idea
+tags
