@@ -49,8 +49,8 @@ module XeroGateway::Payroll
     end
 
     def self.from_xml(pay_run_element, gateway = nil)
-      @gateway = gateway
       pay_run = PayRun.new
+      pay_run.gateway = gateway
       pay_run_element.children.each do |element|
         case (element.name)
           when "PayRunPeriodEndDate" then pay_run.pay_run_period_end_date = parse_date(element.text)
