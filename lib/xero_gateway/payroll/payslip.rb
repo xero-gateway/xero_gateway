@@ -35,8 +35,8 @@ module XeroGateway::Payroll
     end
 
     def total_help_component_tax
-      help_component_tax = tax_lines.select {|obj| obj[:tax_type_name] == "HELP Component" }
-      help_component_tax.sum {|a| a.amount }
+      help_component_tax = tax_lines.select {|obj| obj.tax_type_name == "HELP Component" }
+      help_component_tax.sum {|a| a.amount.to_f }
     end
 
     def to_xml(b = Builder::XmlMarkup.new)
