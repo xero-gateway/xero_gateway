@@ -34,7 +34,7 @@ module XeroGateway::Payroll
       @leave_earnings_lines ||= []
     end
 
-    def total_help_component_taxt
+    def total_help_component_tax
       help_component_tax = tax_lines.select {|obj| obj[:tax_type_name] == "HELP Component" }
       help_component_tax.sum {|a| a.amount }
     end
