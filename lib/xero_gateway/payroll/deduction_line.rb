@@ -8,7 +8,7 @@ module XeroGateway::Payroll
     # Any errors that occurred when the #valid? method called.
     attr_reader :errors
 
-    attr_accessor :deduction_type_id, :calculation_type, :percentage, :number_of_units
+    attr_accessor :deduction_type_id, :calculation_type, :percentage, :number_of_units, :amount
 
     def initialize(params = {})
       @errors ||= []
@@ -22,9 +22,10 @@ module XeroGateway::Payroll
     def to_xml(b = Builder::XmlMarkup.new)
       b.DeductionLine{
         b.DeductionTypeID self.deduction_type_id if self.deduction_type_id
-        b.CalculationTyoe self.calculation_type if self.calculation_type
+        b.CalculationType self.calculation_type if self.calculation_type
         b.Percentage self.percentage if self.percentage
         b.NumberOfUnits self.number_of_units if self.number_of_units
+        b.Amount self.amount if self.amount
       }
     end
 
@@ -34,16 +35,17 @@ module XeroGateway::Payroll
       deduction_line_element.children.each do |element|
         case (element.name)
           when "DeductionTypeID" then deduction_line.deduction_type_id = element.text
-          when "CalculationTyoe" then deduction_line.calculation_type = element.text
+          when "CalculationType" then deduction_line.calculation_type = element.text
           when "Percentage"      then deduction_line.percentage = element.text
           when "NumberOfUnits"   then deduction_line.number_of_units = element.text
+          when "Amount"          then deduction_line.amount = element.text.to_f
         end
       end
       deduction_line
     end
 
     def ==(other)
-     [ :deduction_type_id, :calculation_type, :percentage, :number_of_units ].each do |field|
+     [ :deduction_type_id, :calculation_type, :percentage, :number_of_units, :amount ].each do |field|
         return false if send(field) != other.send(field)
       end
       return true
