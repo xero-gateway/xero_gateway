@@ -131,8 +131,8 @@ module XeroGateway::Payroll
     end
 
     def self.from_xml(employee_element, gateway = nil)
-      @gateway = gateway
       employee = Employee.new
+      employee.gateway = gateway
       employee_element.children.each do |element|
         case(element.name)
         	when "EmployeeID" then employee.employee_id = element.text

@@ -28,8 +28,8 @@ module XeroGateway::Payroll
     end
 
     def self.from_xml(leave_accrual_line_element, gateway = nil)
-      @gateway = gateway
       leave_accrual_line = LeaveAccrualLine.new
+      leave_accrual_line.gateway = gateway
       leave_accrual_line_element.children.each do |element|
         case (element.name)
           when "LeaveTypeID"     then leave_accrual_line.leave_type_id = element.text

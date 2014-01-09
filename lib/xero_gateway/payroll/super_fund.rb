@@ -35,8 +35,8 @@ module XeroGateway::Payroll
     end
 
     def self.from_xml(super_fund_element, gateway = nil)
-      @gateway = gateway
       super_fund = SuperFund.new
+      super_fund.gateway = gateway
       super_fund_element.children.each do |element|
         case(element.name)
         	when "SuperFundID" then super_fund.super_fund_id = element.text

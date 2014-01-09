@@ -32,8 +32,8 @@ module XeroGateway::Payroll
     end
 
     def self.from_xml(pay_template_element, gateway = nil)
-      @gateway = gateway
       pay_template = PayTemplate.new
+      pay_template.gateway = gateway
       pay_template_element.children.each do |element|
         case(element.name)
           when "EarningsLines" then element.children.each {|child| pay_template.earnings_lines << EarningsLine.from_xml(child, gateway) }

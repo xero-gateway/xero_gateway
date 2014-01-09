@@ -80,8 +80,8 @@ module XeroGateway::Payroll
     end
 
     def self.from_xml(earnings_rate_element, gateway = nil)
-      @gateway = gateway
       earnings_rate = EarningsRate.new
+      earnings_rate.gateway = gateway
       earnings_rate_element.children.each do |element|
         case (element.name)
           when "Name" then earnings_rate.name = element.text

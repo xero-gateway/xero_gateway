@@ -34,8 +34,8 @@ module XeroGateway::Payroll
     end
 
     def self.from_xml(payroll_calendar_element, gateway = nil)
-      @gateway = gateway
       payroll_calendar = PayrollCalendar.new
+      payroll_calendar.gateway = gateway
       payroll_calendar_element.children.each do |element|
         case (element.name)
           when "PayrollCalendarID" then payroll_calendar.payroll_calendar_id = element.text

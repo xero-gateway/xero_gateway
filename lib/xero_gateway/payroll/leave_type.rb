@@ -84,8 +84,8 @@ module XeroGateway::Payroll
     end
 
     def self.from_xml(leave_type_element, gateway = nil)
-      @gateway = gateway
       leave_type = LeaveType.new
+      leave_type.gateway = gateway
       leave_type_element.children.each do |element|
         case(element.name)
           when "Name" then leave_type.name = element.text

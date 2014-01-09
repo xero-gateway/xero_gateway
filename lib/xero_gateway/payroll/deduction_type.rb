@@ -56,8 +56,8 @@ module XeroGateway::Payroll
     end
 
     def self.from_xml(deduction_type_element, gateway = nil)
-      @gateway = gateway
       deduction_type = DeductionType.new
+      deduction_type.gateway = gateway
       deduction_type_element.children.each do |element|
         case (element.name)
           when "Name" then deduction_type.name = element.text

@@ -28,8 +28,8 @@ module XeroGateway::Payroll
     end
 
     def self.from_xml(super_membership_element, gateway = nil)
-      @gateway = gateway
       super_membership = SuperMembership.new
+      super_membership.gateway = gateway
       super_membership_element.children.each do |element|
         case(element.name)
           when "SuperFundID" then super_membership.super_fund_id = element.text

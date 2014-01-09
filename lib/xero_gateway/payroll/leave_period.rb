@@ -43,8 +43,8 @@ module XeroGateway::Payroll
     end
 
     def self.from_xml(leave_period_element, gateway = nil)
-      @gateway = gateway
       leave_period = LeavePeriod.new
+      leave_period.gateway = gateway
       leave_period_element.children.each do |element|
         case(element.name)
           when "NumberOfUnits" then leave_period.number_of_units = element.text

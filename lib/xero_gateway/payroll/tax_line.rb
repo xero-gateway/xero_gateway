@@ -30,8 +30,8 @@ module XeroGateway::Payroll
     end
 
     def self.from_xml(tax_line_element, gateway = nil)
-      @gateway = gateway
       tax_line = TaxLine.new
+      tax_line.gateway = gateway
       tax_line_element.children.each do |element|
         case (element.name)
           when "TaxTypeName" then tax_line.tax_type_name = element.text

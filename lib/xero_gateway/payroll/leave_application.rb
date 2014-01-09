@@ -75,8 +75,8 @@ module XeroGateway::Payroll
     end
 
     def self.from_xml(leave_application_element, gateway = nil)
-      @gateway = gateway
       leave_application = LeaveApplication.new
+      leave_application.gateway = gateway
       leave_application_element.children.each do |element|
         case(element.name)
           when "EmployeeID"   then leave_application.employee_id   = element.text

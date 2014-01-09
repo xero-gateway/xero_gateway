@@ -97,8 +97,8 @@ module XeroGateway::Payroll
     end
 
     def self.from_xml(payslip_element, gateway = nil)
-      @gateway = gateway
       payslip = Payslip.new
+      payslip.gateway = gateway
       payslip_element.children.each do |element|
         case (element.name)
           when "EmployeeID" then payslip.employee_id = element.text
