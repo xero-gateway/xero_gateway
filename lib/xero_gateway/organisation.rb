@@ -19,13 +19,16 @@ module XeroGateway
         "PeriodLockDate"        => :string,
         "CreatedDateUTC"        => :string,
         "ShortCode"             => :string,
-        "Timezone"              => :string
+        "Timezone"              => :string,
+        "Phones"                => :phones      # TODO: unify handling with Contacts
       }
     end
     
     attr_accessor *ATTRS.keys.map(&:underscore)
     
     def initialize(params = {})
+      params[:phones] ||= []
+      
       params.each do |k,v|
         self.send("#{k}=", v)
       end
@@ -60,6 +63,7 @@ module XeroGateway
             case (ATTRS[attribute])
               when :boolean then  org.send("#{underscored_attribute}=", (element.text == "true"))
               when :float   then  org.send("#{underscored_attribute}=", element.text.to_f)
+              when :phones  then  element.children.each { |phone_element| org.phones << Phone.from_xml(phone_element) }
               else                org.send("#{underscored_attribute}=", element.text)
             end
             
