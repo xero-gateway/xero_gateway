@@ -81,6 +81,14 @@ class GatewayTest < Test::Unit::TestCase
       end
     end
 
+    should "handle manual journals not found" do
+      XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("api_exception.xml"), :code => "404"))
+
+      assert_raises XeroGateway::ManualJournalNotFoundError do
+        @gateway.get_manual_journal('unknown-manual-journal-id')
+      end
+    end
+
     should "handle random root elements" do
       XeroGateway::OAuth.any_instance.stubs(:put).returns(stub(:plain_body => "<RandomRootElement></RandomRootElement>", :code => "200"))
 
@@ -89,6 +97,13 @@ class GatewayTest < Test::Unit::TestCase
       end
     end
 
+    should "handle no root element" do
+      XeroGateway::OAuth.any_instance.stubs(:put).returns(stub(:plain_body => get_file_as_string("no_certificates_registered"), :code => 400))
+
+      assert_raises RuntimeError do
+        response = @gateway.create_invoice(XeroGateway::Invoice.new)
+      end
+    end
   end
 
   def test_unknown_error_handling

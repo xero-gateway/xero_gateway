@@ -111,19 +111,18 @@ module XeroGateway
 
         doc = REXML::Document.new(raw_response, :ignore_whitespace_nodes => :all)
 
-        if doc.root.name == "ApiException"
+        if doc.root.nil? || doc.root.name != "ApiException"
+
+          raise "Unparseable 400 Response: #{raw_response}"
+
+        else
 
           raise ApiException.new(doc.root.elements["Type"].text,
                                  doc.root.elements["Message"].text,
                                  request_xml,
                                  raw_response)
 
-        else
-
-          raise "Unparseable 400 Response: #{raw_response}"
-
         end
-
       end
 
       def handle_object_not_found!(response, request_url)
@@ -131,6 +130,7 @@ module XeroGateway
           when /Invoices/ then raise InvoiceNotFoundError.new("Invoice not found in Xero.")
           when /BankTransactions/ then raise BankTransactionNotFoundError.new("Bank Transaction not found in Xero.")
           when /CreditNotes/ then raise CreditNoteNotFoundError.new("Credit Note not found in Xero.")
+          when /ManualJournals/ then raise ManualJournalNotFoundError.new("Manual Journal not found in Xero.")
           else raise ObjectNotFound.new(request_url)
         end
       end
