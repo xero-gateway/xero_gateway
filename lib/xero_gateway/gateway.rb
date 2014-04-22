@@ -141,6 +141,7 @@ module XeroGateway
       request_params[:InvoiceNumber] = options[:invoice_number] if options[:invoice_number]
       request_params[:OrderBy]       = options[:order] if options[:order]
       request_params[:ModifiedAfter] = options[:modified_since] if options[:modified_since]
+      request_params[:page]          = options[:page]  if options[:page]
 
       request_params[:where]         = options[:where] if options[:where]
 
