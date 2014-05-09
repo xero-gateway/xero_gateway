@@ -20,7 +20,7 @@ module XeroGateway::Payroll
     attr_accessor :employee_id, :first_name, :date_of_birth, :email, :gender, :last_name,
                   :middle_name, :title, :start_date, :occupation, :mobile,
                   :phone, :termination_date, :home_address, :bank_accounts, :super_memberships, :pay_template,
-                  :tax_declaration
+                  :tax_declaration, :payroll_calendar
 
     def initialize(params = {})
       @errors ||= []
@@ -153,6 +153,7 @@ module XeroGateway::Payroll
           when "BankAccounts" then element.children.each {|child| employee.bank_accounts << BankAccount.from_xml(child, gateway) }
           when "SuperMemberships" then element.children.each {|child| employee.super_memberships << SuperMembership.from_xml(child, gateway) }
           when "TaxDeclaration" then employee.tax_declaration = TaxDeclaration.from_xml(element)
+          when "PayrollCalendarID" then employee.payroll_calendar = gateway.get_payroll_calendar_by_id(element.text).response_item
         end
       end
       employee
