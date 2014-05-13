@@ -25,7 +25,7 @@ module XeroGateway
     attr_accessor :line_items_downloaded
 
     # accessible fields
-    attr_accessor :bank_transaction_id, :type, :date, :reference, :status, :contact, :line_items, :bank_account, :url, :is_reconciled, :transaction_total
+    attr_accessor :bank_transaction_id, :type, :date, :reference, :status, :contact, :line_items, :bank_account, :url, :is_reconciled
 
     def initialize(params = {})
       @errors ||= []
@@ -98,6 +98,12 @@ module XeroGateway
       @line_items_downloaded
     end
 
+    %w(sub_total tax_total total).each do |line_item_total_type|
+      define_method("#{line_item_total_type}=") do |new_total|
+        instance_variable_set("@#{line_item_total_type}", new_total) unless line_items_downloaded?
+      end
+    end
+
     # If line items are not downloaded, then attempt a download now (if this record was found to begin with).
     def line_items
       if line_items_downloaded?
@@ -154,9 +160,9 @@ module XeroGateway
           when "Status" then bank_transaction.status = element.text
           when "Reference" then bank_transaction.reference = element.text
           when "LineItems" then element.children.each {|line_item| bank_transaction.line_items_downloaded = true; bank_transaction.line_items << LineItem.from_xml(line_item) }
-          when "Total" then bank_transaction.transaction_total = BigDecimal.new(element.text)
-          # when "SubTotal" then invoice.sub_total = BigDecimal.new(element.text)
-          # when "TotalTax" then invoice.total_tax = BigDecimal.new(element.text)
+          when "Total" then bank_transaction.total = BigDecimal.new(element.text)
+          when "SubTotal" then bank_transaction.sub_total = BigDecimal.new(element.text)
+          when "TotalTax" then bank_transaction.total_tax = BigDecimal.new(element.text)
           # when "Total" then invoice.total = BigDecimal.new(element.text)
           # when "InvoiceID" then invoice.invoice_id = element.text
           # when "InvoiceNumber" then invoice.invoice_number = element.text
