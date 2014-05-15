@@ -34,7 +34,7 @@ module XeroGateway
 
       request_params[:ContactID]     = options[:contact_id] if options[:contact_id]
       request_params[:ContactNumber] = options[:contact_number] if options[:contact_number]
-      request_params[:OrderBy]       = options[:order] if options[:order]
+      request_params[:order]         = options[:order] if options[:order]
       request_params[:ModifiedAfter] = options[:modified_since] if options[:modified_since]
       request_params[:where]         = options[:where] if options[:where]
       request_params[:page]          = options[:page]  if options[:page]
@@ -139,7 +139,7 @@ module XeroGateway
 
       request_params[:InvoiceID]     = options[:invoice_id] if options[:invoice_id]
       request_params[:InvoiceNumber] = options[:invoice_number] if options[:invoice_number]
-      request_params[:OrderBy]       = options[:order] if options[:order]
+      request_params[:order]         = options[:order] if options[:order]
       request_params[:ModifiedAfter] = options[:modified_since] if options[:modified_since]
 
       request_params[:where]         = options[:where] if options[:where]
@@ -264,10 +264,10 @@ module XeroGateway
 
       request_params[:CreditNoteID]     = options[:credit_note_id] if options[:credit_note_id]
       request_params[:CreditNoteNumber] = options[:credit_note_number] if options[:credit_note_number]
-      request_params[:OrderBy]       = options[:order] if options[:order]
-      request_params[:ModifiedAfter] = options[:modified_since] if options[:modified_since]
+      request_params[:order]            = options[:order] if options[:order]
+      request_params[:ModifiedAfter]    = options[:modified_since] if options[:modified_since]
 
-      request_params[:where]         = options[:where] if options[:where]
+      request_params[:where]            = options[:where] if options[:where]
 
       response_xml = http_get(@client, "#{@xero_url}/CreditNotes", request_params)
 
@@ -414,7 +414,7 @@ module XeroGateway
       request_params = {}
       request_params[:BankTransactionID]  = options[:bank_transaction_id] if options[:bank_transaction_id]
       request_params[:ModifiedAfter]      = options[:modified_since] if options[:modified_since]
-      request_params[:OrderBy]            = options[:order] if options[:order]
+      request_params[:order]              = options[:order] if options[:order]
       request_params[:where]              = options[:where] if options[:where]
 
       response_xml = http_get(@client, "#{@xero_url}/BankTransactions", request_params)
