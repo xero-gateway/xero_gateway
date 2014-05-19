@@ -97,8 +97,15 @@ class BankTransactionTest < Test::Unit::TestCase
 
       assert_xml_field bank_transaction_element, 'Url', :value => 'http://example.com\?with=params&amp;and=more'
 
+      # test total without downloading each line items
+      total_elem = REXML::Element.new('Total')
+      total_elem.text = '1000'
+      bank_transaction_element.add_element(total_elem)
+
+      XeroGateway::BankTransaction.any_instance.stubs(:line_items_downloaded?).returns(false)
       parsed_bank_transaction = XeroGateway::BankTransaction.from_xml(bank_transaction_element)
       assert_equal 'http://example.com?with=params&and=more', parsed_bank_transaction.url
+      assert_equal BigDecimal.new('1000'), parsed_bank_transaction.total
     end
 
     should "ignore missing contact" do

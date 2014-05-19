@@ -37,6 +37,7 @@ module XeroGateway
       request_params[:OrderBy]       = options[:order] if options[:order]
       request_params[:ModifiedAfter] = options[:modified_since] if options[:modified_since]
       request_params[:where]         = options[:where] if options[:where]
+      request_params[:page]          = options[:page]  if options[:page]
 
       response_xml = http_get(@client, "#{@xero_url}/Contacts", request_params)
 
@@ -413,6 +414,8 @@ module XeroGateway
       request_params = {}
       request_params[:BankTransactionID]  = options[:bank_transaction_id] if options[:bank_transaction_id]
       request_params[:ModifiedAfter]      = options[:modified_since] if options[:modified_since]
+      request_params[:OrderBy]            = options[:order] if options[:order]
+      request_params[:where]              = options[:where] if options[:where]
 
       response_xml = http_get(@client, "#{@xero_url}/BankTransactions", request_params)
 

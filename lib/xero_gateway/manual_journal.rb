@@ -2,6 +2,9 @@ module XeroGateway
   class ManualJournal
   	include Dates
 
+  	class Error < RuntimeError; end
+    class NoGatewayError < Error; end
+
     GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ unless defined?(GUID_REGEX)
 
     STATUSES = {
@@ -121,7 +124,7 @@ module XeroGateway
     def to_xml(b = Builder::XmlMarkup.new)
       b.ManualJournal {
         b.ManualJournalID manual_journal_id if manual_journal_id
-        b.Narration narration        
+        b.Narration narration
         b.JournalLines {
           self.journal_lines.each do |journal_line|
             journal_line.to_xml(b)
