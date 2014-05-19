@@ -44,7 +44,7 @@ module XeroGateway
 
     # Calculate the toal as sub_total + total_tax.
     def total
-      @total || sub_total + total_tax
+      @total || (sub_total + total_tax)
     end
 
   end
