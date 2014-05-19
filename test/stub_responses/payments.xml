@@ -1,0 +1,55 @@
+<Response xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Id>64ec41aa-10a1-44cb-b0ac-896fc324087f</Id>
+  <Status>OK</Status>
+  <ProviderName>Xero API Previewer</ProviderName>
+  <DateTimeUTC>2014-05-18T22:03:05.0089839Z</DateTimeUTC>
+  <Payments>
+    <Payment>
+      <PaymentID>25fe300b-9dff-40d7-b046-d7f4b68262d3</PaymentID>
+      <Date>2013-04-26T00:00:00</Date>
+      <Amount>500.00</Amount>
+      <Reference>Test Payment</Reference>
+      <CurrencyRate>1.000000</CurrencyRate>
+      <PaymentType>ACCRECPAYMENT</PaymentType>
+      <Status>AUTHORISED</Status>
+      <UpdatedDateUTC>2010-11-12T14:36:22.537</UpdatedDateUTC>
+      <Account>
+        <AccountID>ac993f75-035b-433c-82e0-7b7a2d40802c</AccountID>
+        <Code>090</Code>
+      </Account>
+      <Invoice>
+        <Contact>
+          <ContactID>fef6755f-549b-4617-b1e9-60bdffb517d8</ContactID>
+          <Name>Ridgeway University</Name>
+        </Contact>
+        <CurrencyCode>NZD</CurrencyCode>
+        <Type>ACCREC</Type>
+        <InvoiceID>b0875d8b-ff26-4ce8-8aea-6955492ead48</InvoiceID>
+        <InvoiceNumber>INV-0001</InvoiceNumber>
+      </Invoice>
+    </Payment>
+    <Payment>
+      <PaymentID>4d75eeb7-ba77-432f-900b-60b67ca469ca</PaymentID>
+      <Date>2014-04-29T00:00:00</Date>
+      <Amount>1181.25</Amount>
+      <CurrencyRate>1.000000</CurrencyRate>
+      <PaymentType>ACCPAYPAYMENT</PaymentType>
+      <Status>AUTHORISED</Status>
+      <UpdatedDateUTC>2010-12-02T10:48:51.15</UpdatedDateUTC>
+      <Account>
+        <AccountID>ac993f75-035b-433c-82e0-7b7a2d40802c</AccountID>
+        <Code>090</Code>
+      </Account>
+      <Invoice>
+        <Contact>
+          <ContactID>16b4cdc2-b36a-4b25-b9c8-7a50c17b10ba</ContactID>
+          <Name>Truxton Property Management</Name>
+        </Contact>
+        <CurrencyCode>NZD</CurrencyCode>
+        <Type>ACCPAY</Type>
+        <InvoiceID>33c8d757-2db0-48a2-8daa-f54768fabeb1</InvoiceID>
+        <InvoiceNumber>RPT469-1</InvoiceNumber>
+      </Invoice>
+    </Payment>
+  </Payments>
+</Response>
