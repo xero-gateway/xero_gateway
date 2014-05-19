@@ -29,6 +29,8 @@ class GetBankTransactionsTest < Test::Unit::TestCase
     assert !result.response_xml.nil?
     assert result.bank_transactions.collect {|i| i.reference}.include?(bank_transaction.reference)
     assert result.bank_transactions.collect {|i| i.bank_transaction_id}.include?(bank_transaction.bank_transaction_id)
+    assert result.bank_transactions.collect {|i| i.updated_at}.include?(bank_transaction.updated_at)
+    assert result.bank_transactions.last.updated_at.is_a?(Time)
   end
 
   def test_get_bank_transactions_with_modified_since_date

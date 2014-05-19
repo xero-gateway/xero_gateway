@@ -25,7 +25,7 @@ module XeroGateway
     attr_accessor :line_items_downloaded
 
     # accessible fields
-    attr_accessor :bank_transaction_id, :type, :date, :reference, :status, :contact, :line_items, :bank_account, :url, :is_reconciled
+    attr_accessor :bank_transaction_id, :type, :date, :reference, :status, :contact, :line_items, :bank_account, :url, :is_reconciled, :updated_at
 
     def initialize(params = {})
       @errors ||= []
@@ -152,6 +152,7 @@ module XeroGateway
       bank_transaction_element.children.each do |element|
         case(element.name)
           when "BankTransactionID" then bank_transaction.bank_transaction_id = element.text
+          when "UpdatedDateUTC" then bank_transaction.updated_at = parse_date_time(element.text)
           when "Type" then bank_transaction.type = element.text
           # when "CurrencyCode" then invoice.currency_code = element.text
           when "Contact" then bank_transaction.contact = Contact.from_xml(element)
