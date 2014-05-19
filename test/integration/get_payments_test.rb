@@ -4,8 +4,6 @@ class GetPaymentsTest < Test::Unit::TestCase
   include TestHelper
   require 'pry'
 
-  INVALID_PAYMENT_ID = "99999999-9999-9999-9999-999999999999" unless defined?(INVALID_PAYMENT_ID)
-
   def setup
     @gateway = XeroGateway::Gateway.new(CONSUMER_KEY, CONSUMER_SECRET)
 
