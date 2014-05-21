@@ -17,7 +17,7 @@ module XeroGateway
       end
     end
 
-    def self.from_xml(payment_element, gateway = nil)
+    def self.from_xml(payment_element)
       payment = Payment.new
       payment_element.children.each do | element |
         case element.name

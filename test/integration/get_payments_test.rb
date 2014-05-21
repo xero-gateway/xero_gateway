@@ -2,7 +2,6 @@ require File.dirname(__FILE__) + '/../test_helper'
 
 class GetPaymentsTest < Test::Unit::TestCase
   include TestHelper
-  require 'pry'
 
   def setup
     @gateway = XeroGateway::Gateway.new(CONSUMER_KEY, CONSUMER_SECRET)
