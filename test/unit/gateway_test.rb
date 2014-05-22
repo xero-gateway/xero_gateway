@@ -89,6 +89,14 @@ class GatewayTest < Test::Unit::TestCase
       end
     end
 
+    should "handle payments not found" do
+      XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("api_exception.xml"), :code => "404"))
+
+      assert_raises XeroGateway::PaymentNotFoundError do
+        @gateway.get_payments
+      end
+    end
+
     should "handle random root elements" do
       XeroGateway::OAuth.any_instance.stubs(:put).returns(stub(:plain_body => "<RandomRootElement></RandomRootElement>", :code => "200"))
 

@@ -7,7 +7,7 @@ module XeroGateway
     attr_reader :errors
 
     # All accessible fields
-    attr_accessor :invoice_id, :invoice_number, :account_id, :code, :payment_id, :date, :amount, :reference, :currency_rate
+    attr_accessor :invoice_id, :invoice_number, :account_id, :code, :payment_id, :payment_type, :date, :amount, :reference, :currency_rate, :updated_at
 
     def initialize(params = {})
       @errors ||= []
@@ -21,13 +21,17 @@ module XeroGateway
       payment = Payment.new
       payment_element.children.each do | element |
         case element.name
-          when 'PaymentID'    then payment.payment_id = element.text
-          when 'Date'         then payment.date = parse_date_time(element.text)
-          when 'Amount'       then payment.amount = BigDecimal.new(element.text)
-          when 'Reference'    then payment.reference = element.text
-          when 'CurrencyRate' then payment.currency_rate = BigDecimal.new(element.text)
-          when 'Invoice'      then payment.send("#{element.children.first.name.underscore}=", element.children.first.text)
-          when 'Account'      then payment.send("#{element.children.first.name.underscore}=", element.children.first.text)
+          when 'PaymentID'      then payment.payment_id = element.text
+          when 'PaymentType'    then payment.payment_type = element.text
+          when 'Date'           then payment.date = parse_date_time(element.text)
+          when 'UpdatedDateUTC' then payment.updated_at = parse_date_time(element.text)
+          when 'Amount'         then payment.amount = BigDecimal.new(element.text)
+          when 'Reference'      then payment.reference = element.text
+          when 'CurrencyRate'   then payment.currency_rate = BigDecimal.new(element.text)
+          when 'Invoice'
+            payment.invoice_id = element.elements["//InvoiceID"].text
+            payment.invoice_number = element.elements["//InvoiceNumber"].text
+          when 'Account'        then payment.account_id = element.elements["//AccountID"].text
         end
       end
       payment
@@ -42,6 +46,9 @@ module XeroGateway
 
     def to_xml(b = Builder::XmlMarkup.new)
       b.Payment do
+
+        b.PaymentID          self.payment_id        if self.payment_id
+        b.PaymentType        self.payment_type      if self.payment_type
 
         if self.invoice_id || self.invoice_number
           b.Invoice do |i|

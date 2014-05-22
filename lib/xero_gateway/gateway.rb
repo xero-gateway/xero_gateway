@@ -34,7 +34,7 @@ module XeroGateway
 
       request_params[:ContactID]     = options[:contact_id] if options[:contact_id]
       request_params[:ContactNumber] = options[:contact_number] if options[:contact_number]
-      request_params[:OrderBy]       = options[:order] if options[:order]
+      request_params[:order]         = options[:order] if options[:order]
       request_params[:ModifiedAfter] = options[:modified_since] if options[:modified_since]
       request_params[:where]         = options[:where] if options[:where]
       request_params[:page]          = options[:page]  if options[:page]
@@ -139,7 +139,7 @@ module XeroGateway
 
       request_params[:InvoiceID]     = options[:invoice_id] if options[:invoice_id]
       request_params[:InvoiceNumber] = options[:invoice_number] if options[:invoice_number]
-      request_params[:OrderBy]       = options[:order] if options[:order]
+      request_params[:order]         = options[:order] if options[:order]
       request_params[:ModifiedAfter] = options[:modified_since] if options[:modified_since]
 
       request_params[:where]         = options[:where] if options[:where]
@@ -264,10 +264,10 @@ module XeroGateway
 
       request_params[:CreditNoteID]     = options[:credit_note_id] if options[:credit_note_id]
       request_params[:CreditNoteNumber] = options[:credit_note_number] if options[:credit_note_number]
-      request_params[:OrderBy]       = options[:order] if options[:order]
-      request_params[:ModifiedAfter] = options[:modified_since] if options[:modified_since]
+      request_params[:order]            = options[:order] if options[:order]
+      request_params[:ModifiedAfter]    = options[:modified_since] if options[:modified_since]
 
-      request_params[:where]         = options[:where] if options[:where]
+      request_params[:where]            = options[:where] if options[:where]
 
       response_xml = http_get(@client, "#{@xero_url}/CreditNotes", request_params)
 
@@ -414,7 +414,7 @@ module XeroGateway
       request_params = {}
       request_params[:BankTransactionID]  = options[:bank_transaction_id] if options[:bank_transaction_id]
       request_params[:ModifiedAfter]      = options[:modified_since] if options[:modified_since]
-      request_params[:OrderBy]            = options[:order] if options[:order]
+      request_params[:order]              = options[:order] if options[:order]
       request_params[:where]              = options[:where] if options[:where]
 
       response_xml = http_get(@client, "#{@xero_url}/BankTransactions", request_params)
@@ -544,6 +544,20 @@ module XeroGateway
 
       response_xml = http_put(@client, "#{xero_url}/Payments", request_xml)
       parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/payments'})
+    end
+
+    #
+    # Gets all Payments for a specific organisation in Xero
+    #
+    def get_payments(options = {})
+      request_params = {}
+      request_params[:PaymentID]     = options[:payment_id] if options[:payment_id]
+      request_params[:ModifiedAfter] = options[:modified_since] if options[:modified_since]
+      request_params[:order]         = options[:order] if options[:order]
+      request_params[:where]         = options[:where] if options[:where]
+
+      response_xml = http_get(@client, "#{@xero_url}/Payments", request_params)
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/payments'})
     end
 
     private
@@ -700,6 +714,11 @@ module XeroGateway
           when "Currencies" then element.children.each {|child| response.response_item << Currency.from_xml(child) }
           when "Organisations" then response.response_item = Organisation.from_xml(element.children.first) # Xero only returns the Authorized Organisation
           when "TrackingCategories" then element.children.each {|child| response.response_item << TrackingCategory.from_xml(child) }
+          when "Payment" then response.response_item = Payment.from_xml(element, self)
+          when "Payments"
+            element.children.each do |child|
+              response.response_item << Payment.from_xml(child, self)
+            end
           when "Errors" then response.errors = element.children.map { |error| Error.parse(error) }
         end
       end if response_element
