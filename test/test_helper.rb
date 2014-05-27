@@ -133,6 +133,32 @@ module TestHelper
     XeroGateway::Payment.new(params)
   end
 
+  def create_test_report_bank_statement(params={}, body_params={})
+    params = {
+      :report_id        => 'BankStatement',
+      :report_name      => 'BankStatement',
+      :report_type      => 'BankStatement',
+      :report_titles    => [],
+      :report_date      => Date.today,
+      :updated_at       => Time.now-3.days,
+      :body             => [create_test_report_body(body_params)]
+    }.merge(params)
+    XeroGateway::Report.new(params)
+  end
+
+  def create_test_report_body(params={})
+    params = {
+      :date           => Time.now-3.days,
+      :description    => "Short description",
+      :reference      => "REF",
+      :reconciled     => "No",
+      :source         => "Import",
+      :amount         => 200.0,
+      :balance        => 200.0
+    }.merge(params)
+    XeroGateway::Content.new(params)
+  end
+
   def add_test_line_items(bank_transaction, line_item_params={})
     if line_item_params
       line_item_params = [line_item_params].flatten # always use an array, even if only a single hash passed in

@@ -73,6 +73,14 @@ class GatewayTest < Test::Unit::TestCase
       result = @gateway.get_contact_by_number('12345')
       assert result.response_item.is_a? XeroGateway::Contact
     end
+
+    context :get_report do
+      should "get a BankStatements report" do
+        XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("reports/report_bank_statement.xml"), :code => "200"))
+        result = @gateway.get_report("BankStatement", bank_account_id: "c09661a2-a954-4e34-98df-f8b6d1dc9b19")
+        assert result.response_item.is_a? XeroGateway::Report
+      end
+    end
   end
 
   context "with error handling" do
