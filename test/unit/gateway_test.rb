@@ -76,8 +76,50 @@ class GatewayTest < Test::Unit::TestCase
 
     context :get_report do
       should "get a BankStatements report" do
-        XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("reports/report_bank_statement.xml"), :code => "200"))
+        XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("reports/bank_statement.xml"), :code => "200"))
         result = @gateway.get_report("BankStatement", bank_account_id: "c09661a2-a954-4e34-98df-f8b6d1dc9b19")
+        assert result.response_item.is_a? XeroGateway::Report
+      end
+
+      should "get a AgedPayablesByContact report" do
+        XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("reports/aged_payables_by_contact.xml"), :code => "200"))
+        result = @gateway.get_report("AgedPayablesByContact", contactID: "c09661a2-a954-4e34-98df-f8b6d1dc9b19")
+        assert result.response_item.is_a? XeroGateway::Report
+      end
+
+      should "get a AgedReceivablesByContact report" do
+        XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("reports/aged_receivables_by_contact.xml"), :code => "200"))
+        result = @gateway.get_report("AgedReceivablesByContact", contactID: "c09661a2-a954-4e34-98df-f8b6d1dc9b19")
+        assert result.response_item.is_a? XeroGateway::Report
+      end
+
+      should "get a BalanceSheet report" do
+        XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("reports/balance_sheet.xml"), :code => "200"))
+        result = @gateway.get_report("BalanceSheet")
+        assert result.response_item.is_a? XeroGateway::Report
+      end
+
+      should "get a BankSummary report" do
+        XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("reports/bank_summary.xml"), :code => "200"))
+        result = @gateway.get_report("BankSummary")
+        assert result.response_item.is_a? XeroGateway::Report
+      end
+
+      should "get a ExecutiveSummary report" do
+        XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("reports/executive_summary.xml"), :code => "200"))
+        result = @gateway.get_report("ExecutiveSummary")
+        assert result.response_item.is_a? XeroGateway::Report
+      end
+
+      should "get a ProfitAndLoss report" do
+        XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("reports/profit_and_loss.xml"), :code => "200"))
+        result = @gateway.get_report("ProfitAndLoss")
+        assert result.response_item.is_a? XeroGateway::Report
+      end
+
+      should "get a TrialBalance report" do
+        XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("reports/trial_balance.xml"), :code => "200"))
+        result = @gateway.get_report("TrialBalance")
         assert result.response_item.is_a? XeroGateway::Report
       end
     end

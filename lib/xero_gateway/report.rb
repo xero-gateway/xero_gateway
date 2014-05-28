@@ -38,7 +38,7 @@ module XeroGateway
   private
 
     def self.each_row_content(element, &block)
-      columns  = find_body_column_names(element).map!{ |t| t.parameterize.underscore }
+      columns  = find_body_column_names(element).map!{ |t| column_name_to_key(t) unless t.nil? }
       xml_body = REXML::XPath.first(element, "//RowType[text()='Section']").parent
       xml_body.elements.each("Rows/Row") do |xml_cells|
         values = find_body_row_values(xml_cells)
@@ -61,15 +61,24 @@ module XeroGateway
 
     def self.find_body_column_names(body)
       header = REXML::XPath.first(body, "//RowType[text()='Header']")
-      column_name = []
+      column_name  = []
+      column_index = 1
       header.parent.elements.each("Cells/Cell") do |header_cell|
+        column_index+=1
         if value = header_cell.children.first # finds <Value>...</Value>
+          name = value.text
+          name = "column_#{column_index}" if Date.parse(name) rescue nil
           column_name << value.text
           next
         end
-        column_name << nil
+        column_name << "column_#{column_index}"
       end
       column_name
+    end
+
+    def self.column_name_to_key(string)
+      string = "Column #{string}" unless string =~ /^[a-z]/i # e.g. '31 May 14' becomes 'column_31 May 14'
+      string = string.parameterize.underscore
     end
   end
 end
