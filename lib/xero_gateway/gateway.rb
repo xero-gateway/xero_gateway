@@ -570,7 +570,7 @@ module XeroGateway
         params[xero_key] = val
         params
       end
-      response_xml = http_get(@client, "#{@xero_url}/#{id_or_name}", request_params)
+      response_xml = http_get(@client, "#{@xero_url}/reports/#{id_or_name}", request_params)
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/reports'})
     end
 
