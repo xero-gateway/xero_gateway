@@ -73,8 +73,27 @@ class ContactTest < Test::Unit::TestCase
     assert_equal(2, contact.phones.size)
     assert_kind_of(XeroGateway::Phone, contact.phones.last)
     new_values.each { |k,v| assert_equal(v, contact.phones.last.send("#{k}")) }
-  end  
+  end
+
+  def test_valid_phone_number
+    phone = XeroGateway::Phone.new({
+     :phone_type => 'MOBILE',
+     :country_code => '61',
+     :area_code => '406',
+     :number => '0123456789'
+    })
+    assert(phone.valid?)
+  end
   
+  def test_invalid_phone_number
+    phone = XeroGateway::Phone.new({
+     :phone_type => 'MOBILE',
+     :country_code => '61',
+     :area_code => '406',
+     :number => '012345678901234567890123456789012345678901234567890'
+    })
+    assert(!phone.valid?)
+  end
   
   private
   
