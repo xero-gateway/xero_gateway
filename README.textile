@@ -187,17 +187,10 @@ This method uses only a single API request to create/update multiple contacts.
     result = gateway.update_contacts(contacts)</code></pre>
 
 
-h3. GET /api.xro/2.0/invoice (get_invoice_by_id)
+h3. GET /api.xro/2.0/invoice (get_invoice)
 
-Gets an invoice record for a specific Xero organisation
-<pre><code>    gateway.get_invoice_by_id(invoice_id)</code></pre>
-
-
-h3. GET /api.xro/2.0/invoice (get_invoice_by_number)
-
-Gets an invoice record for a specific Xero organisation
-<pre><code>    gateway.get_invoice_by_number(invoice_number)</code></pre>
-
+Gets an invoice record for a specific Xero organisation by either id or number
+<pre><code>    gateway.get_invoice(invoice_id_or_number)</code></pre>
 
 
 h3. GET /api.xro/2.0/invoices (get_invoices)
