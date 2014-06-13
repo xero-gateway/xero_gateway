@@ -3,6 +3,7 @@ source "http://rubygems.org"
 gem 'builder', '~> 3.0.0'
 gem 'oauth',   '~> 0.4.0'
 gem 'activesupport'
+gem 'activemodel'
 
 group :test do
   gem 'i18n' # For fixing undocumented active_support dependency

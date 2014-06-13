@@ -1,0 +1,11 @@
+<Response xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Calendars>
+    <Calendar>
+      <Name>GST on Expenses</Name>
+      <CalendarType>INPUT</CalendarType>
+      <StartDate>1978-08-13T00:00:00</StartDate>
+      <PaymentDate>1978-08-13T00:00:00</PaymentDate>
+      <PayrollCalendarId>1</PayrollCalendarId>
+    </Calendar>
+  </Calendars>
+</Response>
