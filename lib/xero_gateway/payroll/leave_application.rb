@@ -1,19 +1,20 @@
+require 'active_model'
 module XeroGateway::Payroll
   class NoGatewayError < StandardError; end
 
   class LeaveApplication
     include XeroGateway::Dates
+    include ActiveModel::Validations
 
     # Xero::Gateway associated with this leave_period.
     attr_accessor :gateway
 
-    # Any errors that occurred when the #valid? method called.
-    attr_reader :errors
-
     attr_accessor :employee_id, :leave_type_id, :title, :start_date, :end_date, :description, :leave_periods, :leave_application_id
 
+    validates_presence_of :employee_id, :leave_type_id, :title, :start_date, :end_date
+    validates_length_of :description, maximum: 200
+
     def initialize(params = {})
-      @errors ||= []
 
       params = {}.merge(params)
       params.each do |k,v|
@@ -21,16 +22,6 @@ module XeroGateway::Payroll
       end
 
       @leave_periods ||= []
-    end
-
-    def valid?
-      @errors = []
-
-      [:employee_id, :leave_type_id, :title, :start_date, :end_date].each do |attr_name|
-        @errors << [attr_name.to_s, "can't be blank"] if self.send(attr_name).blank?
-      end
-
-      @errors.size == 0
     end
 
     # General purpose create/save method.

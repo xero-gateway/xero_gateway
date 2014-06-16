@@ -12,6 +12,7 @@ class GetPayrollEmployeeTest < Test::Unit::TestCase
       @gateway.stubs(:http_get).with {|client, url, params| url =~ /Employees\/[^\/]+$/ }.returns(get_file_as_string("payroll_employee.xml"))
       @gateway.stubs(:http_put).with {|client, url, body, params| url =~ /Employees$/ }.returns(get_file_as_string("payroll_employee.xml"))
       @gateway.stubs(:http_post).with {|client, url, body, params| url =~ /Employees$/ }.returns(get_file_as_string("payroll_employee.xml"))
+      @gateway.stubs(:http_get).with {|client, url, body, params| url =~ /PayrollCalendars/ }.returns(get_file_as_string("payroll_calendar.xml"))
     end
   end
 

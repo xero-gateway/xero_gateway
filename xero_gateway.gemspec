@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name     = "xero_gateway"
-  s.version  = "3.2.8"
-  s.date     = "2014-01-09"
+  s.version  = "3.2.9"
+  s.date     = "2014-06-17"
   s.summary  = "Enables ruby based applications to communicate with the Xero API"
   s.email    = "dave@thinkei.com"
   s.homepage = "http://github.com/Thinkei/xero_gateway"
@@ -12,4 +12,5 @@ Gem::Specification.new do |s|
   s.add_dependency('builder', '~> 3.0.0')
   s.add_dependency('oauth', '~> 0.4.0')
   s.add_dependency('activesupport')
+  s.add_dependency('activemodel')
 end

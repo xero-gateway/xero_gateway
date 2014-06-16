@@ -9,6 +9,7 @@
       <xs:element name="DateOfBirth" minOccurs="0" maxOccurs="1" type="xs:date" />
       <xs:element name="Email" minOccurs="0" maxOccurs="1" type="xs:string" />
       <xs:element name="Gender" minOccurs="0" maxOccurs="1" type="xs:string" />
+      <xs:element name="BankAccounts" minOccurs="0" maxOccurs="1" type="xs:string" />
       <xs:element name="MiddleNames" minOccurs="0" maxOccurs="1" type="xs:string" />
       <xs:element name="HomeAddress">
           <xs:complexType>
