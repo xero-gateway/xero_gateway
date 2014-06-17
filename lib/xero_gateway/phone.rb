@@ -36,6 +36,8 @@ module XeroGateway
             
       unless number
         @errors << ['number', "can't be blank"]
+      else
+        @errors << ['number', "must 50 characters or less"] if number.length > 50
       end
       
       if phone_type && !PHONE_TYPE[phone_type]
