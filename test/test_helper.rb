@@ -98,7 +98,11 @@ module TestHelper
       data += line
     end
     f.close
-    return data
+    data
+  end
+
+  def get_file(filename)
+    data = File.read( File.dirname(__FILE__) + "/stub_responses/" + filename)
   end
 
   def create_test_bank_transaction(params={}, contact_params={}, line_item_params={})
@@ -141,22 +145,10 @@ module TestHelper
       :report_titles    => [],
       :report_date      => Date.today,
       :updated_at       => Time.now-3.days,
-      :body             => [create_test_report_body(body_params)]
+      :column_names     => [],
+      :body             => []
     }.merge(params)
     XeroGateway::Report.new(params)
-  end
-
-  def create_test_report_body(params={})
-    params = {
-      :date           => Time.now-3.days,
-      :description    => "Short description",
-      :reference      => "REF",
-      :reconciled     => "No",
-      :source         => "Import",
-      :amount         => 200.0,
-      :balance        => 200.0
-    }.merge(params)
-    XeroGateway::Content.new(params)
   end
 
   def add_test_line_items(bank_transaction, line_item_params={})
