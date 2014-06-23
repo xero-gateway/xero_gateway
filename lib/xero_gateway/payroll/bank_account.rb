@@ -1,18 +1,20 @@
+require 'active_model'
 module XeroGateway::Payroll
   class BankAccount
+    include ActiveModel::Validations
 
     GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ unless defined?(GUID_REGEX)
 
     attr_accessor :gateway
 
-    # Any errors that occurred when the #valid? method called.
-    attr_reader :errors
-
     attr_accessor :statement_text, :account_name, :bsb, :account_number, :remainder, :percentage, :amount
 
-     def initialize(params = {})
-      @errors ||= []
+    validates_length_of :account_name, maximum: 32, allow_blank: true
+    validates_length_of :statement_text, maximum: 18, allow_blank: true
+    validates_length_of :bsb, is: 6, allow_blank: true
+    validates_length_of :account_number, is: 9, allow_blank: true
 
+     def initialize(params = {})
       params = {}.merge(params)
       params.each do |k,v|
         self.send("#{k}=", v)
