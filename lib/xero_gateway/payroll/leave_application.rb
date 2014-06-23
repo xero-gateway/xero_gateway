@@ -1,4 +1,5 @@
 require 'active_model'
+
 module XeroGateway::Payroll
   class NoGatewayError < StandardError; end
 
