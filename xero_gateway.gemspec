@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name     = "xero_gateway"
-  s.version  = "3.2.9"
-  s.date     = "2014-06-17"
+  s.version  = "3.2.10"
+  s.date     = "2014-06-23"
   s.summary  = "Enables ruby based applications to communicate with the Xero API"
   s.email    = "dave@thinkei.com"
   s.homepage = "http://github.com/Thinkei/xero_gateway"

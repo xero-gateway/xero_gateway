@@ -118,7 +118,7 @@ module XeroGateway::Payroll
         self.pay_template.to_xml(b) if self.pay_template
         b.BankAccounts{
           self.bank_accounts.each do |bank_account|
-            bank_account.to_xml(b)
+            bank_account.to_xml(b) if bank_account.valid?
           end
         }
         b.SuperMemberships{
