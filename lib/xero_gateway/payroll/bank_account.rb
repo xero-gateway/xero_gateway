@@ -1,4 +1,5 @@
 require 'active_model'
+
 module XeroGateway::Payroll
   class BankAccount
     include ActiveModel::Validations
