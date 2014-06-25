@@ -12,6 +12,7 @@ module XeroGateway
     alias_method :manual_journal,       :response_item
     alias_method :contact,              :response_item
     alias_method :organisation,         :response_item
+    alias_method :report,               :response_item
     alias_method :invoices,             :array_wrapped_response_item
     alias_method :credit_notes,         :array_wrapped_response_item
     alias_method :bank_transactions,    :array_wrapped_response_item

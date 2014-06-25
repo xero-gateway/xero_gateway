@@ -560,6 +560,20 @@ module XeroGateway
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/payments'})
     end
 
+    # Retrieves reports from Xero
+    #
+    # Usage : get_report("BankStatement", bank_account_id: "AC993F75-035B-433C-82E0-7B7A2D40802C")
+    #         get_report("297c2dc5-cc47-4afd-8ec8-74990b8761e9", bank_account_id: "AC993F75-035B-433C-82E0-7B7A2D40802C")
+    def get_report(id_or_name, options={})
+      request_params = options.inject({}) do  |params, (key, val)|
+        xero_key = key.to_s.camelize.gsub(/id/i, "ID").to_sym
+        params[xero_key] = val
+        params
+      end
+      response_xml = http_get(@client, "#{@xero_url}/reports/#{id_or_name}", request_params)
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/reports'})
+    end
+
     private
 
     def get_contact(contact_id = nil, contact_number = nil)
@@ -718,6 +732,10 @@ module XeroGateway
           when "Payments"
             element.children.each do |child|
               response.response_item << Payment.from_xml(child)
+            end
+          when "Reports"
+            element.children.each do |child|
+              response.response_item << Report.from_xml(child)
             end
           when "Errors" then response.errors = element.children.map { |error| Error.parse(error) }
         end

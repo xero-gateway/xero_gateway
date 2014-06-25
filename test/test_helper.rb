@@ -98,7 +98,11 @@ module TestHelper
       data += line
     end
     f.close
-    return data
+    data
+  end
+
+  def get_file(filename)
+    data = File.read( File.dirname(__FILE__) + "/stub_responses/" + filename)
   end
 
   def create_test_bank_transaction(params={}, contact_params={}, line_item_params={})
@@ -131,6 +135,20 @@ module TestHelper
       :invoice_number   => 'INV-0001',
     }.merge(params)
     XeroGateway::Payment.new(params)
+  end
+
+  def create_test_report_bank_statement(params={}, body_params={})
+    params = {
+      :report_id        => 'BankStatement',
+      :report_name      => 'BankStatement',
+      :report_type      => 'BankStatement',
+      :report_titles    => [],
+      :report_date      => Date.today,
+      :updated_at       => Time.now-3.days,
+      :column_names     => [],
+      :body             => []
+    }.merge(params)
+    XeroGateway::Report.new(params)
   end
 
   def add_test_line_items(bank_transaction, line_item_params={})

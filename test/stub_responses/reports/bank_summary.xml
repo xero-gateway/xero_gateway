@@ -1,0 +1,105 @@
+<Response xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Id>295ac815-a3ac-4332-8d54-37aaa3e96be9</Id>
+  <Status>OK</Status>
+  <ProviderName>Xero API Previewer</ProviderName>
+  <DateTimeUTC>2014-05-28T02:31:21.7225507Z</DateTimeUTC>
+  <Reports>
+    <Report>
+      <ReportID>BankSummary</ReportID>
+      <ReportName>Bank Summary</ReportName>
+      <ReportType>BankSummary</ReportType>
+      <ReportTitles>
+        <ReportTitle>Bank Summary</ReportTitle>
+        <ReportTitle>Demo Company (NZ)</ReportTitle>
+        <ReportTitle>From 1 May 2014 to 31 May 2014</ReportTitle>
+      </ReportTitles>
+      <ReportDate>28 May 2014</ReportDate>
+      <UpdatedDateUTC>2014-05-28T02:31:21.7225507Z</UpdatedDateUTC>
+      <Rows>
+        <Row>
+          <RowType>Header</RowType>
+          <Cells>
+            <Cell>
+              <Value>Bank Accounts</Value>
+            </Cell>
+            <Cell>
+              <Value>Opening Balance</Value>
+            </Cell>
+            <Cell>
+              <Value>Cash Received</Value>
+            </Cell>
+            <Cell>
+              <Value>Cash Spent</Value>
+            </Cell>
+            <Cell>
+              <Value>Closing Balance</Value>
+            </Cell>
+          </Cells>
+        </Row>
+        <Row>
+          <RowType>Section</RowType>
+          <Rows>
+            <Row>
+              <RowType>Row</RowType>
+              <Cells>
+                <Cell>
+                  <Value>Business Bank Account</Value>
+                  <Attributes>
+                    <Attribute>
+                      <Value>ac993f75-035b-433c-82e0-7b7a2d40802c</Value>
+                      <Id>accountID</Id>
+                    </Attribute>
+                  </Attributes>
+                </Cell>
+                <Cell>
+                  <Value>11674.47</Value>
+                </Cell>
+                <Cell>
+                  <Value>35.00</Value>
+                  <Attributes>
+                    <Attribute>
+                      <Value>ac993f75-035b-433c-82e0-7b7a2d40802c</Value>
+                      <Id>account</Id>
+                    </Attribute>
+                  </Attributes>
+                </Cell>
+                <Cell>
+                  <Value>461.25</Value>
+                  <Attributes>
+                    <Attribute>
+                      <Value>ac993f75-035b-433c-82e0-7b7a2d40802c</Value>
+                      <Id>account</Id>
+                    </Attribute>
+                  </Attributes>
+                </Cell>
+                <Cell>
+                  <Value>11248.22</Value>
+                </Cell>
+              </Cells>
+            </Row>
+            <Row>
+              <RowType>SummaryRow</RowType>
+              <Cells>
+                <Cell>
+                  <Value>Total</Value>
+                </Cell>
+                <Cell>
+                  <Value>11674.47</Value>
+                </Cell>
+                <Cell>
+                  <Value>35.00</Value>
+                </Cell>
+                <Cell>
+                  <Value>461.25</Value>
+                </Cell>
+                <Cell>
+                  <Value>11248.22</Value>
+                </Cell>
+              </Cells>
+            </Row>
+          </Rows>
+        </Row>
+      </Rows>
+    </Report>
+  </Reports>
+</Response>

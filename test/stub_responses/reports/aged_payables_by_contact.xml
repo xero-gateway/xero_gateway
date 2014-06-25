@@ -1,0 +1,154 @@
+<Response xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Id>0b97b44f-2438-4f60-97dc-e5a998354a07</Id>
+  <Status>OK</Status>
+  <ProviderName>Xero API Previewer</ProviderName>
+  <DateTimeUTC>2014-05-27T23:34:35.9932881Z</DateTimeUTC>
+  <Reports>
+    <Report>
+      <ReportID>AgedPayablesByContact</ReportID>
+      <ReportName>Aged Payables By Contact</ReportName>
+      <ReportType>AgedPayablesByContact</ReportType>
+      <ReportTitles>
+        <ReportTitle>Invoices</ReportTitle>
+        <ReportTitle>Bayside Club</ReportTitle>
+        <ReportTitle>To 31 May 2014</ReportTitle>
+        <ReportTitle>Showing payments to 31 May 2014</ReportTitle>
+      </ReportTitles>
+      <ReportDate>28 May 2014</ReportDate>
+      <UpdatedDateUTC>2014-05-27T23:34:35.9932881Z</UpdatedDateUTC>
+      <Rows>
+        <Row>
+          <RowType>Header</RowType>
+          <Cells>
+            <Cell>
+              <Value>Date</Value>
+            </Cell>
+            <Cell>
+              <Value>Reference</Value>
+            </Cell>
+            <Cell>
+              <Value>Due Date</Value>
+            </Cell>
+            <Cell />
+            <Cell>
+              <Value>Total</Value>
+            </Cell>
+            <Cell>
+              <Value>Paid</Value>
+            </Cell>
+            <Cell>
+              <Value>Credited</Value>
+            </Cell>
+            <Cell>
+              <Value>Due</Value>
+            </Cell>
+          </Cells>
+        </Row>
+        <Row>
+          <RowType>Section</RowType>
+          <Rows>
+            <Row>
+              <RowType>Row</RowType>
+              <Cells>
+                <Cell>
+                  <Value>2014-05-03T00:00:00</Value>
+                  <Attributes>
+                    <Attribute>
+                      <Value>1ebc0534-133f-4f9c-a211-b1e7337d13f9</Value>
+                      <Id>invoiceID</Id>
+                    </Attribute>
+                  </Attributes>
+                </Cell>
+                <Cell>
+                  <Attributes>
+                    <Attribute>
+                      <Value>1ebc0534-133f-4f9c-a211-b1e7337d13f9</Value>
+                      <Id>invoiceID</Id>
+                    </Attribute>
+                  </Attributes>
+                </Cell>
+                <Cell>
+                  <Value>2014-05-13T00:00:00</Value>
+                  <Attributes>
+                    <Attribute>
+                      <Value>1ebc0534-133f-4f9c-a211-b1e7337d13f9</Value>
+                      <Id>invoiceID</Id>
+                    </Attribute>
+                  </Attributes>
+                </Cell>
+                <Cell>
+                  <Value>15 days overdue</Value>
+                  <Attributes>
+                    <Attribute>
+                      <Value>1ebc0534-133f-4f9c-a211-b1e7337d13f9</Value>
+                      <Id>invoiceID</Id>
+                    </Attribute>
+                  </Attributes>
+                </Cell>
+                <Cell>
+                  <Value>130.00</Value>
+                  <Attributes>
+                    <Attribute>
+                      <Value>1ebc0534-133f-4f9c-a211-b1e7337d13f9</Value>
+                      <Id>invoiceID</Id>
+                    </Attribute>
+                  </Attributes>
+                </Cell>
+                <Cell>
+                  <Value>0.00</Value>
+                  <Attributes>
+                    <Attribute>
+                      <Value>1ebc0534-133f-4f9c-a211-b1e7337d13f9</Value>
+                      <Id>invoiceID</Id>
+                    </Attribute>
+                  </Attributes>
+                </Cell>
+                <Cell>
+                  <Value>0.00</Value>
+                  <Attributes>
+                    <Attribute>
+                      <Value>1ebc0534-133f-4f9c-a211-b1e7337d13f9</Value>
+                      <Id>invoiceID</Id>
+                    </Attribute>
+                  </Attributes>
+                </Cell>
+                <Cell>
+                  <Value>130.00</Value>
+                  <Attributes>
+                    <Attribute>
+                      <Value>1ebc0534-133f-4f9c-a211-b1e7337d13f9</Value>
+                      <Id>invoiceID</Id>
+                    </Attribute>
+                  </Attributes>
+                </Cell>
+              </Cells>
+            </Row>
+            <Row>
+              <RowType>SummaryRow</RowType>
+              <Cells>
+                <Cell>
+                  <Value>Total</Value>
+                </Cell>
+                <Cell />
+                <Cell />
+                <Cell />
+                <Cell>
+                  <Value>130.00</Value>
+                </Cell>
+                <Cell>
+                  <Value>0.00</Value>
+                </Cell>
+                <Cell>
+                  <Value>0.00</Value>
+                </Cell>
+                <Cell>
+                  <Value>130.00</Value>
+                </Cell>
+              </Cells>
+            </Row>
+          </Rows>
+        </Row>
+      </Rows>
+    </Report>
+  </Reports>
+</Response>
