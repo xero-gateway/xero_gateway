@@ -20,7 +20,7 @@ module XeroGateway::Payroll
     attr_accessor :employee_id, :first_name, :date_of_birth, :email, :gender, :last_name,
                   :middle_name, :title, :start_date, :occupation, :mobile,
                   :phone, :termination_date, :home_address, :bank_accounts, :super_memberships, :pay_template,
-                  :tax_declaration, :payroll_calendar
+                  :tax_declaration, :payroll_calendar, :payroll_calendar_id
 
     def initialize(params = {})
       @errors ||= []
@@ -115,6 +115,7 @@ module XeroGateway::Payroll
         b.Mobile self.mobile if self.mobile
         b.Phone self.phone if self.phone
         b.TerminationDate self.termination_date if self.termination_date
+        b.PayrollCalendarID self.payroll_calendar_id if self.payroll_calendar_id
         self.pay_template.to_xml(b) if self.pay_template
         b.BankAccounts{
           self.bank_accounts.each do |bank_account|
