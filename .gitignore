@@ -4,3 +4,5 @@
 examples/xero_keys.yml
 .idea
 tags
+.ruby-gemset
+.ruby-version

@@ -73,12 +73,10 @@ module XeroGateway
             else
               response.plain_body
             end
-          when 400
+          when 400, 404
             handle_error!(body, response)
           when 401
             handle_oauth_error!(response)
-          when 404
-            handle_object_not_found!(response, url)
           else
             raise "Unknown response code: #{response.code.to_i}"
         end
@@ -110,32 +108,10 @@ module XeroGateway
         raw_response.gsub! '<?xml version="1.0" encoding="utf-16"?>', ''
 
         doc = REXML::Document.new(raw_response, :ignore_whitespace_nodes => :all)
+        type = doc.root.elements['//Type'].text rescue ''
+        message = doc.root.elements['//Message'].text rescue ''
 
-        if doc.root.name == "ApiException"
-
-          raise ApiException.new(doc.root.elements["Type"].text,
-                                 doc.root.elements["Message"].text,
-                                 request_xml,
-                                 raw_response)
-
-        else
-
-          raise "Unparseable 400 Response: #{raw_response}"
-
-        end
-
+        raise ApiException.new(type, message, request_xml, raw_response)
       end
-
-      def handle_object_not_found!(response, request_url)
-        case(request_url)
-          when /Invoices/ then raise InvoiceNotFoundError.new("Invoice not found in Xero.")
-          when /BankTransactions/ then raise BankTransactionNotFoundError.new("Bank Transaction not found in Xero.")
-          when /CreditNotes/ then raise CreditNoteNotFoundError.new("Credit Note not found in Xero.")
-          when /Employees/ then raise EmployeeNotFoundError.new("Employee ID not found.")
-          when /Payslip/ then raise PayslipNotFoundError.new("Payslip not found")
-          else raise ObjectNotFound.new(request_url)
-        end
-      end
-
   end
 end

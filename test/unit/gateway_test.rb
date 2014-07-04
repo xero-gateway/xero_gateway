@@ -60,7 +60,7 @@ class GatewayTest < Test::Unit::TestCase
     should "handle invoices not found" do
       XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("api_exception.xml"), :code => "404"))
 
-      assert_raises XeroGateway::InvoiceNotFoundError do
+      assert_raises XeroGateway::ApiException do
         @gateway.get_invoice('unknown-invoice-id')
       end
     end
@@ -68,7 +68,7 @@ class GatewayTest < Test::Unit::TestCase
     should "handle bank transactions not found" do
       XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("api_exception.xml"), :code => "404"))
 
-      assert_raises XeroGateway::BankTransactionNotFoundError do
+      assert_raises XeroGateway::ApiException do
         @gateway.get_bank_transaction('unknown-bank-transaction-id')
       end
     end
@@ -76,7 +76,7 @@ class GatewayTest < Test::Unit::TestCase
     should "handle credit notes not found" do
       XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("api_exception.xml"), :code => "404"))
 
-      assert_raises XeroGateway::CreditNoteNotFoundError do
+      assert_raises XeroGateway::ApiException do
         @gateway.get_credit_note('unknown-credit-note-id')
       end
     end
@@ -92,7 +92,7 @@ class GatewayTest < Test::Unit::TestCase
     should "handle payroll employee not found" do
       XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("api_exception.xml"), :code => "404"))
 
-      assert_raises XeroGateway::EmployeeNotFoundError do
+      assert_raises XeroGateway::ApiException do
         @gateway.get_payroll_employee_by_id('unknown-employee-id')
       end
     end
