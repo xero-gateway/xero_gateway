@@ -13,7 +13,7 @@ module XeroGateway::Payroll
     validates_length_of :account_name, maximum: 32, allow_blank: true
     validates_length_of :statement_text, maximum: 18, allow_blank: true
     validates_length_of :bsb, is: 6, allow_blank: true
-    validates_length_of :account_number, is: 9, allow_blank: true
+    validates_length_of :account_number, maximum: 9, allow_blank: true
 
      def initialize(params = {})
       params = {}.merge(params)
