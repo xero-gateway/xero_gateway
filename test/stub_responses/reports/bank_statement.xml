@@ -97,7 +97,10 @@
                   <Value>2014-05-01T00:00:00</Value>
                 </Cell>
                 <Cell>
-                  <Value>Cooper Street Bakery</Value>
+                  <Attribute>
+                    <Value>asasdas-asdf-asdf-asdf-asdfasdfasdfas</Value>
+                    <Id>statementID</Id>
+                  </Attribute>
                 </Cell>
                 <Cell>
                   <Value>Eft  </Value>

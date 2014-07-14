@@ -63,6 +63,15 @@ class ReportTest < Test::Unit::TestCase
       assert_equal "Import", second_statement.column_5
       assert_equal "-15.00", second_statement.column_6
       assert_equal "15446.97", second_statement.column_7
+
+      # Third
+      third_statement = @report.body.third
+      assert_equal nil, third_statement.column_2 # no description, but other attributes
+      assert_equal "Eft", third_statement.column_3
+      assert_equal "No", third_statement.column_4
+      assert_equal "Import", third_statement.column_5
+      assert_equal "-15.75", third_statement.column_6
+      assert_equal "15431.22", third_statement.column_7
     end
   end
 
