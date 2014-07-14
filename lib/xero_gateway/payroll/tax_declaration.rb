@@ -53,11 +53,11 @@ module XeroGateway::Payroll
         b.EmploymentBasis self.employment_basis if self.employment_basis
         b.TFNPendingOrExemptionHeld self.tfn_pending_or_exemption_held if self.tfn_pending_or_exemption_held
         b.TaxFileNumber self.tax_file_number if self.tax_file_number
-        b.AustralianResidentForTaxPurposes self.australian_resident_for_tax_purposes if self.australian_resident_for_tax_purposes
-        b.TaxFreeThresholdClaimed self.tax_free_threshold_claimed if self.tax_free_threshold_claimed
+        b.AustralianResidentForTaxPurposes self.australian_resident_for_tax_purposes unless self.australian_resident_for_tax_purposes.nil?
+        b.TaxFreeThresholdClaimed self.tax_free_threshold_claimed unless self.tax_free_threshold_claimed.nil?
         b.TaxOffsetEstimatedAmount self.tax_offset_estimated_amount if self.tax_offset_estimated_amount
-        b.HasHELPDebt self.has_help_debt if self.has_help_debt
-        b.HasSFSSDebt self.has_sfss_debt if self.has_sfss_debt
+        b.HasHELPDebt self.has_help_debt unless self.has_help_debt.nil?
+        b.HasSFSSDebt self.has_sfss_debt unless self.has_sfss_debt.nil?
         b.UpwardVariationTaxWithholdingAmount self.upward_variation_tax_withholding_amount if self.upward_variation_tax_withholding_amount
         b.EligibleToReceiveLeaveLoading self.eligible_to_receive_leave_loading if self.eligible_to_receive_leave_loading
         b.ApprovedWithholdingVariationPercentage self.approved_withholding_variation_percentage if self.approved_withholding_variation_percentage
