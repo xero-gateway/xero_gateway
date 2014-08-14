@@ -9,7 +9,7 @@ module XeroGateway::Payroll
     # Any errors that occurred when the #valid? method called.
     attr_reader :errors
 
-    attr_accessor :super_fund_id, :type, :name, :abn, :bsb, :account_number, :account_name, :employer_number, :employee_number
+    attr_accessor :super_fund_id, :type, :name, :abn, :bsb, :account_number, :account_name, :employer_number, :employee_number, :spin
 
     def initialize(params = {})
       @errors ||= []
@@ -27,6 +27,7 @@ module XeroGateway::Payroll
         b.Name self.name if self.name
         b.ABN self.abn if self.abn
         b.BSB self.bsb if self.bsb
+        b.SPIN self.spin if self.spin
         b.AccountNumber self.account_number if self.account_number
         b.AccountName self.account_name if self.account_name
         b.EmployerNumber self.employer_number if self.employer_number
@@ -44,6 +45,7 @@ module XeroGateway::Payroll
           when "ABN" then super_fund.abn = element.text
           when "Type" then super_fund.type = element.text
           when "BSB" then super_fund.bsb = element.text
+          when "SPIN" then super_fund.spin = element.text
           when "AccountNumber" then super_fund.account_number = element.text
           when "AccountName" then super_fund.account_name = element.text
           when "EmployerNumber" then super_fund.employer_number = element.text
@@ -54,7 +56,7 @@ module XeroGateway::Payroll
     end
 
     def ==(other)
-      [ :super_fund_id, :type, :name, :abn, :bsb, :account_number, :account_name, :employer_number, :employee_number ].each do |field|
+      [ :super_fund_id, :type, :name, :spin, :abn, :bsb, :account_number, :account_name, :employer_number, :employee_number ].each do |field|
         return false if send(field) != other.send(field)
       end
       return true
