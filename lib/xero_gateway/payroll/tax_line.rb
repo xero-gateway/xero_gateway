@@ -19,6 +19,13 @@ module XeroGateway::Payroll
       end
     end
 
+    def attributes
+      { tax_type_name: tax_type_name,
+        amount: amount,
+        description: description,
+        payslip_tax_line_id: payslip_tax_line_id }
+    end
+
     def to_xml(b = Builder::XmlMarkup.new)
       b.TaxLine{
         b.TaxTypeName self.tax_type_name if self.tax_type_name

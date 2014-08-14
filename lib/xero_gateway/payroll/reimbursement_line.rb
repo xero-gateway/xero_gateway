@@ -19,6 +19,13 @@ module XeroGateway::Payroll
       end
     end
 
+    def attributes
+      { reimbursement_type_id: reimbursement_type_id,
+        description: description,
+        expense_account: expense_account,
+        amount: amount }
+    end
+
     def to_xml(b = Builder::XmlMarkup.new)
       b.ReimbursementLine{
         b.ReimbursementTypeID self.reimbursement_type_id if self.reimbursement_type_id
