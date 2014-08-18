@@ -1,7 +1,7 @@
 module XeroGateway::Payroll
   class NoGatewayError < StandardError; end
-  class TimesheetEarningsLine < EarningsRate; end
-  class LeaveEarningsLine < EarningsRate; end
+  class TimesheetEarningsLine < EarningsLine; end
+  class LeaveEarningsLine < EarningsLine; end
 
   class Payslip
     GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ unless defined?(GUID_REGEX)
