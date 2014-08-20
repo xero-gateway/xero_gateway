@@ -75,7 +75,7 @@ module XeroGateway
             end
           when 400, 404
             handle_error!(body, response)
-          when 401
+          when 401, 503
             handle_oauth_error!(response)
           else
             raise "Unknown response code: #{response.code.to_i}"
@@ -95,7 +95,7 @@ module XeroGateway
           when "consumer_key_unknown" then raise OAuth::TokenInvalid.new(description)
           when "token_rejected"       then raise OAuth::TokenInvalid.new(description)
           when "rate limit exceeded"  then raise OAuth::RateLimitExceeded.new(description)
-          else raise OAuth::UnknownError.new(error_details["oauth_problem"].first + ':' + description)
+          else raise OAuth::UnknownError.new(error_details["oauth_problem"].first.to_s + ':' + description)
         end
       end
 
