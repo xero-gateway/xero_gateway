@@ -35,7 +35,7 @@ class GatewayTest < Test::Unit::TestCase
 
     should "handle rate limit exceeded" do
       XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("rate_limit_exceeded"), :code => "401"))
-
+      @gateway.expects(:_http_request).times(3).then.raises(XeroGateway::OAuth::RateLimitExceeded)
       assert_raises XeroGateway::OAuth::RateLimitExceeded do
         @gateway.get_accounts
       end

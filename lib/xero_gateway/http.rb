@@ -1,3 +1,5 @@
+require 'retriable'
+
 module XeroGateway
   module Http
     OPEN_TIMEOUT = 10 unless defined? OPEN_TIMEOUT
@@ -19,6 +21,12 @@ module XeroGateway
     private
 
       def http_request(client, method, url, body, params = {}, headers = {})
+        Retriable.retriable tries: 3, interval: 10, on: [OAuth::RateLimitExceeded] do
+          _http_request(client, method, url, body, params, headers)
+        end
+      end
+
+      def _http_request(client, method, url, body, params = {}, headers = {})
         # headers = {'Accept-Encoding' => 'gzip, deflate'}
 
         headers = headers.merge!('charset' => 'utf-8')
