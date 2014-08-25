@@ -19,7 +19,7 @@ module XeroGateway::Payroll
     attr_accessor :employment_basis, :tfn_pending_or_exemption_held, :tax_file_number,
       :australian_resident_for_tax_purposes, :tax_free_threshold_claimed, :tax_offset_estimated_amount,
       :has_help_debt, :has_sfss_debt, :upward_variation_tax_withholding_amount, :eligible_to_receive_leave_loading,
-      :approved_withholding_variation_percentage, :updated_date_utc, :employee_id
+      :approved_withholding_variation_percentage, :updated_date_utc, :employee_id, :tfn_exception_type
 
     def initialize(params = {})
       @errors ||= []
@@ -61,6 +61,7 @@ module XeroGateway::Payroll
         b.UpwardVariationTaxWithholdingAmount self.upward_variation_tax_withholding_amount if self.upward_variation_tax_withholding_amount
         b.EligibleToReceiveLeaveLoading self.eligible_to_receive_leave_loading if self.eligible_to_receive_leave_loading
         b.ApprovedWithholdingVariationPercentage self.approved_withholding_variation_percentage if self.approved_withholding_variation_percentage
+        b.TFNExemptionType self.tfn_exception_type if self.tfn_exception_type
       }
     end
 
@@ -80,6 +81,7 @@ module XeroGateway::Payroll
           when "UpwardVariationTaxWithholdingAmount" then tax_declaration.upward_variation_tax_withholding_amount = element.text
           when "EligibleToReceiveLeaveLoading" then tax_declaration.eligible_to_receive_leave_loading = element.text
           when "ApprovedWithholdingVariationPercentage" then tax_declaration.approved_withholding_variation_percentage = element.text
+          when "TFNExemptionType" then tax_declaration.tfn_exception_type = element.text
         end
       end
       tax_declaration
