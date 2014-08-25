@@ -20,7 +20,7 @@ module XeroGateway::Payroll
     attr_accessor :employee_id, :first_name, :date_of_birth, :email, :gender, :last_name,
                   :middle_name, :title, :start_date, :occupation, :mobile,
                   :phone, :termination_date, :home_address, :bank_accounts, :super_memberships, :pay_template,
-                  :tax_declaration, :payroll_calendar, :payroll_calendar_id
+                  :tax_declaration, :payroll_calendar, :payroll_calendar_id, :classification, :ordinary_earnings_rate_id
 
     def initialize(params = {})
       @errors ||= []
@@ -112,6 +112,8 @@ module XeroGateway::Payroll
         b.Title self.title if self.title
         b.StartDate self.class.format_date(self.start_date || Date.today) if self.start_date
         b.Occupation self.occupation if self.occupation
+        b.Classification self.classification if self.classification
+        b.OrdinaryEarningsRateID self.ordinary_earnings_rate_id if self.ordinary_earnings_rate_id
         b.Mobile self.mobile if self.mobile
         b.Phone self.phone if self.phone
         b.TerminationDate self.termination_date if self.termination_date
@@ -146,6 +148,8 @@ module XeroGateway::Payroll
           when "Title" then employee.title = element.text
           when "StartDate" then employee.start_date =  parse_date_time(element.text)
           when "Occupation" then employee.occupation = element.text
+          when "Classification" then employee.classification = element.text
+          when "OrdinaryEarningsRateID" then employee.ordinary_earnings_rate_id = element.text
           when "Mobile" then employee.mobile = element.text
           when "Phone" then employee.phone = element.text
           when "TerminationDate" then employee.termination_date = parse_date_time(element.text)
