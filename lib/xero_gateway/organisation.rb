@@ -19,7 +19,8 @@ module XeroGateway
         "PeriodLockDate"        => :string,
         "CreatedDateUTC"        => :string,
         "ShortCode"             => :string,
-        "Timezone"              => :string
+        "Timezone"              => :string,
+        "LineOfBusiness"        => :string
       }
     end
     
