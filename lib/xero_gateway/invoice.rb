@@ -37,7 +37,7 @@ module XeroGateway
     attr_accessor :line_items_downloaded
   
     # All accessible fields
-    attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :branding_theme_id, :line_amount_types, :currency_code, :line_items, :contact, :payments, :fully_paid_on, :amount_due, :amount_paid, :amount_credited, :sent_to_contact, :url
+    attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :branding_theme_id, :line_amount_types, :currency_code, :line_items, :contact, :payments, :fully_paid_on, :amount_due, :amount_paid, :amount_credited, :sent_to_contact, :url, :updated_date_utc
 
     def initialize(params = {})
       @errors ||= []
@@ -220,6 +220,7 @@ module XeroGateway
           when "Contact" then invoice.contact = Contact.from_xml(element)
           when "Date" then invoice.date = parse_date(element.text)
           when "DueDate" then invoice.due_date = parse_date(element.text)
+          when "UpdatedDateUTC" then invoice.updated_date_utc = parse_date(element.text)
           when "Status" then invoice.invoice_status = element.text
           when "Reference" then invoice.reference = element.text
           when "BrandingThemeID" then invoice.branding_theme_id = element.text
