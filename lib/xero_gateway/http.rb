@@ -92,7 +92,7 @@ module XeroGateway
 
       def handle_oauth_error!(response)
         error_details = CGI.parse(response.plain_body)
-        description   = error_details["oauth_problem_advice"].first
+        description   = error_details["oauth_problem_advice"].first || 'No "oauth_problem_advice" for this error'
 
         # see http://oauth.pbworks.com/ProblemReporting
         # In addition to token_expired and token_rejected, Xero also returns
