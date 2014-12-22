@@ -9,6 +9,14 @@ module XeroGateway
     extend Forwardable
     def_delegators :client, :request_token, :access_token, :authorize_from_request, :authorize_from_access, :expires_at, :authorization_expires_at
 
+    class << self
+      attr_accessor :logger
+    end
+
+    def logger
+      @logger ||= self.class.logger
+    end
+
     #
     # The consumer key and secret here correspond to those provided
     # to you by Xero inside the API Previewer.

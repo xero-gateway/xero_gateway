@@ -58,7 +58,10 @@ module XeroGateway
         #   @cached_http.verify_depth   = 5
         # end
 
-        logger.info("\n== [#{Time.now.to_s}] XeroGateway Request: #{uri.request_uri} ") if self.logger
+        if self.logger
+          logger.info("\n== [#{Time.now.to_s}] XeroGateway Request: #{uri.request_uri} ")
+          logger.info(body)
+        end
 
         response = case method
           when :get   then    client.get(uri.request_uri, headers)
