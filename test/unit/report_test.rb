@@ -36,7 +36,7 @@ class ReportTest < Test::Unit::TestCase
       expected_titles = ["Bank Statement", "Business Bank Account", "Demo Company (NZ)", "From 1 May 2014 to 27 May 2014"]
       assert_equal expected_titles, @report.report_titles
       assert_equal "BankStatement", @report.report_type
-      assert_equal Time.parse("2014-05-26 22:36:07 +1200"), @report.updated_at
+      assert_equal Time.parse("2014-05-26 22:36:07 +0000").to_i, @report.updated_at.to_i
       expected_names = { :column_1=>"Date", :column_2=>"Description", :column_3=>"Reference", :column_4=>"Reconciled", :column_5=>"Source", :column_6=>"Amount", :column_7=>"Balance" }
       assert_equal expected_names, @report.column_names
 

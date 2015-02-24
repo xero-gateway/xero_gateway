@@ -29,7 +29,7 @@ module XeroGateway
               report.report_titles << title
             end
           when 'ReportDate'       then report.report_date = Date.parse(element.text)
-          when 'UpdatedDateUTC'   then report.updated_at = parse_date_time(element.text)
+          when 'UpdatedDateUTC'   then report.updated_at = parse_date_time_utc(element.text)
           when 'Rows'
             report.column_names   ||= find_body_column_names(element)
             each_row_content(element) do |content_hash|
