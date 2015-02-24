@@ -40,7 +40,7 @@ class CreditNoteTest < Test::Unit::TestCase
   end
   
   # Tests the total_tax calculation and that setting it manually doesn't modify the data.
-  def test_credit_note_sub_total_calculation
+  def test_credit_note_sub_total_calculation2
     credit_note = create_test_credit_note
     line_item = credit_note.line_items.first
     
@@ -61,7 +61,7 @@ class CreditNoteTest < Test::Unit::TestCase
   end
 
   # Tests the total calculation and that setting it manually doesn't modify the data.
-  def test_credit_note_sub_total_calculation
+  def test_credit_note_sub_total_calculation3
     credit_note = create_test_credit_note
     line_item = credit_note.line_items.first
     

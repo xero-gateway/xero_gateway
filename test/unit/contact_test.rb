@@ -58,7 +58,7 @@ class ContactTest < Test::Unit::TestCase
 
   # Test Contact#add_phone helper creates a valid XeroGateway::Phone object with the passed in values
   # and appends it to the Contact#phones attribute.
-  def test_add_address_helper
+  def test_add_address_helper2
     contact = create_test_contact
     assert_equal(1, contact.phones.size)
     
