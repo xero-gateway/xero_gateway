@@ -13,6 +13,7 @@
       <OrganisationStatus>ACTIVE</OrganisationStatus>
       <BaseCurrency>NZD</BaseCurrency>
       <IsDemoCompany>false</IsDemoCompany>
+      <LineOfBusiness>Graphic Design &amp; Web Development</LineOfBusiness>
     </Organisation>
   </Organisations>
 </Response>

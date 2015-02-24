@@ -33,6 +33,7 @@ class OrganisationTest < Test::Unit::TestCase
       org.organisation_type   = nil
       org.organisation_status = nil
       org.is_demo_company     = false
+      org.line_of_business = "Graphic Design & Web Development"
     end
   end
 end
