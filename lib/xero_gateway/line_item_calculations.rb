@@ -20,7 +20,7 @@ module XeroGateway
 
     # Calculate the sub_total as the SUM(line_item.line_amount).
     def sub_total
-      @sub_total || line_items.inject(BigDecimal.new('0')) { | sum, line_item | sum + BigDecimal.new(line_item.line_amount.to_s) }
+      !line_items_downloaded? && @sub_total || line_items.inject(BigDecimal.new('0')) { | sum, line_item | sum + BigDecimal.new(line_item.line_amount.to_s) }
     end
 
     # Deprecated (but API for setter remains).
@@ -32,7 +32,7 @@ module XeroGateway
 
     # Calculate the total_tax as the SUM(line_item.tax_amount).
     def total_tax
-      @total_tax || line_items.inject(BigDecimal.new('0')) { | sum, line_item | sum + BigDecimal.new(line_item.tax_amount.to_s) }
+      !line_items_downloaded? && @total_tax || line_items.inject(BigDecimal.new('0')) { | sum, line_item | sum + BigDecimal.new(line_item.tax_amount.to_s) }
     end
 
     # Deprecated (but API for setter remains).
@@ -44,7 +44,7 @@ module XeroGateway
 
     # Calculate the toal as sub_total + total_tax.
     def total
-      @total || (sub_total + total_tax)
+      !line_items_downloaded? && @total || (sub_total + total_tax)
     end
 
   end
