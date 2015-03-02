@@ -18,7 +18,7 @@ module XeroGateway::Payroll
     attr_reader :errors
 
     attr_accessor :employee_id, :first_name, :date_of_birth, :email, :gender, :last_name,
-                  :middle_name, :title, :start_date, :occupation, :mobile,
+                  :middle_name, :title, :start_date, :job_title, :mobile,
                   :phone, :termination_date, :home_address, :bank_accounts, :super_memberships, :pay_template,
                   :tax_declaration, :payroll_calendar, :payroll_calendar_id, :classification, :ordinary_earnings_rate_id
 
@@ -60,8 +60,8 @@ module XeroGateway::Payroll
         @errors << ['status', "must be one of #{EMPLOYEE_STATUS.keys.join('/')}"]
       end
 
-      if occupation && occupation.length > 50
-        @errors << ['occupation', "is too long (maximum is 50 characters)"]
+      if job_title && job_title.length > 50
+        @errors << ['job_title', "is too long (maximum is 50 characters)"]
       end
 
       if mobile && mobile.length > 50
@@ -103,7 +103,7 @@ module XeroGateway::Payroll
       b.Employee {
       	b.EmployeeID self.employee_id if self.employee_id
         b.FirstName self.first_name if self.first_name
-        b.DateOfBirth self.date_of_birth if self.date_of_birth
+        b.DateOfBirth self.class.format_date(self.date_of_birth) if self.date_of_birth
         b.Email self.email if self.email
         b.Gender self.gender if self.gender
         b.LastName self.last_name if self.last_name
@@ -111,7 +111,7 @@ module XeroGateway::Payroll
         self.tax_declaration.to_xml(b) if self.tax_declaration
         b.Title self.title if self.title
         b.StartDate self.class.format_date(self.start_date || Date.today) if self.start_date
-        b.Occupation self.occupation if self.occupation
+        b.JobTitle self.job_title if self.job_title
         b.Classification self.classification if self.classification
         b.OrdinaryEarningsRateID self.ordinary_earnings_rate_id if self.ordinary_earnings_rate_id
         b.Mobile self.mobile if self.mobile
@@ -139,7 +139,7 @@ module XeroGateway::Payroll
       employee_element.children.each do |element|
         case(element.name)
         	when "EmployeeID" then employee.employee_id = element.text
-          when "DateOfBirth" then employee.date_of_birth = element.text
+          when "DateOfBirth" then employee.date_of_birth = parse_date_time(element.text)
           when "Email" then employee.email = element.text
           when "FirstName" then employee.first_name = element.text
           when "Gender" then employee.gender = element.text
@@ -147,7 +147,7 @@ module XeroGateway::Payroll
           when "MiddleNames" then employee.middle_name = element.text
           when "Title" then employee.title = element.text
           when "StartDate" then employee.start_date =  parse_date_time(element.text)
-          when "Occupation" then employee.occupation = element.text
+          when "JobTitle" then employee.job_title = element.text
           when "Classification" then employee.classification = element.text
           when "OrdinaryEarningsRateID" then employee.ordinary_earnings_rate_id = element.text
           when "Mobile" then employee.mobile = element.text
@@ -166,7 +166,7 @@ module XeroGateway::Payroll
 
     def ==(other)
       [ :employee_id, :first_name, :date_of_birth, :email, :gender, :last_name, :middle_name,
-      :title, :start_date, :occupation, :mobile, :phone, :termination_date, :home_address, :bank_accounts,
+      :title, :start_date, :job_title, :mobile, :phone, :termination_date, :home_address, :bank_accounts,
       :tax_declaration ].each do |field|
         return false if send(field) != other.send(field)
       end
