@@ -1,3 +1,5 @@
 .bundle
 .rvmrc
+.ruby-version
+.ruby-gemset
 .rbenv-version
