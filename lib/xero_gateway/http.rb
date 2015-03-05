@@ -88,6 +88,8 @@ module XeroGateway
         error_details = CGI.parse(response.plain_body)
         description   = error_details["oauth_problem_advice"].first
 
+        description ||= "No description found: #{response.plain_body}"
+
         # see http://oauth.pbworks.com/ProblemReporting
         # In addition to token_expired and token_rejected, Xero also returns
         # 'rate limit exceeded' when more than 60 requests have been made in
@@ -97,7 +99,9 @@ module XeroGateway
           when "consumer_key_unknown" then raise OAuth::TokenInvalid.new(description)
           when "token_rejected"       then raise OAuth::TokenInvalid.new(description)
           when "rate limit exceeded"  then raise OAuth::RateLimitExceeded.new(description)
-          else raise OAuth::UnknownError.new(error_details["oauth_problem"].first + ':' + description)
+          else
+            message = (error_details["oauth_problem"].first || "Unknown Error") + ':' + description
+            raise OAuth::UnknownError.new(message)
         end
       end
 
