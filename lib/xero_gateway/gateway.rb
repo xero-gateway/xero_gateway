@@ -127,6 +127,31 @@ module XeroGateway
       response
     end
 
+    # Retreives all contact groups from Xero
+    #
+    # Usage:
+    #   groups = gateway.get_contact_groups()
+    #
+    def get_contact_groups(options = {})
+      request_params = {}
+
+      request_params[:ContactGroupID] = options[:contact_group_id] if options[:contact_group_id]
+      request_params[:order]          = options[:order] if options[:order]
+      request_params[:where]          = options[:where] if options[:where]
+
+      response_xml = http_get(@client, "#{@xero_url}/ContactGroups", request_params)
+
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/contactgroups'})
+    end
+
+    # Retreives a contact group by its id.
+    def get_contact_group_by_id(contact_group_id)
+      request_params = { :ContactGroupID => contact_group_id }
+      response_xml = http_get(@client, "#{@xero_url}/ContactGroups/#{URI.escape(contact_group_id)}", request_params)
+
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/contactgroup'})
+    end
+
     # Retrieves all invoices from Xero
     #
     # Usage : get_invoices
@@ -713,6 +738,7 @@ module XeroGateway
           when "ManualJournal"
             response.response_item = ManualJournal.from_xml(element, self, {:journal_lines_downloaded => options[:request_signature] != "GET/ManualJournals"})
           when "Contacts" then element.children.each {|child| response.response_item << Contact.from_xml(child, self) }
+          when "ContactGroups" then element.children.each {|child| response.response_item << ContactGroup.from_xml(child, self, {:contacts_downloaded => options[:request_signature] != "GET/contactgroups"}) }
           when "Invoices" then element.children.each {|child| response.response_item << Invoice.from_xml(child, self, {:line_items_downloaded => options[:request_signature] != "GET/Invoices"}) }
           when "BankTransactions"
             element.children.each do |child|
