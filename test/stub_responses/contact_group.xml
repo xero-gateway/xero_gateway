@@ -1,0 +1,27 @@
+<Response xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Id>f3e8d581-8b7b-4ef1-8aec-f16ef13e2f31</Id>
+  <Status>OK</Status>
+  <ProviderName>Xero API Previewer</ProviderName>
+  <DateTimeUTC>2015-04-01T23:58:19.7179419Z</DateTimeUTC>
+  <ContactGroups>
+    <ContactGroup>
+      <ContactGroupID>79b51c07-b309-4a4b-9ea5-580c3836b21f</ContactGroupID>
+      <Name>Consulting Clients</Name>
+      <Status>ACTIVE</Status>
+      <Contacts>
+        <Contact>
+          <ContactID>60fa29c9-dcdc-4351-bd90-66bac282a523</ContactID>
+          <Name>Github</Name>
+        </Contact>
+        <Contact>
+          <ContactID>66565769-ca85-4d37-a55e-6ef46a6afdcc</ContactID>
+          <Name>ANZ</Name>
+        </Contact>
+        <Contact>
+          <ContactID>d960b18a-810e-4116-9376-e131e8d8ea7d</ContactID>
+          <Name>Amazon</Name>
+        </Contact>
+      </Contacts>
+    </ContactGroup>
+  </ContactGroups>
+</Response>

@@ -1,0 +1,19 @@
+<Response xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Id>dcce7aa7-43e9-48be-a2b2-d0bc7d7aadd8</Id>
+  <Status>OK</Status>
+  <ProviderName>Xero API Previewer</ProviderName>
+  <DateTimeUTC>2015-04-01T23:57:31.8865023Z</DateTimeUTC>
+  <ContactGroups>
+    <ContactGroup>
+      <ContactGroupID>79b51c07-b309-4a4b-9ea5-580c3836b21f</ContactGroupID>
+      <Name>Consulting Clients</Name>
+      <Status>ACTIVE</Status>
+    </ContactGroup>
+
+    <ContactGroup>
+      <ContactGroupID>580c3836-b309-4a4b-9ea5-580c3836b21f</ContactGroupID>
+      <Name>Retainer Clients</Name>
+      <Status>ACTIVE</Status>
+    </ContactGroup>
+  </ContactGroups>
+</Response>
