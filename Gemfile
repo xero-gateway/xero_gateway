@@ -8,4 +8,5 @@ group :test do
   gem 'shoulda'
   gem 'libxml-ruby'
   gem 'rake'
+  gem 'debugger'
 end

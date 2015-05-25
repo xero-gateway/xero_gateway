@@ -8,6 +8,8 @@ module XeroGateway::Payroll
       "ACT", "NSW", "NT", "QLD","SA", "TAS", "VIC", "WA"
     ]unless defined?(STATE_ABBREVIATIO)
 
+    POSTCODE_REGEX = /^[0-9]{4}$/
+
     # Xero::Gateway associated with this employee.
     attr_accessor :gateway
 
@@ -29,19 +31,23 @@ module XeroGateway::Payroll
       @errors = []
 
       if address_line1.blank?
-        @errors << ['address_line1', 'must be blank']
+        @errors << ['address_line1', 'cannot be blank']
       end
 
       if city.blank?
-        @errors << ['city', 'must be blank']
+        @errors << ['city', 'cannot be blank']
       end
 
       if postal_code.blank?
-        @errors << ['postal_code', 'must be blank']
+        @errors << ['postal_code', 'cannot be blank']
+      elsif !postal_code.match(POSTCODE_REGEX)
+        @errors << ['postal_code', 'must contain exactly 4 digits']
       end
 
-      if !region.blank? && !STATE_ABBREVIATIONS.include?(region)
-        @errors << ['region', "must be blank or a valid state abbreviation"]
+      if region.blank?
+        @errors << ['region', "cannot be blank"]
+      elsif !STATE_ABBREVIATIONS.include?(region)
+        @errors << ['region', 'must have a valid state abbreviation']
       end
 
       @errors.size == 0
@@ -49,7 +55,7 @@ module XeroGateway::Payroll
 
     def to_xml(b = Builder::XmlMarkup.new)
       b.HomeAddress {
-      	b.AddressLine1 self.address_line1 if self.address_line1
+        b.AddressLine1 self.address_line1 if self.address_line1
         b.AddressLine2 self.address_line2 if self.address_line2
         b.AddressLine3 self.address_line3 if self.address_line3
         b.AddressLine4 self.address_line4 if self.address_line4

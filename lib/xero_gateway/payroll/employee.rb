@@ -18,7 +18,7 @@ module XeroGateway::Payroll
     attr_reader :errors
 
     attr_accessor :employee_id, :first_name, :date_of_birth, :email, :gender, :last_name,
-                  :middle_name, :title, :start_date, :job_title, :mobile,
+                  :middle_name, :title, :start_date, :job_title, :mobile, :status,
                   :phone, :termination_date, :home_address, :bank_accounts, :super_memberships, :pay_template,
                   :tax_declaration, :payroll_calendar, :payroll_calendar_id, :classification, :ordinary_earnings_rate_id
 
@@ -52,8 +52,8 @@ module XeroGateway::Payroll
     def valid?
       @errors = []
 
-      if !employee_id.nil? && employee_id !~ GUID_REGEX
-        @errors << ['employee_id', 'must be blank or a valid Xero GUID']
+      if employee_id && employee_id !~ GUID_REGEX
+        @errors << ['employee_id', 'cannot be blank and must be a valid Xero GUID']
       end
 
       if status && !EMPLOYEE_STATUS[status]
@@ -71,6 +71,14 @@ module XeroGateway::Payroll
       if phone && phone.length > 50
         @errors << ['phone', "is too long (maximum is 50 characters)"]
       end
+
+      if date_of_birth.blank?
+        @errors << ['Date of Birth', "cannot be blank"]
+      elsif date_of_birth >= Date.today
+        @errors << ['Date of Birth', "must be in the past"]
+      end
+
+      @errors += home_address.errors unless home_address.valid?
 
       @errors.size == 0
     end
@@ -101,7 +109,7 @@ module XeroGateway::Payroll
 
     def to_xml(b = Builder::XmlMarkup.new)
       b.Employee {
-      	b.EmployeeID self.employee_id if self.employee_id
+        b.EmployeeID self.employee_id if self.employee_id
         b.FirstName self.first_name if self.first_name
         b.DateOfBirth self.class.format_date(self.date_of_birth) if self.date_of_birth
         b.Email self.email if self.email
@@ -138,7 +146,7 @@ module XeroGateway::Payroll
       employee.gateway = gateway
       employee_element.children.each do |element|
         case(element.name)
-        	when "EmployeeID" then employee.employee_id = element.text
+          when "EmployeeID" then employee.employee_id = element.text
           when "DateOfBirth" then employee.date_of_birth = parse_date_time(element.text)
           when "Email" then employee.email = element.text
           when "FirstName" then employee.first_name = element.text
@@ -159,19 +167,19 @@ module XeroGateway::Payroll
           when "SuperMemberships" then element.children.each {|child| employee.super_memberships << SuperMembership.from_xml(child, gateway) }
           when "TaxDeclaration" then employee.tax_declaration = TaxDeclaration.from_xml(element)
           when "PayrollCalendarID" then employee.payroll_calendar = gateway.get_payroll_calendar_by_id(element.text).response_item
+          when "Status" then employee.status = element.text
         end
       end
       employee
     end
 
     def ==(other)
-      [ :employee_id, :first_name, :date_of_birth, :email, :gender, :last_name, :middle_name,
+      [ :employee_id, :status, :first_name, :date_of_birth, :email, :gender, :last_name, :middle_name,
       :title, :start_date, :job_title, :mobile, :phone, :termination_date, :home_address, :bank_accounts,
       :tax_declaration ].each do |field|
         return false if send(field) != other.send(field)
       end
       return true
     end
-
   end
 end
