@@ -214,6 +214,11 @@ module XeroGateway
       parse_response(response_xml, {request_params: request_params}, {request_signature: 'GET/employees', basic_employee_info: basic_employee_info}, true)
     end
 
+    def get_basic_info_payroll_employees(options= {})
+      options[:basic_employee_info] = true
+      get_payroll_employees(options)
+    end
+
     def get_payroll_employee_by_id(employee_id)
       get_payroll_employee(employee_id)
     end
