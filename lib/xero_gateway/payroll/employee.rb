@@ -173,6 +173,21 @@ module XeroGateway::Payroll
       employee
     end
 
+    def self.basic_info_from_xml(employee_element, gateway = nil)
+      employee = Employee.new
+      employee.gateway = gateway
+      employee_element.children.each do |element|
+        case(element.name)
+          when "EmployeeID" then employee.employee_id = element.text
+          when "Email" then employee.email = element.text
+          when "FirstName" then employee.first_name = element.text
+          when "LastName" then employee.last_name = element.text
+          when "MiddleNames" then employee.middle_name = element.text
+        end
+      end
+      employee
+    end
+
     def ==(other)
       [ :employee_id, :status, :first_name, :date_of_birth, :email, :gender, :last_name, :middle_name,
       :title, :start_date, :job_title, :mobile, :phone, :termination_date, :home_address, :bank_accounts,

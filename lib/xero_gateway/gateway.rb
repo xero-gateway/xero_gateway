@@ -207,9 +207,16 @@ module XeroGateway
       request_params[:ModifiedAfter] = options[:modified_since] if options[:modified_since]
       request_params[:where]         = options[:where] if options[:where]
 
+      basic_employee_info            = options[:basic_employee_info] || false
+
       response_xml = http_get(@client, "#{@xero_payroll_url}/Employees", request_params)
 
-      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/employees'}, true)
+      parse_response(response_xml, {request_params: request_params}, {request_signature: 'GET/employees', basic_employee_info: basic_employee_info}, true)
+    end
+
+    def get_basic_info_payroll_employees(options= {})
+      options[:basic_employee_info] = true
+      get_payroll_employees(options)
     end
 
     def get_payroll_employee_by_id(employee_id)
@@ -1008,7 +1015,11 @@ module XeroGateway
           when "Employees"
             then
               if payroll_api
-                element.children.each {|child| response.response_item << Payroll::Employee.from_xml(child, self) }
+                if options[:basic_employee_info]
+                  element.children.each { |child| response.response_item << Payroll::Employee.basic_info_from_xml(child, self) }
+                else
+                  element.children.each { |child| response.response_item << Payroll::Employee.from_xml(child, self) }
+                end
               else
                 element.children.each {|child| response.response_item << Employee.from_xml(child, self) }
               end
