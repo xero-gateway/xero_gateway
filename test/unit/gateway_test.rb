@@ -56,6 +56,13 @@ class GatewayTest < Test::Unit::TestCase
       assert result.response_item.first.is_a? XeroGateway::Payment
     end
 
+    should :get_payment do
+      XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("payments.xml"), :code => "200"))
+      result = @gateway.get_payment('1234')
+      assert result.response_item.first.is_a? XeroGateway::Payment
+    end
+
+
     should :get_contacts do
       XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("contacts.xml"), :code => "200"))
       result = @gateway.get_contacts
