@@ -34,6 +34,7 @@ class PaymentTest < Test::Unit::TestCase
       assert_equal 'i99i9iii-9999-99i9-9ii9-iiiiii9i9999', payment.invoice_id
       assert_equal 'INV-0001', payment.invoice_number
       assert_equal 'o99o9ooo-9999-99o9-9oo9-oooooo9o9999', payment.account_id
+      assert payment.reconciled?
     end
   end
 
