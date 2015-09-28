@@ -133,6 +133,7 @@ module TestHelper
       :date             => Date.today.to_time,
       :invoice_id       => 'i99i9iii-9999-99i9-9ii9-iiiiii9i9999',
       :invoice_number   => 'INV-0001',
+      :reconciled       => true,
     }.merge(params)
     XeroGateway::Payment.new(params)
   end
