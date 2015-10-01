@@ -32,7 +32,7 @@ module XeroGateway
           when 'Invoice'
             payment.invoice_id = element.elements["//InvoiceID"].text
             payment.invoice_number = element.elements["//InvoiceNumber"].text
-          when 'IsReconciled'   then payment.reconciled = true
+          when 'IsReconciled'   then payment.reconciled = (element.text == "true")
           when 'Account'        then payment.account_id = element.elements["//AccountID"].text
         end
       end
