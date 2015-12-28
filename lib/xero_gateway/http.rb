@@ -79,7 +79,7 @@ module XeroGateway
             handle_oauth_error!(response)
           when 404
             handle_object_not_found!(response, url)
-          when 503
+          when 500..504
             # Xero sends certain oauth errors back as 500 errors
             handle_oauth_error!(response)
           else
@@ -100,7 +100,7 @@ module XeroGateway
           when "consumer_key_unknown" then raise OAuth::TokenInvalid.new(description)
           when "token_rejected"       then raise OAuth::TokenInvalid.new(description)
           when "rate limit exceeded"  then raise OAuth::RateLimitExceeded.new(description)
-          else raise OAuth::UnknownError.new(error_details["oauth_problem"].first + ':' + description)
+          else raise OAuth::UnknownError.new(response.plain_body)
         end
       end
 
