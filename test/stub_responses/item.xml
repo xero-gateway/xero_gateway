@@ -1,0 +1,14 @@
+<Item>
+  <Code>Merino-2011-LG</Code>
+  <Name>Full Tracked Item</Name>
+  <Description>2011 Merino Sweater - LARGE</Description>
+  <PurchaseDescription>2011 Merino Sweater - LARGE</PurchaseDescription>
+  <PurchaseDetails>
+    <UnitPrice>149.0000</UnitPrice>
+    <AccountCode>300</AccountCode>
+  </PurchaseDetails>
+  <SalesDetails>
+    <UnitPrice>299.0000</UnitPrice>
+    <AccountCode>200</AccountCode>
+  </SalesDetails>
+</Item>
