@@ -6,7 +6,7 @@ require 'shoulda'
 
 require 'libxml'
 
-require File.dirname(__FILE__) + '/../lib/xero_gateway.rb' unless defined?(XeroGateway)
+require File.dirname(__FILE__) + '/../lib/xero_gateway.rb'
 
 module TestHelper
   # The integration tests can be run against the Xero test environment.  You mush have a company set up in the test
