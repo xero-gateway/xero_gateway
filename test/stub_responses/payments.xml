@@ -12,6 +12,7 @@
       <CurrencyRate>1.000000</CurrencyRate>
       <PaymentType>ACCRECPAYMENT</PaymentType>
       <Status>AUTHORISED</Status>
+      <IsReconciled>true</IsReconciled>
       <UpdatedDateUTC>2010-11-12T14:36:22.537</UpdatedDateUTC>
       <Account>
         <AccountID>ac993f75-035b-433c-82e0-7b7a2d40802c</AccountID>
