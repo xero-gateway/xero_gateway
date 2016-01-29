@@ -185,6 +185,16 @@ class GatewayTest < Test::Unit::TestCase
       end
     end
 
+    should "handle errors without advice" do
+      XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("error_without_advice"), :code => "401"))
+
+      begin
+        @gateway.get_accounts
+      rescue XeroGateway::OAuth::UnknownError => e
+        assert_equal "some_error: No description found: oauth_problem=some_error&oauth_problem_advice=\n", e.message
+      end
+    end
+
     should "handle ApiExceptions" do
       XeroGateway::OAuth.any_instance.stubs(:put).returns(stub(:plain_body => get_file_as_string("api_exception.xml"), :code => "400"))
 

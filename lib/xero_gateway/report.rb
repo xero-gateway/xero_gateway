@@ -67,7 +67,7 @@ module XeroGateway
       values = []
       xml_cells.elements.each("Cells/Cell") do |xml_cell|
         if value = xml_cell.children.first # finds <Value>...</Value>
-          values << value.text.strip if value.text
+          values << value.text.try(:strip)
           next
         end
         values << nil
