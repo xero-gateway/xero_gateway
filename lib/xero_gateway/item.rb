@@ -1,6 +1,7 @@
 module XeroGateway
   class Item < BaseRecord
     attributes({
+        "ItemID" => :string,
         "Code"          => :string,
         "InventoryAssetAccountCode" => :string,
         "Name"          => :string,

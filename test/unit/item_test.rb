@@ -26,6 +26,7 @@ class ItemTest < Test::Unit::TestCase
 
     item = XeroGateway::Item.from_xml(xml)
 
+    assert_equal "19b79d12-0ae1-496e-9649-cbd04b15c7c5", item.item_id
     assert_equal "Merino-2011-LG", item.code
     assert_equal "Full Tracked Item", item.name
     assert_equal "2011 Merino Sweater - LARGE", item.description
