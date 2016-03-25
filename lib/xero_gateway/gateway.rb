@@ -572,6 +572,22 @@ module XeroGateway
     end
 
     #
+    # Create Payments records in Xero
+    #
+    def create_payments(payments)
+      b = Builder::XmlMarkup.new
+
+      request_xml = b.Payments do
+        payments.each do | payment |
+          payment.to_xml(b)
+        end
+      end
+
+      response_xml = http_put(@client, "#{xero_url}/Payments", request_xml)
+      parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/payments'})
+    end
+
+    #
     # Gets all Payments for a specific organisation in Xero
     #
     def get_payments(options = {})
