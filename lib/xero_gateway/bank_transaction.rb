@@ -131,7 +131,8 @@ module XeroGateway
       b.BankTransaction {
         b.BankTransactionID bank_transaction_id if bank_transaction_id
         b.Type type
-        # b.CurrencyCode self.currency_code if self.currency_code
+        b.CurrencyCode self.currency_code if self.currency_code
+        b.CurrencyRate self.currency_rate if self.currency_rate
         contact.to_xml(b) if contact
         bank_account.to_xml(b, :name => 'BankAccount') if bank_account
         b.Date BankTransaction.format_date(date || Date.today)
@@ -154,7 +155,8 @@ module XeroGateway
           when "BankTransactionID" then bank_transaction.bank_transaction_id = element.text
           when "UpdatedDateUTC" then bank_transaction.updated_at = parse_date_time(element.text)
           when "Type" then bank_transaction.type = element.text
-          # when "CurrencyCode" then invoice.currency_code = element.text
+          when "CurrencyCode" then invoice.currency_code = element.text
+          when "CurrencyRate" then invoice.currency_rate = element.text
           when "Contact" then bank_transaction.contact = Contact.from_xml(element)
           when "BankAccount" then bank_transaction.bank_account = Account.from_xml(element)
           when "Date" then bank_transaction.date = parse_date(element.text)
