@@ -80,7 +80,6 @@ class BankTransactionTest < Test::Unit::TestCase
     end
   end
 
-
   context "building and parsing XML" do
     should "work vice versa" do
       bank_transaction = create_test_bank_transaction
