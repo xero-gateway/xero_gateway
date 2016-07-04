@@ -220,8 +220,8 @@ module XeroGateway
         b.InvoiceID self.invoice_id if self.invoice_id
         b.InvoiceNumber self.invoice_number if invoice_number
         b.Type self.invoice_type
-        b.CurrencyCode self.currency_code if self.currency_code
-        b.CurrencyRate self.currency_rate if self.currency_rate
+        b.CurrencyCode currency_code if currency_code
+        b.CurrencyRate currency_rate if currency_rate
         contact.to_xml(b)
         b.Date Invoice.format_date(self.date || Date.today)
         b.DueDate Invoice.format_date(self.due_date) if self.due_date
@@ -247,7 +247,7 @@ module XeroGateway
           when "InvoiceNumber" then invoice.invoice_number = element.text
           when "Type" then invoice.invoice_type = element.text
           when "CurrencyCode" then invoice.currency_code = element.text
-          when "CurrencyRate" then invoice.currency_rate = element.text
+          when "CurrencyRate" then invoice.currency_rate = BigDecimal.new(element.text)
           when "Contact" then invoice.contact = Contact.from_xml(element)
           when "Date" then invoice.date = parse_date(element.text)
           when "DueDate" then invoice.due_date = parse_date(element.text)
