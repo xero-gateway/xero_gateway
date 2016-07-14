@@ -117,7 +117,7 @@ module XeroGateway
     def accounts_receivable?
       invoice_type == 'ACCREC'
     end
-
+    
     # Whether or not the line_items have been downloaded (GET/invoices does not download line items).
     def line_items_downloaded?
       @line_items_downloaded
@@ -185,7 +185,7 @@ module XeroGateway
       raise NoGatewayError unless gateway
       gateway.update_invoice(self)
     end
-
+    
     def to_xml(b = Builder::XmlMarkup.new)
       b.Invoice {
         b.InvoiceID self.invoice_id if self.invoice_id
