@@ -25,10 +25,10 @@ module XeroGateway
     } unless defined?(INVOICE_STATUS)
     
     GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ unless defined?(GUID_REGEX)
-
+        
     # Xero::Gateway associated with this invoice.
     attr_accessor :gateway
-
+    
     # Any errors that occurred when the #valid? method called.
     # Or errors that were within the XML payload from Xero
     attr_accessor :errors
@@ -65,7 +65,7 @@ module XeroGateway
     #  Additionally sets address.errors array to an array of field/error.
     def valid?
       @errors = []
-
+      
       if !INVOICE_TYPE[invoice_type]
         @errors << ['invoice_type', "must be one of #{INVOICE_TYPE.keys.join('/')}"]
       end
@@ -73,7 +73,7 @@ module XeroGateway
       if !invoice_id.nil? && invoice_id !~ GUID_REGEX
         @errors << ['invoice_id', 'must be blank or a valid Xero GUID']
       end
-
+            
       if invoice_status && !INVOICE_STATUS[invoice_status]
         @errors << ['invoice_status', "must be one of #{INVOICE_STATUS.keys.join('/')}"]
       end
@@ -81,38 +81,38 @@ module XeroGateway
       if line_amount_types && !LINE_AMOUNT_TYPES[line_amount_types]
         @errors << ['line_amount_types', "must be one of #{LINE_AMOUNT_TYPES.keys.join('/')}"]
       end
-
+      
       unless date
         @errors << ['invoice_date', "can't be blank"]
       end
-
+      
       # Make sure contact is valid.
       unless @contact && @contact.valid?
         @errors << ['contact', 'is invalid']
       end
-
+      
       # Make sure all line_items are valid.
       unless line_items.all? { | line_item | line_item.valid? }
         @errors << ['line_items', "at least one line item invalid"]
       end
-
+      
       @errors.size == 0
     end
-
+    
     # Helper method to create the associated contact object.
     def build_contact(params = {})
       self.contact = gateway ? gateway.build_contact(params) : Contact.new(params)
     end
-
+    
     def contact
       @contact ||= build_contact
     end
-
+    
     # Helper method to check if the invoice is accounts payable.
     def accounts_payable?
       invoice_type == 'ACCPAY'
     end
-
+    
     # Helper method to check if the invoice is accounts receivable.
     def accounts_receivable?
       invoice_type == 'ACCREC'
@@ -128,7 +128,7 @@ module XeroGateway
         instance_variable_set("@#{line_item_total_type}", new_total) unless line_items_downloaded?
       end
     end
-
+        
     # If line items are not downloaded, then attempt a download now (if this record was found to begin with).
     def line_items
       if line_items_downloaded?
@@ -139,39 +139,29 @@ module XeroGateway
         # Let's attempt to download the line_item records (if there is a gateway)
         response = @gateway.get_invoice(invoice_id)
         raise InvoiceNotFoundError, "Invoice with ID #{invoice_id} not found in Xero." unless response.success? && response.invoice.is_a?(XeroGateway::Invoice)
-
+        
         @line_items = response.invoice.line_items
         @line_items_downloaded = true
-
+        
         @line_items
-
+        
       # Otherwise, this is a new invoice, so return the line_items reference.
       else
         @line_items
       end
     end
-
+    
     def ==(other)
-      [
-        "invoice_number",
-        "invoice_type",
-        "invoice_status",
-        "reference",
-        "currency_code",
-        "currency_rate",
-        "line_amount_types",
-        "contact",
-        "line_items"
-      ].each do |field|
+      ["invoice_number", "invoice_type", "invoice_status", "reference", "currency_code", "currency_rate", "line_amount_types", "contact", "line_items"].each do |field|
         return false if send(field) != other.send(field)
       end
-
+      
       ["date", "due_date"].each do |field|
         return false if send(field).to_s != other.send(field).to_s
       end
       return true
     end
-
+    
     # General purpose create/save method.
     # If invoice_id is nil then create, otherwise, attempt to save.
     def save
@@ -181,14 +171,14 @@ module XeroGateway
         update
       end
     end
-
+    
     # Creates this invoice record (using gateway.create_invoice) with the associated gateway.
     # If no gateway set, raise a NoGatewayError exception.
     def create
       raise NoGatewayError unless gateway
       gateway.create_invoice(self)
     end
-
+    
     # Updates this invoice record (using gateway.update_invoice) with the associated gateway.
     # If no gateway set, raise a NoGatewayError exception.
     def update
@@ -218,7 +208,7 @@ module XeroGateway
         b.Url url if url
       }
     end
-
+    
     #TODO UpdatedDateUTC
     def self.from_xml(invoice_element, gateway = nil, options = {})
       invoice = Invoice.new(options.merge({:gateway => gateway}))
