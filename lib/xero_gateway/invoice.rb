@@ -35,28 +35,28 @@ module XeroGateway
 
     # Represents whether the line_items have been downloaded when getting from GET /API.XRO/2.0/INVOICES
     attr_accessor :line_items_downloaded
-
+  
     # All accessible fields
     attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :branding_theme_id, :line_amount_types, :currency_code, :currency_rate, :line_items, :contact, :payments, :fully_paid_on, :amount_due, :amount_paid, :amount_credited, :sent_to_contact, :url
 
     def initialize(params = {})
       @errors ||= []
       @payments ||= []
-
+      
       # Check if the line items have been downloaded.
       @line_items_downloaded = (params.delete(:line_items_downloaded) == true)
-
+      
       params = {
         :line_amount_types => "Exclusive"
       }.merge(params)
-
+      
       params.each do |k,v|
         self.send("#{k}=", v)
       end
-
+      
       @line_items ||= []
     end
-
+    
     # Validate the Address record according to what will be valid by the gateway.
     #
     # Usage: 
@@ -139,18 +139,18 @@ module XeroGateway
         # Let's attempt to download the line_item records (if there is a gateway)
         response = @gateway.get_invoice(invoice_id)
         raise InvoiceNotFoundError, "Invoice with ID #{invoice_id} not found in Xero." unless response.success? && response.invoice.is_a?(XeroGateway::Invoice)
-        
+
         @line_items = response.invoice.line_items
         @line_items_downloaded = true
-        
+
         @line_items
-        
+
       # Otherwise, this is a new invoice, so return the line_items reference.
       else
         @line_items
       end
     end
-    
+
     def ==(other)
       [
         "invoice_number",
@@ -165,13 +165,13 @@ module XeroGateway
       ].each do |field|
         return false if send(field) != other.send(field)
       end
-      
+
       ["date", "due_date"].each do |field|
         return false if send(field).to_s != other.send(field).to_s
       end
       return true
     end
-    
+
     # General purpose create/save method.
     # If invoice_id is nil then create, otherwise, attempt to save.
     def save
@@ -181,21 +181,21 @@ module XeroGateway
         update
       end
     end
-    
+
     # Creates this invoice record (using gateway.create_invoice) with the associated gateway.
     # If no gateway set, raise a NoGatewayError exception.
     def create
       raise NoGatewayError unless gateway
       gateway.create_invoice(self)
     end
-    
+
     # Updates this invoice record (using gateway.update_invoice) with the associated gateway.
     # If no gateway set, raise a NoGatewayError exception.
     def update
       raise NoGatewayError unless gateway
       gateway.update_invoice(self)
     end
-    
+
     def to_xml(b = Builder::XmlMarkup.new)
       b.Invoice {
         b.InvoiceID self.invoice_id if self.invoice_id
@@ -218,7 +218,7 @@ module XeroGateway
         b.Url url if url
       }
     end
-    
+
     #TODO UpdatedDateUTC
     def self.from_xml(invoice_element, gateway = nil, options = {})
       invoice = Invoice.new(options.merge({:gateway => gateway}))
