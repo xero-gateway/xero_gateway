@@ -135,13 +135,13 @@ class InvoiceTest < Test::Unit::TestCase
       assert_equal(BigDecimal.new('0'), invoice.total)
     }
   end
-
+  
   def test_invoice_type_helper_methods
     # Test accounts receivable invoices.
     invoice = create_test_invoice({:invoice_type => 'ACCREC'})
     assert_equal(true,  invoice.accounts_receivable?, "Accounts RECEIVABLE invoice doesn't think it is.")
     assert_equal(false, invoice.accounts_payable?,    "Accounts RECEIVABLE invoice thinks it's payable.")
-
+    
     # Test accounts payable invoices.
     invoice = create_test_invoice({:invoice_type => 'ACCPAY'})
     assert_equal(false, invoice.accounts_receivable?, "Accounts PAYABLE invoice doesn't think it is.")
@@ -179,10 +179,10 @@ class InvoiceTest < Test::Unit::TestCase
     assert_equal('200', invoice.line_items.first.account_code)
     assert_equal(BigDecimal.new('100'), invoice.line_items.first.unit_amount)
     assert_equal(BigDecimal.new('12.5'), invoice.line_items.first.tax_amount)
-    
+
     # Test optional params
     assert_nil invoice.url
-    
+
     # Test overriding an invoice parameter (assume works for all).
     invoice = create_test_invoice({:invoice_type => 'ACCPAY'})
     assert_equal('ACCPAY', invoice.invoice_type)
@@ -238,14 +238,14 @@ class InvoiceTest < Test::Unit::TestCase
     assert_equal(line_item_params[:description], line_item.description)
     assert_equal(line_item_params[:unit_amount], line_item.unit_amount)
     assert_equal(2, invoice.line_items.size)
-    
+
     # Test that pushing anything else into add_line_item fails.
     ["invalid", 100, nil, []].each do | invalid_object |
       assert_raise(XeroGateway::InvalidLineItemError) { invoice.add_line_item(invalid_object) }
       assert_equal(2, invoice.line_items.size)
     end
   end
-  
+
   def test_instantiate_invoice_with_default_line_amount_types
     invoice = XeroGateway::Invoice.new
     assert_equal(invoice.line_amount_types, 'Exclusive')
@@ -286,20 +286,20 @@ class InvoiceTest < Test::Unit::TestCase
         :address_type => 'DEFAULT',
         :line_1 => 'LINE 1 OF THE ADDRESS'
       }.merge(contact_params.delete(:address) || {})
-      
+    
       # Strip out :phone key from contact_params to use at the default phone.
       stripped_phone = {
         :phone_type => 'DEFAULT',
         :number => '12345678'
       }.merge(contact_params.delete(:phone) || {})
-      
+    
       contact_params = {
         :contact_id => '00000000-0000-0000-0000-000000000000', # Just any valid GUID
         :name => "CONTACT NAME",
         :first_name => "Bob",
         :last_name => "Builder"
       }.merge(contact_params)
-      
+    
       # Create invoice.contact from contact_params.
       invoice.contact = XeroGateway::Contact.new(contact_params)
       invoice.contact.address = XeroGateway::Address.new(stripped_address)
