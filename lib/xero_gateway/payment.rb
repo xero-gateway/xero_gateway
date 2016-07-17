@@ -7,7 +7,8 @@ module XeroGateway
     attr_reader :errors
 
     # All accessible fields
-    attr_accessor :invoice_id, :invoice_number, :account_id, :code, :payment_id, :payment_type, :date, :amount, :reference, :currency_rate, :updated_at
+    attr_accessor :invoice_id, :invoice_number, :account_id, :code, :payment_id, :payment_type, :date, :amount, :reference, :currency_rate, :updated_at, :reconciled
+    alias_method :reconciled?, :reconciled
 
     def initialize(params = {})
       @errors ||= []
@@ -31,6 +32,7 @@ module XeroGateway
           when 'Invoice'
             payment.invoice_id = element.elements["//InvoiceID"].text
             payment.invoice_number = element.elements["//InvoiceNumber"].text
+          when 'IsReconciled'   then payment.reconciled = (element.text == "true")
           when 'Account'        then payment.account_id = element.elements["//AccountID"].text
         end
       end
@@ -67,6 +69,10 @@ module XeroGateway
         b.Amount            self.amount         if self.amount
         b.CurrencyRate      self.currency_rate  if self.currency_rate
         b.Reference         self.reference      if self.reference
+
+        if self.reconciled?
+          b.IsReconciled true
+        end
 
         b.Date              self.class.format_date(self.date || Date.today)
       end

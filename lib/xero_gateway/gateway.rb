@@ -585,6 +585,16 @@ module XeroGateway
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/payments'})
     end
 
+
+    #
+    # Gets a single Payment for a specific organsation in Xero
+    #
+    def get_payment(payment_id, options = {})
+      request_params = {}
+      response_xml = http_get(client, "#{xero_url}/Payments/#{payment_id}", request_params)
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/payments'})
+    end
+
     # Retrieves reports from Xero
     #
     # Usage : get_report("BankStatement", bank_account_id: "AC993F75-035B-433C-82E0-7B7A2D40802C")

@@ -1,15 +1,31 @@
+# coding: utf-8
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'xero_gateway/version'
+
 Gem::Specification.new do |s|
-  s.name     = "xero_gateway"
-  s.version  = "2.1.0"
-  s.date     = "2012-11-19"
-  s.summary  = "Enables ruby based applications to communicate with the Xero API"
-  s.email    = "tim@connorsoftware.com"
-  s.homepage = "http://github.com/tlconnor/xero_gateway"
+  s.name        = "xero_gateway"
+  s.version     = XeroGateway::VERSION
+  s.summary     = "Enables ruby based applications to communicate with the Xero API"
+  s.email       = ["me@nikwakelin.com", "jared@minutedock.com"]
+  s.homepage    = "http://github.com/xero-gatweay/xero_gateway"
   s.description = "Enables ruby based applications to communicate with the Xero API"
-  s.has_rdoc = false
-  s.authors  = ["Tim Connor", "Nik Wakelin"]
-  s.files = ["Gemfile", "LICENSE", "Rakefile", "README.textile", "xero_gateway.gemspec"] + Dir['**/*.rb'] + Dir['**/*.crt']
-  s.add_dependency('builder', '>= 2.1.2')
-  s.add_dependency('oauth', '>= 0.3.6')
-  s.add_dependency('activesupport')
+  s.has_rdoc    = false
+  s.authors     = ["Tim Connor", "Nik Wakelin", "Jared Armstrong"]
+  s.license     = "MIT"
+
+  s.files       = ["Gemfile", "LICENSE", "Rakefile", "README.textile", "xero_gateway.gemspec"] + Dir['**/*.rb'] + Dir['**/*.crt']
+
+  s.add_dependency "builder", ">= 3.2.2"
+  s.add_dependency "oauth", ">= 0.3.6"
+  s.add_dependency "activesupport"
+
+  s.add_development_dependency "bundler"
+  s.add_development_dependency "rake"
+  s.add_development_dependency "minitest"
+  s.add_development_dependency "test-unit"
+  s.add_development_dependency "mocha"
+  s.add_development_dependency "shoulda"
+  s.add_development_dependency "libxml-ruby"
+
 end
