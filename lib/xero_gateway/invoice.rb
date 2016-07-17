@@ -37,7 +37,7 @@ module XeroGateway
     attr_accessor :line_items_downloaded
   
     # All accessible fields
-    attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :branding_theme_id, :line_amount_types, :currency_code, :line_items, :contact, :payments, :fully_paid_on, :amount_due, :amount_paid, :amount_credited, :sent_to_contact, :url, :updated_date_utc
+    attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :branding_theme_id, :line_amount_types, :currency_code, :currency_rate, :line_items, :contact, :payments, :fully_paid_on, :amount_due, :amount_paid, :amount_credited, :sent_to_contact, :url
 
     def initialize(params = {})
       @errors ||= []
@@ -152,7 +152,7 @@ module XeroGateway
     end
     
     def ==(other)
-      ["invoice_number", "invoice_type", "invoice_status", "reference", "currency_code", "line_amount_types", "contact", "line_items"].each do |field|
+      ["invoice_number", "invoice_type", "invoice_status", "reference", "currency_code", "currency_rate", "line_amount_types", "contact", "line_items"].each do |field|
         return false if send(field) != other.send(field)
       end
       
@@ -191,7 +191,8 @@ module XeroGateway
         b.InvoiceID self.invoice_id if self.invoice_id
         b.InvoiceNumber self.invoice_number if invoice_number
         b.Type self.invoice_type
-        b.CurrencyCode self.currency_code if self.currency_code
+        b.CurrencyCode currency_code if currency_code
+        b.CurrencyRate currency_rate if currency_rate
         contact.to_xml(b)
         b.Date Invoice.format_date(self.date || Date.today)
         b.DueDate Invoice.format_date(self.due_date) if self.due_date
@@ -217,10 +218,10 @@ module XeroGateway
           when "InvoiceNumber" then invoice.invoice_number = element.text            
           when "Type" then invoice.invoice_type = element.text
           when "CurrencyCode" then invoice.currency_code = element.text
+          when "CurrencyRate" then invoice.currency_rate = BigDecimal.new(element.text)
           when "Contact" then invoice.contact = Contact.from_xml(element)
           when "Date" then invoice.date = parse_date(element.text)
           when "DueDate" then invoice.due_date = parse_date(element.text)
-          when "UpdatedDateUTC" then invoice.updated_date_utc = parse_date(element.text)
           when "Status" then invoice.invoice_status = element.text
           when "Reference" then invoice.reference = element.text
           when "BrandingThemeID" then invoice.branding_theme_id = element.text
