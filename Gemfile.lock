@@ -1,7 +1,15 @@
-GEM
-  remote: http://rubygems.org/
+PATH
+  remote: .
   specs:
-    activesupport (4.2.0)
+    xero_gateway (2.2.0)
+      activesupport
+      builder (>= 3.2.2)
+      oauth (>= 0.3.6)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activesupport (4.2.5.1)
       i18n (~> 0.7)
       json (~> 1.7, >= 1.7.7)
       minitest (~> 5.1)
@@ -9,14 +17,15 @@ GEM
       tzinfo (~> 1.1)
     builder (3.2.2)
     i18n (0.7.0)
-    json (1.8.2)
-    libxml-ruby (2.8.0)
+    json (1.8.3)
+    libxml-ruby (2.7.0)
     metaclass (0.0.4)
-    minitest (5.5.1)
+    minitest (5.8.4)
     mocha (1.1.0)
       metaclass (~> 0.0.1)
     oauth (0.4.7)
-    power_assert (0.2.2)
+    power_assert (0.2.3)
+    rake (10.5.0)
     shoulda (3.5.0)
       shoulda-context (~> 1.0, >= 1.0.1)
       shoulda-matchers (>= 1.4.1, < 3.0)
@@ -25,7 +34,7 @@ GEM
       activesupport (>= 3.0.0)
     test-unit (3.0.9)
       power_assert
-    thread_safe (0.3.4)
+    thread_safe (0.3.5)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
 
@@ -33,12 +42,11 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activesupport
-  builder (>= 2.1.2)
-  i18n
+  bundler
   libxml-ruby
   minitest
   mocha
-  oauth (>= 0.3.6)
+  rake
   shoulda
   test-unit
+  xero_gateway!

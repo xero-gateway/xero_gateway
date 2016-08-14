@@ -158,6 +158,7 @@ class InvoiceTest < Test::Unit::TestCase
     assert_equal('ACCREC', invoice.invoice_type)
     assert_kind_of(Date, invoice.date)
     assert_kind_of(Date, invoice.due_date)
+    assert_kind_of(Time, invoice.updated_date_utc)
     assert_equal('12345', invoice.invoice_number)
     assert_equal('MY REFERENCE FOR THIS INVOICE', invoice.reference)
     assert_equal("Exclusive", invoice.line_amount_types)
@@ -252,9 +253,20 @@ class InvoiceTest < Test::Unit::TestCase
   end
 
   def test_optional_params
-    invoice = create_test_invoice(:url => 'http://example.com', :branding_theme_id => 'a94a78db-5cc6-4e26-a52b-045237e56e6e')
+    eur_code = "EUR"
+    eur_rate = 1.80
+    
+    invoice = create_test_invoice(:url => 'http://example.com', :branding_theme_id => 'a94a78db-5cc6-4e26-a52b-045237e56e6e', :currency_code => eur_code, :currency_rate => eur_rate)
     assert_equal 'http://example.com', invoice.url
     assert_equal 'a94a78db-5cc6-4e26-a52b-045237e56e6e', invoice.branding_theme_id
+    assert_equal eur_code, invoice.currency_code
+    assert_equal eur_rate, invoice.currency_rate
+  end
+
+  def test_updated_date_utc
+     time = Time.now.utc
+     invoice = create_test_invoice(:updated_date_utc => time)
+     assert_equal time, invoice.updated_date_utc
   end
 
   private
@@ -267,7 +279,8 @@ class InvoiceTest < Test::Unit::TestCase
         :due_date => Date.today + 10, # 10 days in the future
         :invoice_number => '12345',
         :reference => "MY REFERENCE FOR THIS INVOICE",
-        :line_amount_types => "Exclusive"
+        :line_amount_types => "Exclusive",
+        :updated_date_utc => Time.now.utc
       }.merge(invoice_params)
     end
     invoice = XeroGateway::Invoice.new(invoice_params || {})

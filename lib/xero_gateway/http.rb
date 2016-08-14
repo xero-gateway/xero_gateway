@@ -79,6 +79,9 @@ module XeroGateway
             handle_oauth_error!(response)
           when 404
             handle_object_not_found!(response, url)
+          when 500..504
+            # Xero sends certain oauth errors back as 500 errors
+            handle_oauth_error!(response)
           else
             raise "Unknown response code: #{response.code.to_i}"
         end
