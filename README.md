@@ -356,19 +356,19 @@ organization in Xero.
 
         gateway.get_tracking_categories
 
-### GET /api.xero/2.0/Organisation
+### GET /api.xro/2.0/Organisation
 
 Retrieves organisation details for the authorised application.
 
         gateway.get_organisation.organisation
 
-### GET /api.xero/2.0/Currencies
+### GET /api.xro/2.0/Currencies
 
 Retrieves currencies in use for the authorised application.
 
         gateway.get_currencies.currencies
 
-### GET /api.xero/2.0/TaxRates
+### GET /api.xro/2.0/TaxRates
 
 Retrieves Tax Rates in use for the authorised application.
 
