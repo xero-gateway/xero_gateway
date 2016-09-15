@@ -558,6 +558,14 @@ module XeroGateway
     end
 
     #
+    # Gets all Items for a specific organisation in Xero
+    #
+    def get_items
+      response_xml = http_get(@client, "#{xero_url}/Items")
+      parse_response(response_xml, {}, {:request_signature => 'GET/items'})
+    end
+
+    #
     # Create Payment record in Xero
     #
     def create_payment(payment)
@@ -761,6 +769,7 @@ module XeroGateway
           when "CreditNotes" then element.children.each {|child| response.response_item << CreditNote.from_xml(child, self, {:line_items_downloaded => options[:request_signature] != "GET/CreditNotes"}) }
           when "Accounts" then element.children.each {|child| response.response_item << Account.from_xml(child) }
           when "TaxRates" then element.children.each {|child| response.response_item << TaxRate.from_xml(child) }
+          when "Items" then element.children.each {|child| response.response_item << Item.from_xml(child) }
           when "Currencies" then element.children.each {|child| response.response_item << Currency.from_xml(child) }
           when "Organisations" then response.response_item = Organisation.from_xml(element.children.first) # Xero only returns the Authorized Organisation
           when "TrackingCategories" then element.children.each {|child| response.response_item << TrackingCategory.from_xml(child) }

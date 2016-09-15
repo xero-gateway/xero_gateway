@@ -18,19 +18,43 @@
 #
 module XeroGateway
   class TrackingCategory
-    attr_accessor :tracking_category_id, :name, :options
-    
+    attr_accessor :tracking_category_id, :name, :status, :options
+    attr_accessor :all_options
+
+    class Option
+      attr_accessor :tracking_option_id, :name, :status
+
+      def initialize(params = {})
+        params.each do |k,v|
+          self.send("#{k}=", v)
+        end
+      end
+
+      def self.from_xml(option_element)
+        option = Option.new
+        option_element.children.each do |element|
+          case(element.name)
+            when "TrackingOptionID" then option.tracking_option_id = element.text
+            when "Name" then option.name = element.text
+            when "Status" then option.status = element.text
+          end
+        end
+        option
+      end
+    end
+
     def initialize(params = {})
       @options = []
+      @all_options = []
       params.each do |k,v|
         self.send("#{k}=", v)
       end
     end
-    
+
     def option
        options[0] if options.size == 1
     end
-        
+
     def to_xml(b = Builder::XmlMarkup.new)
       b.TrackingCategory {
         b.TrackingCategoryID tracking_category_id unless tracking_category_id.nil?
@@ -45,43 +69,45 @@ module XeroGateway
           else
             b.Option {
               b.Name self.options.to_s
-            }            
+            }
           end
         }
       }
     end
-    
+
     # When a tracking category is serialized as part of an invoice it may only have a single
     # option, and the Options tag is omitted
     def to_xml_for_invoice_messages(b = Builder::XmlMarkup.new)
       b.TrackingCategory {
         b.TrackingCategoryID self.tracking_category_id unless tracking_category_id.nil?
         b.Name self.name
-        b.Option self.options.is_a?(Array) ? self.options.first : self.options.to_s 
-      }      
+        b.Option self.options.is_a?(Array) ? self.options.first : self.options.to_s
+      }
     end
-    
+
     def self.from_xml(tracking_category_element)
       tracking_category = TrackingCategory.new
       tracking_category_element.children.each do |element|
         case(element.name)
           when "TrackingCategoryID" then tracking_category.tracking_category_id = element.text
           when "Name" then tracking_category.name = element.text
+          when "Status" then tracking_category.status = element.text
           when "Options" then
             element.children.each do |option_child|
               tracking_category.options << option_child.children.detect {|c| c.name == "Name"}.text
+              tracking_category.all_options << Option.from_xml(option_child)
             end
           when "Option" then tracking_category.options << element.text
         end
       end
-      tracking_category              
-    end  
-    
+      tracking_category
+    end
+
     def ==(other)
       [:tracking_category_id, :name, :options].each do |field|
         return false if send(field) != other.send(field)
       end
       return true
-    end      
+    end
   end
 end

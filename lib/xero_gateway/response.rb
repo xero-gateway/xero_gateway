@@ -23,6 +23,7 @@ module XeroGateway
     alias_method :accounts,             :array_wrapped_response_item
     alias_method :tracking_categories,  :array_wrapped_response_item
     alias_method :tax_rates,            :array_wrapped_response_item
+    alias_method :items,            :array_wrapped_response_item
     alias_method :currencies,           :array_wrapped_response_item
     alias_method :payments,             :array_wrapped_response_item
 
