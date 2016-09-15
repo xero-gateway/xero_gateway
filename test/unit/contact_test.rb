@@ -4,21 +4,21 @@ class ContactTest < Test::Unit::TestCase
   def setup
     @schema = LibXML::XML::Schema.document(LibXML::XML::Document.file(File.join(File.dirname(__FILE__), '../xsd/create_contact.xsd')))
   end
-  
+
   # Tests that the XML generated from a contact object validates against the Xero XSD
   def test_build_xml
     contact = create_test_contact
-    
+
     message = contact.to_xml
 
     # Check that the document matches the XSD
     assert LibXML::XML::Parser.string(message).parse.validate_schema(@schema), "The XML document generated did not validate against the XSD"
   end
-  
+
   # Tests that a contact can be converted into XML that Xero can understand, and then converted back to a contact
   def test_build_and_parse_xml
     contact = create_test_contact
-    
+
     # Generate the XML message
     contact_as_xml = contact.to_xml
 
@@ -27,17 +27,17 @@ class ContactTest < Test::Unit::TestCase
 
     # Build a new contact from the XML
     result_contact = XeroGateway::Contact.from_xml(contact_element)
-    
+
     # Check the contact details
     assert_equal contact, result_contact
   end
-  
+
   # Test Contact#add_address helper creates a valid XeroGateway::Contact object with the passed in values
   # and appends it to the Contact#addresses attribute.
   def test_add_address_helper
     contact = create_test_contact
     assert_equal(1, contact.addresses.size)
-    
+
     new_values = {
       :address_type => 'POBOX',
       :line_1 => 'NEW LINE 1',
@@ -50,7 +50,7 @@ class ContactTest < Test::Unit::TestCase
       :country => 'Australia'
     }
     contact.add_address(new_values)
-    
+
     assert_equal(2, contact.addresses.size)
     assert_kind_of(XeroGateway::Address, contact.addresses.last)
     new_values.each { |k,v| assert_equal(v, contact.addresses.last.send("#{k}")) }
@@ -58,10 +58,10 @@ class ContactTest < Test::Unit::TestCase
 
   # Test Contact#add_phone helper creates a valid XeroGateway::Phone object with the passed in values
   # and appends it to the Contact#phones attribute.
-  def test_add_address_helper2
+  def test_add_phone_helper
     contact = create_test_contact
     assert_equal(1, contact.phones.size)
-    
+
     new_values = {
       :phone_type => 'MOBILE',
       :country_code => '61',
@@ -69,7 +69,7 @@ class ContactTest < Test::Unit::TestCase
       :number => '123456'
     }
     contact.add_phone(new_values)
-    
+
     assert_equal(2, contact.phones.size)
     assert_kind_of(XeroGateway::Phone, contact.phones.last)
     new_values.each { |k,v| assert_equal(v, contact.phones.last.send("#{k}")) }
@@ -84,7 +84,7 @@ class ContactTest < Test::Unit::TestCase
     })
     assert(phone.valid?)
   end
-  
+
   def test_invalid_phone_number
     phone = XeroGateway::Phone.new({
      :phone_type => 'MOBILE',
@@ -94,9 +94,9 @@ class ContactTest < Test::Unit::TestCase
     })
     assert(!phone.valid?)
   end
-  
+
   private
-  
+
   def create_test_contact
     contact = XeroGateway::Contact.new(:contact_id => "55555")
     contact.contact_number = "aaa111"
