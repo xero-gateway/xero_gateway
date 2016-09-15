@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    xero_gateway (2.2.0)
+    xero_gateway (2.3.0)
       activesupport
       builder (>= 3.2.2)
       oauth (>= 0.3.6)
@@ -23,7 +23,7 @@ GEM
     minitest (5.8.4)
     mocha (1.1.0)
       metaclass (~> 0.0.1)
-    oauth (0.4.7)
+    oauth (0.5.1)
     power_assert (0.2.3)
     rake (10.5.0)
     shoulda (3.5.0)
@@ -50,3 +50,6 @@ DEPENDENCIES
   shoulda
   test-unit
   xero_gateway!
+
+BUNDLED WITH
+   1.12.3
