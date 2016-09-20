@@ -29,8 +29,8 @@ implements OAuth in a very similar manner to the [Twitter gem by John Nunemaker]
   1. **Get a Consumer Key & Secret**
 
     First off, you'll need to get a Consumer Key/Secret pair for your
-    application from Xero.\
-    Head to <http://api.xero.com>, log in and then click My Applications
+    application from Xero.
+    Head to <https://api.xero.com>, log in and then click My Applications
     &gt; Add Application.
 
     If you want to create a private application (that accesses your own Xero
@@ -87,7 +87,7 @@ implements OAuth in a very similar manner to the [Twitter gem by John Nunemaker]
     information on what parameters Xero sends with this request.
 
     ```ruby
-      request_token = request_token(oauth_callback: "http://yourapp.comcom/xero/callback")
+      request_token = request_token(oauth_callback: "https://yourapp.com/xero/callback")
       redirect_to request_token.authorize_url
     ```
 
