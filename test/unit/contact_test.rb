@@ -32,6 +32,48 @@ class ContactTest < Test::Unit::TestCase
     assert_equal contact, result_contact
   end
 
+  test "parsing from XML" do
+    test_xml = <<-TESTING.strip_heredoc.chomp
+    <Contact>
+      <ContactID>f1d403d1-7d30-46c2-a2be-fc2bb29bd295</ContactID>
+      <ContactStatus>ACTIVE</ContactStatus>
+      <Name>24 Locks</Name>
+      <Addresses>
+        <Address>
+          <AddressType>POBOX</AddressType>
+        </Address>
+        <Address>
+          <AddressType>STREET</AddressType>
+        </Address>
+      </Addresses>
+      <Phones>
+        <Phone>
+          <PhoneType>DDI</PhoneType>
+        </Phone>
+        <Phone>
+          <PhoneType>DEFAULT</PhoneType>
+        </Phone>
+        <Phone>
+          <PhoneType>FAX</PhoneType>
+        </Phone>
+        <Phone>
+          <PhoneType>MOBILE</PhoneType>
+        </Phone>
+      </Phones>
+      <UpdatedDateUTC>2016-08-31T04:55:39.217</UpdatedDateUTC>
+      <IsSupplier>false</IsSupplier>
+      <IsCustomer>false</IsCustomer>
+      <HasAttachments>false</HasAttachments>
+    </Contact>
+    TESTING
+
+    contact_element = REXML::XPath.first(REXML::Document.new(test_xml.gsub(/\s/, "")), "/Contact")
+    contact = XeroGateway::Contact.from_xml(contact_element)
+
+    assert_equal Time.new(2016, 8, 31, 04, 55, 39), contact.updated_at.utc
+
+  end
+
   # Test Contact#add_address helper creates a valid XeroGateway::Contact object with the passed in values
   # and appends it to the Contact#addresses attribute.
   def test_add_address_helper
