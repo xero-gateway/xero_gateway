@@ -154,7 +154,6 @@ module XeroGateway
           when "BankTransactionID" then bank_transaction.bank_transaction_id = element.text
           when "UpdatedDateUTC" then bank_transaction.updated_at = parse_date_time(element.text)
           when "Type" then bank_transaction.type = element.text
-          # when "CurrencyCode" then invoice.currency_code = element.text
           when "Contact" then bank_transaction.contact = Contact.from_xml(element)
           when "BankAccount" then bank_transaction.bank_account = Account.from_xml(element)
           when "Date" then bank_transaction.date = parse_date(element.text)
@@ -164,14 +163,6 @@ module XeroGateway
           when "Total" then bank_transaction.total = BigDecimal.new(element.text)
           when "SubTotal" then bank_transaction.sub_total = BigDecimal.new(element.text)
           when "TotalTax" then bank_transaction.total_tax = BigDecimal.new(element.text)
-          # when "Total" then invoice.total = BigDecimal.new(element.text)
-          # when "InvoiceID" then invoice.invoice_id = element.text
-          # when "InvoiceNumber" then invoice.invoice_number = element.text
-          # when "Payments" then element.children.each { | payment | invoice.payments << Payment.from_xml(payment) }
-          # when "AmountDue" then invoice.amount_due = BigDecimal.new(element.text)
-          # when "AmountPaid" then invoice.amount_paid = BigDecimal.new(element.text)
-          # when "AmountCredited" then invoice.amount_credited = BigDecimal.new(element.text)
-          # when "SentToContact" then invoice.sent_to_contact = (element.text.strip.downcase == "true")
           when "IsReconciled" then bank_transaction.is_reconciled = (element.text.strip.downcase == "true")
           when "Url" then bank_transaction.url = element.text
         end
