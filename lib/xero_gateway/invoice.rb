@@ -37,7 +37,10 @@ module XeroGateway
     attr_accessor :line_items_downloaded
 
     # All accessible fields
-    attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :branding_theme_id, :line_amount_types, :currency_code, :line_items, :contact, :payments, :fully_paid_on, :amount_due, :amount_paid, :amount_credited, :sent_to_contact, :url, :updated_date_utc
+    attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :branding_theme_id,
+                  :line_amount_types, :currency_code, :payments, :fully_paid_on, :amount_due, :amount_paid, :amount_credited,
+                  :sent_to_contact, :url, :updated_date_utc
+    attr_writer   :contact, :line_items
 
     def initialize(params = {})
       @errors ||= []
@@ -121,12 +124,6 @@ module XeroGateway
     # Whether or not the line_items have been downloaded (GET/invoices does not download line items).
     def line_items_downloaded?
       @line_items_downloaded
-    end
-
-    %w(sub_total total_tax total).each do |line_item_total_type|
-      define_method("#{line_item_total_type}=") do |new_total|
-        instance_variable_set("@#{line_item_total_type}", new_total) unless line_items_downloaded?
-      end
     end
 
     # If line items are not downloaded, then attempt a download now (if this record was found to begin with).
@@ -221,8 +218,6 @@ module XeroGateway
           when "SubTotal" then invoice.sub_total = BigDecimal.new(element.text)
           when "TotalTax" then invoice.total_tax = BigDecimal.new(element.text)
           when "Total" then invoice.total = BigDecimal.new(element.text)
-          when "InvoiceID" then invoice.invoice_id = element.text
-          when "InvoiceNumber" then invoice.invoice_number = element.text
           when "Payments" then element.children.each { | payment | invoice.payments << Payment.from_xml(payment) }
           when "AmountDue" then invoice.amount_due = BigDecimal.new(element.text)
           when "AmountPaid" then invoice.amount_paid = BigDecimal.new(element.text)

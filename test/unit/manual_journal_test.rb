@@ -10,7 +10,7 @@ class ManualJournalTest < Test::Unit::TestCase
       # test transaction defaults
       assert_equal 'POSTED', manual_journal.status
       assert_kind_of Date, manual_journal.date
-      assert_equal 'test narration', manual_journal.narration      
+      assert_equal 'test narration', manual_journal.narration
 
       # Test the journal_line defaults.
       journal_line = manual_journal.journal_lines.first
@@ -49,8 +49,8 @@ class ManualJournalTest < Test::Unit::TestCase
       assert_equal(journal_line_params[:line_amount], journal_line.line_amount)
       assert_equal(4, @manual_journal.journal_lines.size)
 
-      # Test that having only 1 journal line fails.      
-      @manual_journal.journal_lines = [] 
+      # Test that having only 1 journal line fails.
+      @manual_journal.journal_lines = []
       @manual_journal.add_journal_line(journal_line_params)
       assert !@manual_journal.valid?
     end
@@ -63,10 +63,10 @@ class ManualJournalTest < Test::Unit::TestCase
       manual_journal_as_xml = manual_journal.to_xml
       manual_journal_element = REXML::XPath.first(REXML::Document.new(manual_journal_as_xml), "/ManualJournal")
 
-      # checking for mandatory fields      
+      # checking for mandatory fields
       assert_xml_field manual_journal_element, 'Date'
       assert_xml_field manual_journal_element, 'Narration', :value => 'test narration'
-      assert_xml_field manual_journal_element, 'Status', :value => 'POSTED'            
+      assert_xml_field manual_journal_element, 'Status', :value => 'POSTED'
 
       parsed_manual_journal = XeroGateway::ManualJournal.from_xml(manual_journal_element)
       assert_equal(manual_journal, parsed_manual_journal)
@@ -86,8 +86,8 @@ class ManualJournalTest < Test::Unit::TestCase
 private
 
   def assert_xml_field(xml, field_name, options={})
-    assert_match /#{field_name}/, xml.to_s, "Didn't find the field #{field_name} in the XML document!"
-    assert_match /#{field_name}.*#{options[:value]}.*#{field_name}/, xml.to_s, "The field #{field_name} was expected to be '#{options[:value]}'!" if options[:value]    
+    assert_match(/#{field_name}/, xml.to_s, "Didn't find the field #{field_name} in the XML document!")
+    assert_match(/#{field_name}.*#{options[:value]}.*#{field_name}/, xml.to_s, "The field #{field_name} was expected to be '#{options[:value]}'!") if options[:value]
   end
 
 end

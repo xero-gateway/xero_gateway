@@ -175,8 +175,6 @@ module XeroGateway
           when "EmailAddress" then contact.email = element.text
           when "Addresses" then element.children.each {|address_element| contact.addresses << Address.from_xml(address_element)}
           when "Phones" then element.children.each {|phone_element| contact.phones << Phone.from_xml(phone_element)}
-          when "FirstName" then contact.first_name = element.text
-          when "LastName"  then contact.last_name  = element.text
           when "BankAccountDetails" then contact.bank_account_details = element.text
           when "TaxNumber" then contact.tax_number = element.text
           when "AccountsReceivableTaxType" then contact.accounts_receivable_tax_type = element.text

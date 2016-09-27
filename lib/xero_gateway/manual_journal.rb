@@ -24,7 +24,8 @@ module XeroGateway
     attr_accessor :journal_lines_downloaded
 
     # accessible fields
-    attr_accessor :manual_journal_id, :narration, :date, :status, :journal_lines, :url, :show_on_cash_basis_reports
+    attr_accessor :manual_journal_id, :narration, :date, :status, :url, :show_on_cash_basis_reports
+    attr_writer   :journal_lines
 
     def initialize(params = {})
       @errors ||= []

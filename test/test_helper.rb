@@ -102,7 +102,7 @@ module TestHelper
   end
 
   def get_file(filename)
-    data = File.read( File.dirname(__FILE__) + "/stub_responses/" + filename)
+    File.read( File.dirname(__FILE__) + "/stub_responses/" + filename)
   end
 
   def create_test_bank_transaction(params={}, contact_params={}, line_item_params={})

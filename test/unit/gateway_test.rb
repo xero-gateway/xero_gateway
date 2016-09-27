@@ -84,13 +84,13 @@ class GatewayTest < Test::Unit::TestCase
     should :get_contact_groups do
       XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("contact_groups.xml"), :code => "200"))
       result = @gateway.get_contact_groups
-      assert result.response_item.first.is_a? XeroGateway::ContactGroup      
+      assert result.response_item.first.is_a? XeroGateway::ContactGroup
     end
 
     should :get_contact_group_by_id do
       XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("contact_group.xml"), :code => "200"))
       result = @gateway.get_contact_group_by_id('a99a9aaa-9999-99a9-9aa9-aaaaaa9a9999')
-      assert result.response_item.is_a? XeroGateway::ContactGroup      
+      assert result.response_item.is_a? XeroGateway::ContactGroup
     end
 
     context :get_report do
@@ -255,7 +255,7 @@ class GatewayTest < Test::Unit::TestCase
       XeroGateway::OAuth.any_instance.stubs(:put).returns(stub(:plain_body => get_file_as_string("no_certificates_registered"), :code => 400))
 
       assert_raises RuntimeError do
-        response = @gateway.create_invoice(XeroGateway::Invoice.new)
+        @gateway.create_invoice(XeroGateway::Invoice.new)
       end
     end
   end

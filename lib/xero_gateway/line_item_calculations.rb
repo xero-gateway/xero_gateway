@@ -1,5 +1,6 @@
 module XeroGateway
   module LineItemCalculations
+
     def add_line_item(params = {})
       line_item = nil
       case params
@@ -11,41 +12,38 @@ module XeroGateway
       line_item
     end
 
-    # Deprecated (but API for setter remains).
-    #
-    # As sub_total must equal SUM(line_item.line_amount) for the API call to pass, this is now
-    # automatically calculated in the sub_total method.
-    def sub_total=(value)
+    %w(sub_total total_tax total).each do |line_item_total_type|
+      define_method("#{line_item_total_type}=") do |new_total|
+        instance_variable_set("@#{line_item_total_type}", new_total) unless line_items_downloaded?
+      end
     end
 
     # Calculate the sub_total as the SUM(line_item.line_amount).
     def sub_total
-      !line_items_downloaded? && @sub_total || line_items.inject(BigDecimal.new('0')) { | sum, line_item | sum + BigDecimal.new(line_item.line_amount.to_s) }
-    end
-
-    # Deprecated (but API for setter remains).
-    #
-    # As total_tax must equal SUM(line_item.tax_amount) for the API call to pass, this is now
-    # automatically calculated in the total_tax method.
-    def total_tax=(value)
+      total_cache(:sub_total) || sum_line_items(line_items, :line_amount)
     end
 
     # Calculate the total_tax as the SUM(line_item.tax_amount).
     def total_tax
-      !line_items_downloaded? && @total_tax || line_items.inject(BigDecimal.new('0')) { | sum, line_item | sum + BigDecimal.new(line_item.tax_amount.to_s) }
-    end
-
-    # Deprecated (but API for setter remains).
-    #
-    # As total must equal sub_total + total_tax for the API call to pass, this is now
-    # automatically calculated in the total method.
-    def total=(value)
+      total_cache(:total_tax) || sum_line_items(line_items, :tax_amount)
     end
 
     # Calculate the toal as sub_total + total_tax.
     def total
-      !line_items_downloaded? && @total || (sub_total + total_tax)
+      total_cache(:total) || (sub_total + total_tax)
     end
+
+    private
+
+      def total_cache(name)
+        instance_variable_defined?("@#{name}") && instance_variable_get("@#{name}")
+      end
+
+      def sum_line_items(lines, sum_type = :line_amount)
+        lines.inject(BigDecimal.new('0')) do |sum, line|
+          sum + BigDecimal.new(line.send(sum_type).to_s)
+        end
+      end
 
   end
 end
