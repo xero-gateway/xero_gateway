@@ -16,6 +16,7 @@ module XeroGateway
       params.each do |k,v|
         self.send("#{k}=", v)
       end
+      @contacts_downloaded = (params.delete(:contacts_downloaded) == true)
     end
 
     # Return the list of Contacts. Will load the contacts if the group
@@ -37,7 +38,7 @@ module XeroGateway
     # If the contact_ids array has been assigned, will return that array.
     # Otherwise, returns any loaded ContactIDs
     def contact_ids
-      if @contact_ids
+      if defined?(@contact_ids)
         @contact_ids
       else
         contacts.map(&:contact_id)

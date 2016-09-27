@@ -36,8 +36,8 @@ module XeroGateway
     attr_accessor :line_items_downloaded
 
     # All accessible fields
-    attr_accessor :credit_note_id, :credit_note_number, :type, :status, :date, :reference, :line_amount_types, :currency_code, :line_items, :contact, :payments, :fully_paid_on, :amount_credited
-
+    attr_accessor :credit_note_id, :credit_note_number, :type, :status, :date, :reference, :line_amount_types, :currency_code, :payments, :fully_paid_on, :amount_credited
+    attr_writer :line_items, :contact
 
     def initialize(params = {})
       @errors ||= []
@@ -152,12 +152,6 @@ module XeroGateway
         return false if send(field).to_s != other.send(field).to_s
       end
       return true
-    end
-
-    # General purpose createsave method.
-    # If contact_id and contact_number are nil then create, otherwise, attempt to save.
-    def save
-      create
     end
 
     # Creates this credit_note record (using gateway.create_credit_note) with the associated gateway.

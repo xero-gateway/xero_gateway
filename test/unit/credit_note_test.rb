@@ -24,14 +24,14 @@ class CreditNoteTest < Test::Unit::TestCase
     line_item = credit_note.line_items.first
 
     # Make sure that everything adds up to begin with.
-    expected_sub_total = credit_note.line_items.inject(BigDecimal.new('0')) { | sum, line_item | line_item.line_amount }
+    expected_sub_total = credit_note.line_items.inject(BigDecimal.new('0')) { | sum, l | l.line_amount }
     assert_equal(expected_sub_total, credit_note.sub_total)
 
     # Change the amount of the first line item and make sure that
     # everything still continues to add up.
     line_item.unit_amount = line_item.unit_amount + 10
     assert_not_equal(expected_sub_total, credit_note.sub_total)
-    expected_sub_total = credit_note.line_items.inject(BigDecimal.new('0')) { | sum, line_item | line_item.line_amount }
+    expected_sub_total = credit_note.line_items.inject(BigDecimal.new('0')) { | sum, l | l.line_amount }
     assert_equal(expected_sub_total, credit_note.sub_total)
   end
 
@@ -41,14 +41,14 @@ class CreditNoteTest < Test::Unit::TestCase
     line_item = credit_note.line_items.first
 
     # Make sure that everything adds up to begin with.
-    expected_total_tax = credit_note.line_items.inject(BigDecimal.new('0')) { | sum, line_item | line_item.tax_amount }
+    expected_total_tax = credit_note.line_items.inject(BigDecimal.new('0')) { | sum, l | l.tax_amount }
     assert_equal(expected_total_tax, credit_note.total_tax)
 
     # Change the tax_amount of the first line item and make sure that
     # everything still continues to add up.
     line_item.tax_amount = line_item.tax_amount + 10
     assert_not_equal(expected_total_tax, credit_note.total_tax)
-    expected_total_tax = credit_note.line_items.inject(BigDecimal.new('0')) { | sum, line_item | line_item.tax_amount }
+    expected_total_tax = credit_note.line_items.inject(BigDecimal.new('0')) { | sum, l | l.tax_amount }
     assert_equal(expected_total_tax, credit_note.total_tax)
   end
 
@@ -175,7 +175,7 @@ class CreditNoteTest < Test::Unit::TestCase
 
   def test_auto_creation_of_associated_contact
     credit_note = create_test_credit_note({}, nil) # no contact
-    assert_nil(credit_note.instance_variable_get("@contact"))
+    assert(!credit_note.instance_variable_defined?("@contact"))
 
     new_contact = credit_note.contact
     assert_kind_of(XeroGateway::Contact, new_contact)

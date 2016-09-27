@@ -25,7 +25,8 @@ module XeroGateway
     attr_accessor :line_items_downloaded
 
     # accessible fields
-    attr_accessor :bank_transaction_id, :type, :date, :reference, :status, :contact, :line_items, :bank_account, :url, :is_reconciled, :updated_at
+    attr_accessor :bank_transaction_id, :type, :date, :reference, :status, :contact, :bank_account, :url, :is_reconciled, :updated_at
+    attr_writer   :line_items
 
     def initialize(params = {})
       @errors ||= []

@@ -76,7 +76,7 @@ class InvoiceTest < Test::Unit::TestCase
     line_item = invoice.line_items.first
 
     # Make sure that everything adds up to begin with.
-    expected_sub_total = invoice.line_items.inject(BigDecimal.new('0')) { | sum, line_item | line_item.line_amount }
+    expected_sub_total = invoice.line_items.inject(BigDecimal.new('0')) { | sum, l | l.line_amount }
     assert_equal(expected_sub_total, invoice.sub_total)
 
     # Change the sub_total and check that it doesn't modify anything.
@@ -87,7 +87,7 @@ class InvoiceTest < Test::Unit::TestCase
     # everything still continues to add up.
     line_item.unit_amount = line_item.unit_amount + 10
     assert_not_equal(expected_sub_total, invoice.sub_total)
-    expected_sub_total = invoice.line_items.inject(BigDecimal.new('0')) { | sum, line_item | line_item.line_amount }
+    expected_sub_total = invoice.line_items.inject(BigDecimal.new('0')) { | sum, l | l.line_amount }
     assert_equal(expected_sub_total, invoice.sub_total)
   end
 
@@ -97,7 +97,7 @@ class InvoiceTest < Test::Unit::TestCase
     line_item = invoice.line_items.first
 
     # Make sure that everything adds up to begin with.
-    expected_total_tax = invoice.line_items.inject(BigDecimal.new('0')) { | sum, line_item | line_item.tax_amount }
+    expected_total_tax = invoice.line_items.inject(BigDecimal.new('0')) { | sum, l | l.tax_amount }
     assert_equal(expected_total_tax, invoice.total_tax)
 
     # Change the total_tax and check that it doesn't modify anything.
@@ -108,7 +108,7 @@ class InvoiceTest < Test::Unit::TestCase
     # everything still continues to add up.
     line_item.tax_amount = line_item.tax_amount + 10
     assert_not_equal(expected_total_tax, invoice.total_tax)
-    expected_total_tax = invoice.line_items.inject(BigDecimal.new('0')) { | sum, line_item | line_item.tax_amount }
+    expected_total_tax = invoice.line_items.inject(BigDecimal.new('0')) { | sum, l | l.tax_amount }
     assert_equal(expected_total_tax, invoice.total_tax)
   end
 
@@ -245,7 +245,7 @@ class InvoiceTest < Test::Unit::TestCase
 
   def test_auto_creation_of_associated_contact
     invoice = create_test_invoice({}, nil) # no contact
-    assert_nil(invoice.instance_variable_get("@contact"))
+    assert(!invoice.instance_variable_defined?("@contact"))
 
     new_contact = invoice.contact
     assert_kind_of(XeroGateway::Contact, new_contact)
