@@ -147,7 +147,7 @@ module XeroGateway
     # Retreives a contact group by its id.
     def get_contact_group_by_id(contact_group_id)
       request_params = { :ContactGroupID => contact_group_id }
-      response_xml = http_get(@client, "#{@xero_url}/ContactGroups/#{URI.escape(contact_group_id)}", request_params)
+      response_xml = http_get(@client, "#{@xero_url}/ContactGroups/#{CGI.escape(contact_group_id)}", request_params)
 
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/contactgroup'})
     end
@@ -186,7 +186,7 @@ module XeroGateway
 
       headers.merge!("Accept" => "application/pdf") if format == :pdf
 
-      url  = "#{@xero_url}/Invoices/#{URI.escape(invoice_id_or_number)}"
+      url  = "#{@xero_url}/Invoices/#{CGI.escape(invoice_id_or_number)}"
 
       response = http_get(@client, url, request_params, headers)
 
@@ -306,7 +306,7 @@ module XeroGateway
     def get_credit_note(credit_note_id_or_number)
       request_params = {}
 
-      url  = "#{@xero_url}/CreditNotes/#{URI.escape(credit_note_id_or_number)}"
+      url  = "#{@xero_url}/CreditNotes/#{CGI.escape(credit_note_id_or_number)}"
 
       response_xml = http_get(@client, url, request_params)
 
@@ -453,7 +453,7 @@ module XeroGateway
     #         get_bank_transaction("OIT-12345") # By number
     def get_bank_transaction(bank_transaction_id)
       request_params = {}
-      url = "#{@xero_url}/BankTransactions/#{URI.escape(bank_transaction_id)}"
+      url = "#{@xero_url}/BankTransactions/#{CGI.escape(bank_transaction_id)}"
       response_xml = http_get(@client, url, request_params)
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/BankTransaction'})
     end
@@ -503,7 +503,7 @@ module XeroGateway
     #         get_manual_journal("OIT-12345") # By number
     def get_manual_journal(manual_journal_id)
       request_params = {}
-      url = "#{@xero_url}/ManualJournals/#{URI.escape(manual_journal_id)}"
+      url = "#{@xero_url}/ManualJournals/#{CGI.escape(manual_journal_id)}"
       response_xml = http_get(@client, url, request_params)
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/ManualJournal'})
     end
@@ -621,7 +621,7 @@ module XeroGateway
 
     def get_contact(contact_id = nil, contact_number = nil)
       request_params = contact_id ? { :contactID => contact_id } : { :contactNumber => contact_number }
-      response_xml = http_get(@client, "#{@xero_url}/Contacts/#{URI.escape(contact_id||contact_number)}", request_params)
+      response_xml = http_get(@client, "#{@xero_url}/Contacts/#{CGI.escape(contact_id||contact_number)}", request_params)
 
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/contact'})
     end
