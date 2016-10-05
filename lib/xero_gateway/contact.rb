@@ -29,7 +29,7 @@ module XeroGateway
       end
 
       @phones ||= []
-      @addresses = nil
+      @addresses ||= nil
     end
 
     def address=(address)

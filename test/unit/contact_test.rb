@@ -43,7 +43,13 @@ class ContactTest < Test::Unit::TestCase
     contact.addresses = []
     parsed = REXML::XPath.first(REXML::Document.new(contact.to_xml), "/Contact")
     assert parsed.children.map(&:name).include?("Addresses")
+  end
 
+  test "should be able to set addresses as part of initialize" do
+    contact = XeroGateway::Contact.new(contact_id: "abcdef-3abe", name: "Test", addresses: [])
+
+    parsed = REXML::XPath.first(REXML::Document.new(contact.to_xml), "/Contact")
+    assert parsed.children.map(&:name).include?("Addresses")
   end
 
   test "parsing from XML" do
