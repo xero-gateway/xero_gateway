@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Xero gateway by xero-gateway</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Xero gateway</h1>
+      <h2 class="project-tagline">Ruby wrapper for the Xero API</h2>
+      <a href="https://github.com/xero-gateway/xero_gateway" class="btn">View on GitHub</a>
+      <a href="https://github.com/xero-gateway/xero_gateway/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/xero-gateway/xero_gateway/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="xero-api-wrapper--" class="anchor" href="#xero-api-wrapper--" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Xero API wrapper <a href="https://travis-ci.org/xero-gateway/xero_gateway"><img src="https://travis-ci.org/xero-gateway/xero_gateway.svg?branch=master" alt="Build Status"></a> <a href="https://badge.fury.io/rb/xero_gateway"><img src="https://badge.fury.io/rb/xero_gateway.svg" alt="Gem Version"></a>
+</h1>
+
+<h1>
+<a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Getting Started</h1>
+
+<p>This is a Ruby gem for communicating with the Xero API.
+You can find more information about the Xero API at <a href="https://developer.xero.com">https://developer.xero.com</a>.</p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Just add the <code>xero_gateway</code> gem to your Gemfile, like so:</p>
+
+<div class="highlight highlight-source-ruby"><pre>  <span class="pl-k">gem</span> <span class="pl-s"><span class="pl-pds">'</span>xero_gateway<span class="pl-pds">'</span></span></pre></div>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
+
+<div class="highlight highlight-source-ruby"><pre>  gateway <span class="pl-k">=</span> <span class="pl-c1">XeroGateway</span>::<span class="pl-c1">Gateway</span>.<span class="pl-k">new</span>(<span class="pl-c1">YOUR_OAUTH_CONSUMER_KEY</span>, <span class="pl-c1">YOUR_OAUTH_CONSUMER_SECRET</span>)</pre></div>
+
+<h3>
+<a id="authenticating-with-oauth" class="anchor" href="#authenticating-with-oauth" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authenticating with OAuth</h3>
+
+<p>The Xero Gateway uses <a href="https://oauth.net/core/1.0a/">OAuth 1.0a</a> for authentication. Xero Gateway
+implements OAuth in a very similar manner to the <a href="http://github.com/jnunemaker/twitter">Twitter gem by John Nunemaker</a>
+, so if you've used that before this will all seem familiar.</p>
+
+<ol>
+<li>
+<p><strong>Get a Consumer Key &amp; Secret</strong></p>
+
+<p>First off, you'll need to get a Consumer Key/Secret pair for your
+application from Xero.
+Head to <a href="https://api.xero.com">https://api.xero.com</a>, log in and then click My Applications
+&gt; Add Application.</p>
+
+<p>If you want to create a private application (that accesses your own Xero
+account rather than your users), you'll need to generate an RSA keypair
+and an X509 certificate. This can be done with OpenSSL as below:</p>
+
+<pre><code>  openssl genrsa –out privatekey.pem 1024
+  openssl req –newkey rsa:1024 –x509 –key privatekey.pem –out publickey.cer –days 365
+  openssl pkcs12 –export –out public_privatekey.pfx –inkey privatekey.pem –in publickey.cer
+</code></pre>
+
+<p>On the right-hand-side of your application's page there's a box titled
+"OAuth Credentials". Use the Key and Secret from this box in order to
+set up a new Gateway instance.</p>
+
+<p>(If you're unsure about the Callback URL, specify nothing - it will
+become clear a bit later)</p>
+</li>
+<li>
+<p><strong>Create a Xero Gateway in your App</strong></p>
+
+<div class="highlight highlight-source-ruby"><pre>  gateway <span class="pl-k">=</span> <span class="pl-c1">XeroGateway</span>::<span class="pl-c1">Gateway</span>.<span class="pl-k">new</span>(<span class="pl-c1">YOUR_OAUTH_CONSUMER_KEY</span>, <span class="pl-c1">YOUR_OAUTH_CONSUMER_SECRET</span>)</pre></div>
+
+<p>or for Private applications</p>
+
+<div class="highlight highlight-source-ruby"><pre>  <span class="pl-k">require</span> <span class="pl-s"><span class="pl-pds">'</span>xero_gateway<span class="pl-pds">'</span></span>
+  gateway <span class="pl-k">=</span> <span class="pl-c1">XeroGateway</span>::<span class="pl-c1">PrivateApp</span>.<span class="pl-k">new</span>(<span class="pl-c1">YOUR_OAUTH_CONSUMER_KEY</span>, <span class="pl-c1">YOUR_OAUTH_CONSUMER_SECRET</span>, <span class="pl-c1">PATH_TO_YOUR_PRIVATE_KEY</span>)</pre></div>
+</li>
+<li>
+<p><strong>Creating a Request Token</strong></p>
+
+<p>You'll then need to get a Request Token from Xero.</p>
+
+<div class="highlight highlight-source-ruby"><pre>  request_token <span class="pl-k">=</span> gateway.request_token</pre></div>
+
+<p>You should keep this around - you'll need it to exchange for an Access
+Token later. (If you're using Rails, this means storing it in the
+session or something similar)</p>
+
+<p>Next, you need to redirect your user to the authorization url for this
+request token. In Rails, that looks something like this:</p>
+
+<div class="highlight highlight-source-ruby"><pre>  redirect_to request_token.authorize_url</pre></div>
+
+<p>You may also provide a callback parameter, which is the URL within your
+app the user will be redirected to. See next section for more
+information on what parameters Xero sends with this request.</p>
+
+<div class="highlight highlight-source-ruby"><pre>  request_token <span class="pl-k">=</span> request_token(<span class="pl-c1">oauth_callback:</span> <span class="pl-s"><span class="pl-pds">"</span>https://yourapp.com/xero/callback<span class="pl-pds">"</span></span>)
+  redirect_to request_token.authorize_url</pre></div>
+</li>
+<li>
+<p><strong>Retrieving an Access Token</strong></p>
+
+<p>If you've specified a Callback URL when setting up your application or
+provided an oauth_callback parameter on your request token, your user
+will be redirected to that URL with an OAuth Verifier as a GET
+parameter. You can then exchange your Request Token for an Access Token
+like this (assuming Rails, once again):</p>
+
+<div class="highlight highlight-source-ruby"><pre>  gateway.authorize_from_request(request_token.token, request_token.secret, <span class="pl-c1">oauth_verifier:</span> params[<span class="pl-c1">:oauth_verifier</span>])</pre></div>
+
+<p>(If you haven't specified a Callback URL, the user will be presented
+with a numeric verifier which they must copy+paste into your
+application; see examples/oauth.rb for an example)</p>
+
+<p>Now you can access Xero API methods:</p>
+
+<div class="highlight highlight-source-ruby"><pre>  gateway.get_contacts
+  <span class="pl-c"># =&gt; #&lt;XeroGateway::Response:0x007fd367181388 ...</span></pre></div>
+</li>
+</ol>
+
+<h3>
+<a id="storing-access-tokens" class="anchor" href="#storing-access-tokens" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Storing Access Tokens</h3>
+
+<p>You can also store the Access Token/Secret pair so that you can access
+the API without user intervention. Currently, these access tokens are
+only valid for 30 minutes, and will raise a
+<code>XeroGateway::OAuth::TokenExpired</code> exception if you attempt to access the
+API beyond the token's expiry time.</p>
+
+<div class="highlight highlight-source-ruby"><pre>  access_token, access_secret <span class="pl-k">=</span> gateway.access_token</pre></div>
+
+<p>You can authorize a <code>Gateway</code> instance later on using the
+<code>authorize_from_access</code> method:</p>
+
+<div class="highlight highlight-source-ruby"><pre>  gateway <span class="pl-k">=</span> <span class="pl-c1">XeroGateway</span>::<span class="pl-c1">Gateway</span>.<span class="pl-k">new</span>(<span class="pl-c1">XERO_CONSUMER_KEY</span>, <span class="pl-c1">XERO_CONSUMER_SECRET</span>)
+  gateway.authorize_from_access(your_stored_token.access_token, your_stored_token.access_secret)</pre></div>
+
+<h2>
+<a id="examples" class="anchor" href="#examples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Examples</h2>
+
+<p>Open examples/oauth.rb and change CONSUMER_KEY and CONSUMER_SECRET to
+the values for a Test OAuth Application in order to see an example of
+OAuth at work.</p>
+
+<p>If you're working with Rails, a controller similar to this might come in
+handy:</p>
+
+<div class="highlight highlight-source-ruby"><pre>  <span class="pl-k">class</span> <span class="pl-en">XeroSessionsController<span class="pl-e"> &lt; ApplicationController</span></span>
+
+    before_action <span class="pl-c1">:get_xero_gateway</span>
+
+    <span class="pl-k">def</span> <span class="pl-en">new</span>
+      session[<span class="pl-c1">:request_token</span>]  <span class="pl-k">=</span> <span class="pl-smi">@xero_gateway</span>.request_token.token
+      session[<span class="pl-c1">:request_secret</span>] <span class="pl-k">=</span> <span class="pl-smi">@xero_gateway</span>.request_token.secret
+
+      redirect_to <span class="pl-smi">@xero_gateway</span>.request_token.authorize_url
+    <span class="pl-k">end</span>
+
+    <span class="pl-k">def</span> <span class="pl-en">create</span>
+      <span class="pl-smi">@xero_gateway</span>.authorize_from_request(session[<span class="pl-c1">:request_token</span>], session[<span class="pl-c1">:request_secret</span>],
+                                           <span class="pl-c1">oauth_verifier:</span> params[<span class="pl-c1">:oauth_verifier</span>])
+
+      session[<span class="pl-c1">:xero_auth</span>] <span class="pl-k">=</span> { <span class="pl-c1">access_token:</span>   <span class="pl-smi">@xero_gateway</span>.access_token.token,
+                              <span class="pl-c1">access_secret:</span>  <span class="pl-smi">@xero_gateway</span>.access_token.secret }
+
+      session.data.delete(<span class="pl-c1">:request_token</span>)
+      session.data.delete(<span class="pl-c1">:request_secret</span>)
+    <span class="pl-k">end</span>
+
+    <span class="pl-k">def</span> <span class="pl-en">destroy</span>
+      session.data.delete(<span class="pl-c1">:xero_auth</span>)
+    <span class="pl-k">end</span>
+
+    <span class="pl-k">private</span>
+
+      <span class="pl-k">def</span> <span class="pl-en">get_xero_gateway</span>
+        <span class="pl-smi">@xero_gateway</span> <span class="pl-k">=</span> <span class="pl-c1">XeroGateway</span>::<span class="pl-c1">Gateway</span>.<span class="pl-k">new</span>(<span class="pl-c1">YOUR_OAUTH_CONSUMER_KEY</span>, <span class="pl-c1">YOUR_OAUTH_CONSUMER_SECRET</span>)
+      <span class="pl-k">end</span>
+
+  <span class="pl-k">end</span></pre></div>
+
+<p>Note that I'm just storing the Access Token + Secret in the session here</p>
+
+<ul>
+<li>you could equally store them in the database if you felt like
+refreshing them every 30 minutes ;)</li>
+</ul>
+
+<h2>
+<a id="api-methods" class="anchor" href="#api-methods" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>API Methods</h2>
+
+<p>You can find a full listing of all implemented methods on <a href="https://github.com/xero-gateway/xero_gateway/wiki/API-Methods">the wiki page</a>.</p>
+
+<h2>
+<a id="logging" class="anchor" href="#logging" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Logging</h2>
+
+<p>You can specify a logger to use (so you can track down those tricky
+exceptions) by using:</p>
+
+<div class="highlight highlight-source-ruby"><pre>  gateway.logger <span class="pl-k">=</span> <span class="pl-c1">ActiveSupport</span>::<span class="pl-c1">BufferedLogger</span>.<span class="pl-k">new</span>(<span class="pl-s"><span class="pl-pds">"</span>log_file_name.log<span class="pl-pds">"</span></span>)</pre></div>
+
+<p>Your logger simply needs to respond to <code>info</code>.</p>
+
+<h2>
+<a id="contributing" class="anchor" href="#contributing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contributing</h2>
+
+<p>We welcome contributions, thanks for pitching in! <g-emoji alias="sparkles" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/2728.png" ios-version="6.0">✨</g-emoji></p>
+
+<ol>
+<li>Fork the repo</li>
+<li>Create your feature branch (<code>git checkout -b my-new-feature</code>)</li>
+<li>Make sure you have some tests, and they pass! (<code>bundle exec rake</code>)</li>
+<li>Commit your changes (<code>git commit -am 'Added some feature'</code>)</li>
+<li>Push to the branch (<code>git push origin my-new-feature</code>)</li>
+<li>Create new Pull Request</li>
+</ol>
+
+<p>This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the <a href="http://contributor-covenant.org">Contributor Covenant</a> code of conduct.</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/xero-gateway/xero_gateway">Xero gateway</a> is maintained by <a href="https://github.com/xero-gateway">xero-gateway</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
