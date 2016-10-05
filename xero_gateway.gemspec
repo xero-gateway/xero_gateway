@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "builder", ">= 3.2.2"
   s.add_dependency "oauth", ">= 0.3.6"
-  s.add_dependency "activesupport", "< 5"
+  s.add_dependency "activesupport"
 
   s.add_development_dependency "bundler"
   s.add_development_dependency "rake"
