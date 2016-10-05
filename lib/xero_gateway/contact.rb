@@ -29,7 +29,7 @@ module XeroGateway
       end
 
       @phones ||= []
-      @addresses ||= []
+      @addresses = nil
     end
 
     def address=(address)
@@ -37,6 +37,7 @@ module XeroGateway
     end
 
     def address
+      self.addresses    ||= []
       self.addresses[0] ||= Address.new
     end
 
@@ -154,7 +155,7 @@ module XeroGateway
         b.DefaultCurrency if self.default_currency
         b.Addresses {
           addresses.each { |address| address.to_xml(b) }
-        } if self.addresses.any?
+        } unless addresses.nil?
         b.Phones {
           phones.each { |phone| phone.to_xml(b) }
         } if self.phones.any?
@@ -173,8 +174,8 @@ module XeroGateway
           when "FirstName" then contact.first_name = element.text
           when "LastName" then contact.last_name = element.text
           when "EmailAddress" then contact.email = element.text
-          when "Addresses" then element.children.each {|address_element| contact.addresses << Address.from_xml(address_element)}
-          when "Phones" then element.children.each {|phone_element| contact.phones << Phone.from_xml(phone_element)}
+          when "Addresses" then element.children.each { |address_element| contact.addresses ||= []; contact.addresses << Address.from_xml(address_element) }
+          when "Phones" then element.children.each { |phone_element| contact.phones << Phone.from_xml(phone_element) }
           when "BankAccountDetails" then contact.bank_account_details = element.text
           when "TaxNumber" then contact.tax_number = element.text
           when "AccountsReceivableTaxType" then contact.accounts_receivable_tax_type = element.text

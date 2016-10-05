@@ -32,6 +32,20 @@ class ContactTest < Test::Unit::TestCase
     assert_equal contact, result_contact
   end
 
+  # this allows you to remove addresses from Xero
+  test "explicity passing an empty array for addresses should include an empty element" do
+    contact = create_test_contact
+    contact.addresses = nil
+
+    parsed = REXML::XPath.first(REXML::Document.new(contact.to_xml), "/Contact")
+    assert !parsed.children.map(&:name).include?("Addresses")
+
+    contact.addresses = []
+    parsed = REXML::XPath.first(REXML::Document.new(contact.to_xml), "/Contact")
+    assert parsed.children.map(&:name).include?("Addresses")
+
+  end
+
   test "parsing from XML" do
     test_xml = <<-TESTING.strip_heredoc.chomp
     <Contact>
