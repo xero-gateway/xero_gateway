@@ -53,6 +53,18 @@ class OrganisationTest < Test::Unit::TestCase
     end
   end
 
+  test "works with an empty addresses attribute" do
+    org = create_test_organisation
+    org.addresses = []
+
+    assert org_as_xml = org.to_xml
+
+    org_element = REXML::XPath.first(REXML::Document.new(org_as_xml), "/Organisation")
+    result_org = XeroGateway::Organisation.from_xml(org_element)
+
+    assert_equal org, result_org
+  end
+
   private
 
   def create_test_organisation
