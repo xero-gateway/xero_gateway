@@ -18,7 +18,13 @@ module XeroGateway
       "CreatedDateUTC"        => :string,
       "ShortCode"             => :string,
       "Timezone"              => :string,
-      "LineOfBusiness"        => :string
+      "LineOfBusiness"        => :string,
+      "Addresses"             => [Address]
     })
+
+    def add_address(address_params)
+      self.addresses ||= []
+      self.addresses << Address.new(address_params)
+    end
   end
 end
