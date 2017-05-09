@@ -4,7 +4,7 @@ GEM
     activesupport (3.0.0)
     builder (2.1.2)
     i18n (0.6.0)
-    libxml-ruby (2.2.2)
+    libxml-ruby (2.9.0)
     metaclass (0.0.1)
     mocha (0.14.0)
       metaclass (~> 0.0.1)
@@ -18,7 +18,10 @@ DEPENDENCIES
   activesupport
   builder (>= 2.1.2)
   i18n
-  libxml-ruby (~> 2.2.2)
+  libxml-ruby (~> 2.4)
   mocha
   oauth (>= 0.3.6)
   shoulda
+
+BUNDLED WITH
+   1.14.5

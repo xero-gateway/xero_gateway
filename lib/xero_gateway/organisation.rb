@@ -1,6 +1,6 @@
 module XeroGateway
   class Organisation
-    
+
     unless defined? ATTRS
       ATTRS = {
         "Name" 	                => :string,     # Display name of organisation shown in Xero
@@ -9,10 +9,10 @@ module XeroGateway
         "Version"   	          => :string,     # See Version Types
         "BaseCurrency"          => :string,     # Default currency for organisation. See Currency types
         "OrganisationType"      => :string,     # only returned for "real" (i.e non-demo) companies
-        "OrganisationStatus"    => :string,     
-        "IsDemoCompany"         => :boolean,    
+        "OrganisationStatus"    => :string,
+        "IsDemoCompany"         => :boolean,
         "APIKey"                => :string,     # returned if organisations are linked via Xero Network
-        "CountryCode"           => :string,      
+        "CountryCode"           => :string,
         "TaxNumber"             => :string,
         "FinancialYearEndDay"   => :string,
         "FinancialYearEndMonth" => :string,
@@ -23,59 +23,66 @@ module XeroGateway
         "Phones"                => :phones      # TODO: unify handling with Contacts
       }
     end
-    
+
     attr_accessor *ATTRS.keys.map(&:underscore)
-    
+
     def initialize(params = {})
       params[:phones] ||= []
-      
+
       params.each do |k,v|
         self.send("#{k}=", v)
       end
     end
-    
+
     def ==(other)
       ATTRS.keys.map(&:underscore).each do |field|
         return false if send(field) != other.send(field)
       end
       return true
     end
-    
+
     def to_xml
       b = Builder::XmlMarkup.new
-      
+
       b.Organisation do
-        ATTRS.keys.each do |attr|
-          eval("b.#{attr} '#{self.send(attr.underscore.to_sym)}'")
+        ATTRS.each do |attr, type|
+          if type == :phones
+            next if phones.empty?
+            b.Phones do
+              phones.each { |phone| phone.to_xml(b) }
+            end
+          else
+            eval("b.#{attr} '#{self.send(attr.underscore.to_sym)}'")
+          end
         end
       end
     end
-    
+
     def self.from_xml(organisation_element)
       Organisation.new.tap do |org|
         organisation_element.children.each do |element|
-        
+
           attribute             = element.name
           underscored_attribute = element.name.underscore
-        
+
           if ATTRS.keys.include?(attribute)
-                  
+
             case (ATTRS[attribute])
               when :boolean then  org.send("#{underscored_attribute}=", (element.text == "true"))
               when :float   then  org.send("#{underscored_attribute}=", element.text.to_f)
               when :phones  then  element.children.each { |phone_element| org.phones << Phone.from_xml(phone_element) }
               else                org.send("#{underscored_attribute}=", element.text)
             end
-            
+
           else
-            
-            warn "Ignoring unknown attribute: #{attribute}" 
-            
+
+            warn "Ignoring unknown attribute: #{attribute}"
+
           end
-          
+
         end
       end
     end
-    
+
   end
 end

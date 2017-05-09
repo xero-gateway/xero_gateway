@@ -1,11 +1,11 @@
 require File.join(File.dirname(__FILE__), '../test_helper.rb')
 
 class OrganisationTest < Test::Unit::TestCase
-  
+
   # Tests that an organisation can be converted into XML that Xero can understand, and then converted back to an organisation
   def test_build_and_parse_xml
     org = create_test_organisation
-    
+
     # Generate the XML message
     org_as_xml = org.to_xml
 
@@ -14,14 +14,14 @@ class OrganisationTest < Test::Unit::TestCase
 
     # Build a new account from the XML
     result_org = XeroGateway::Organisation.from_xml(org_element)
-    
+
     # Check the account details
     assert_equal org, result_org
   end
-  
-  
+
+
   private
-  
+
   def create_test_organisation
     XeroGateway::Organisation.new.tap do |org|
       org.name                = "Demo Company (NZ)"
