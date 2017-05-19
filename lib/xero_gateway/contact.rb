@@ -15,7 +15,7 @@ module XeroGateway
     # Any errors that occurred when the #valid? method called.
     attr_reader :errors
 
-    attr_accessor :contact_id, :contact_number, :status, :name, :first_name, :last_name, :email, :addresses, :phones, :updated_at,
+    attr_accessor :contact_id, :contact_number, :account_number, :status, :name, :first_name, :last_name, :email, :addresses, :phones, :updated_at,
                   :bank_account_details, :tax_number, :accounts_receivable_tax_type, :accounts_payable_tax_type, :is_customer, :is_supplier,
                   :default_currency, :contact_groups
 
@@ -141,6 +141,7 @@ module XeroGateway
       b.Contact {
         b.ContactID self.contact_id if self.contact_id
         b.ContactNumber self.contact_number if self.contact_number
+        b.AccountNumber self.account_number if self.account_number
         b.Name self.name if self.name
         b.EmailAddress self.email if self.email
         b.FirstName self.first_name if self.first_name
@@ -169,6 +170,7 @@ module XeroGateway
         case(element.name)
           when "ContactID" then contact.contact_id = element.text
           when "ContactNumber" then contact.contact_number = element.text
+          when "AccountNumber" then contact.account_number = element.text
           when "ContactStatus" then contact.status = element.text
           when "Name" then contact.name = element.text
           when "FirstName" then contact.first_name = element.text
@@ -191,7 +193,7 @@ module XeroGateway
     end
 
     def ==(other)
-      [ :contact_id, :contact_number, :status, :name, :first_name, :last_name, :email, :addresses, :phones, :updated_at,
+      [ :contact_id, :contact_number, :account_number, :status, :name, :first_name, :last_name, :email, :addresses, :phones, :updated_at,
         :bank_account_details, :tax_number, :accounts_receivable_tax_type, :accounts_payable_tax_type, :is_customer, :is_supplier,
         :default_currency, :contact_groups ].each do |field|
         return false if send(field) != other.send(field)
