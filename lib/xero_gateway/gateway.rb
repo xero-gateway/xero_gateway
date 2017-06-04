@@ -155,7 +155,9 @@ module XeroGateway
     # Retrieves all invoices from Xero
     #
     # Usage : get_invoices
-    #         get_invoices(:invoice_id => " 297c2dc5-cc47-4afd-8ec8-74990b8761e9")
+    #         get_invoices(:invoice_id => "297c2dc5-cc47-4afd-8ec8-74990b8761e9")
+    #         get_invoices(:invoice_number => "175")
+    #         get_invoices(:contact_ids => ["297c2dc5-cc47-4afd-8ec8-74990b8761e9"] )
     #
     # Note  : modified_since is in UTC format (i.e. Brisbane is UTC+10)
     def get_invoices(options = {})
@@ -166,6 +168,7 @@ module XeroGateway
       request_params[:InvoiceNumber] = options[:invoice_number] if options[:invoice_number]
       request_params[:order]         = options[:order] if options[:order]
       request_params[:ModifiedAfter] = options[:modified_since] if options[:modified_since]
+      request_params[:ContactIDs]    = Array(options[:contact_ids]).join(",") if options[:contact_ids]
 
       request_params[:where]         = options[:where] if options[:where]
 
