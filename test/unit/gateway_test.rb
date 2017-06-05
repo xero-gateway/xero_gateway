@@ -14,6 +14,19 @@ class GatewayTest < Test::Unit::TestCase
       assert result.response_item.first.is_a? XeroGateway::Invoice
     end
 
+    should "get invoices by contact ids" do
+      contact_id = 'a99a9aaa-9999-99a9-9aa9-aaaaaa9a9999'
+      stub_response = stub(:plain_body => get_file_as_string("invoices.xml"),
+                           :code => "200")
+      expected_url = /.+\/Invoices\?ContactIDs=#{contact_id}/
+      XeroGateway::OAuth.any_instance
+                        .stubs(:get)
+                        .with(regexp_matches(expected_url), anything)
+                        .returns(stub_response)
+      result = @gateway.get_invoices(:contact_ids => [contact_id])
+      assert result.response_item.first.is_a? XeroGateway::Invoice
+    end
+
     should :get_invoice do
       XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("invoice.xml"), :code => "200"))
       result = @gateway.get_invoice('a99a9aaa-9999-99a9-9aa9-aaaaaa9a9999')
@@ -61,7 +74,6 @@ class GatewayTest < Test::Unit::TestCase
       result = @gateway.get_payment('1234')
       assert result.response_item.first.is_a? XeroGateway::Payment
     end
-
 
     should :get_contacts do
       XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("contacts.xml"), :code => "200"))
