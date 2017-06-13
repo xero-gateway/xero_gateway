@@ -1,6 +1,6 @@
 module XeroGateway
   class Account
-    
+
     TYPE = {
       'CURRENT' =>        '',
       'FIXED' =>          '',
@@ -17,14 +17,22 @@ module XeroGateway
       'REVENUE' =>        '',
       'SALES' =>          ''
     } unless defined?(TYPE)
-    
+
+    ACCOUNT_CLASS = {
+      'ASSET'     => '',
+      'EQUITY'    => '',
+      'EXPENSE'   => '',
+      'LIABILITY' => '',
+      'REVENUE'   => '',
+    } unless defined?(ACCOUNT_CLASS)
+
     TAX_TYPE = {
       'NONE' =>             'No GST',
       'EXEMPTINPUT' =>      'VAT on expenses exempt from VAT (UK only)',
       'INPUT' =>            'GST on expenses',
       'SRINPUT' =>          'VAT on expenses',
       'ZERORATEDINPUT' =>   'Expense purchased from overseas (UK only)',
-      'RRINPUT' =>          'Reduced rate VAT on expenses (UK Only)', 
+      'RRINPUT' =>          'Reduced rate VAT on expenses (UK Only)',
       'EXEMPTOUTPUT' =>     'VAT on sales exempt from VAT (UK only)',
       'ECZROUTPUT' =>       'EC Zero-rated output',
       'OUTPUT' =>           'OUTPUT (old rate)',
@@ -34,28 +42,29 @@ module XeroGateway
       'RROUTPUT' =>         'Reduced rate VAT on sales (UK Only)',
       'ZERORATED' =>        'Zero-rated supplies/sales from overseas (NZ Only)'
     } unless defined?(TAX_TYPE)
-    
-    attr_accessor :account_id, :code, :name, :type, :tax_type, :description, :system_account, :enable_payments_to_account, :currency_code
-    
+
+    attr_accessor :account_id, :code, :name, :type, :account_class, :tax_type, :description, :system_account, :enable_payments_to_account, :currency_code
+
     def initialize(params = {})
       params.each do |k,v|
         self.send("#{k}=", v)
       end
     end
-    
+
     def ==(other)
-      [:account_id, :code, :name, :type, :tax_type, :description, :system_account, :enable_payments_to_account].each do |field|
+      [:account_id, :code, :name, :type, :account_class, :tax_type, :description, :system_account, :enable_payments_to_account].each do |field|
         return false if send(field) != other.send(field)
       end
       return true
     end
-    
+
     def to_xml(b = Builder::XmlMarkup.new, options={})
       b.tag!(options[:name] ? options[:name] : 'Account') {
         b.AccountID self.account_id
         b.Code self.code
         b.Name self.name
         b.Type self.type
+        b.Class self.account_class
         b.TaxType self.tax_type
         b.Description self.description
         b.SystemAccount self.system_account unless self.system_account.nil?
@@ -63,7 +72,7 @@ module XeroGateway
         b.CurrencyCode currency_code if currency_code
       }
     end
-    
+
     def self.from_xml(account_element)
       account = Account.new
       account_element.children.each do |element|
@@ -72,15 +81,16 @@ module XeroGateway
           when "Code" then account.code = element.text
           when "Name" then account.name = element.text
           when "Type" then account.type = element.text
+          when "Class" then account.account_class = element.text
           when "TaxType" then account.tax_type = element.text
           when "Description" then account.description = element.text
           when "SystemAccount" then account.system_account = element.text
           when "EnablePaymentsToAccount" then account.enable_payments_to_account = (element.text == 'true')
           when "CurrencyCode" then account.currency_code = element.text
         end
-      end      
+      end
       account
     end
-    
+
   end
 end
