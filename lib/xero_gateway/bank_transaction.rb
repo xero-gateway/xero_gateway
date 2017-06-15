@@ -25,7 +25,8 @@ module XeroGateway
     attr_accessor :line_items_downloaded
 
     # accessible fields
-    attr_accessor :bank_transaction_id, :type, :date, :reference, :status, :contact, :line_items, :bank_account, :url, :is_reconciled, :updated_at, :currency_code, :currency_rate
+    attr_writer   :line_items
+    attr_accessor :bank_transaction_id, :type, :date, :reference, :status, :contact, :bank_account, :url, :is_reconciled, :updated_at, :currency_code, :currency_rate
 
     def initialize(params = {})
       @errors ||= []
@@ -166,14 +167,6 @@ module XeroGateway
           when "Total" then bank_transaction.total = BigDecimal.new(element.text)
           when "SubTotal" then bank_transaction.sub_total = BigDecimal.new(element.text)
           when "TotalTax" then bank_transaction.total_tax = BigDecimal.new(element.text)
-          # when "Total" then invoice.total = BigDecimal.new(element.text)
-          # when "InvoiceID" then invoice.invoice_id = element.text
-          # when "InvoiceNumber" then invoice.invoice_number = element.text
-          # when "Payments" then element.children.each { | payment | invoice.payments << Payment.from_xml(payment) }
-          # when "AmountDue" then invoice.amount_due = BigDecimal.new(element.text)
-          # when "AmountPaid" then invoice.amount_paid = BigDecimal.new(element.text)
-          # when "AmountCredited" then invoice.amount_credited = BigDecimal.new(element.text)
-          # when "SentToContact" then invoice.sent_to_contact = (element.text.strip.downcase == "true")
           when "IsReconciled" then bank_transaction.is_reconciled = (element.text.strip.downcase == "true")
           when "Url" then bank_transaction.url = element.text
         end

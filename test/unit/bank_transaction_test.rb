@@ -133,9 +133,9 @@ class BankTransactionTest < Test::Unit::TestCase
 private
 
   def assert_xml_field(xml, field_name, options={})
-    assert_match /#{field_name}/, xml.to_s, "Didn't find the field #{field_name} in the XML document!"
+    assert_match(/#{field_name}/, xml.to_s, "Didn't find the field #{field_name} in the XML document!")
     if options[:value]
-      assert_match /#{field_name}.*#{options[:value]}.*#{field_name}/, xml.to_s, "The field #{field_name} was expected to be '#{options[:value]}'!"
+      assert_match(/#{field_name}.*#{options[:value]}.*#{field_name}/, xml.to_s, "The field #{field_name} was expected to be '#{options[:value]}'!")
     end
   end
 

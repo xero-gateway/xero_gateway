@@ -1,1 +1,0 @@
-require 'xero_gateway'

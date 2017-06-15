@@ -1,20 +1,22 @@
 module XeroGateway
   class ContactGroup
-    
+
     # Xero::Gateway associated with this invoice.
     attr_accessor :gateway
-    
+
     # All accessible fields
-    attr_accessor :contact_group_id, :name, :status, :contacts
-    
+    attr_accessor :contact_group_id, :name, :status
+    attr_writer   :contacts
+
     # Boolean representing whether the accounts list has been loaded.
     attr_accessor :contacts_downloaded
-    
+
     def initialize(params = {})
       @contacts = []
       params.each do |k,v|
         self.send("#{k}=", v)
       end
+      @contacts_downloaded = (params.delete(:contacts_downloaded) == true)
     end
 
     # Return the list of Contacts. Will load the contacts if the group
@@ -32,11 +34,11 @@ module XeroGateway
       @contacts
     end
 
-    # Returns the array of ContactIDs. 
+    # Returns the array of ContactIDs.
     # If the contact_ids array has been assigned, will return that array.
     # Otherwise, returns any loaded ContactIDs
     def contact_ids
-      if @contact_ids
+      if defined?(@contact_ids)
         @contact_ids
       else
         contacts.map(&:contact_id)
@@ -80,8 +82,8 @@ module XeroGateway
             end
         end
       end
-      contact_group              
-    end  
+      contact_group
+    end
 
   end
 end

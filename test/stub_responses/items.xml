@@ -1,0 +1,53 @@
+<Response xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Id>ace3dea1-4025-48cf-a91f-50759c32653e</Id>
+  <Status>OK</Status>
+  <ProviderName>Xero Gateway Test</ProviderName>
+  <DateTimeUTC>2009-10-04T03:29:54.6788414Z</DateTimeUTC>
+  <Items>
+    <Item>
+       <ItemID>19b79d12-0ae1-496e-9649-cbd04b15c7c5</ItemID>
+       <Code>UnTrackedThing</Code>
+       <Description>I sell this untracked thing</Description>
+       <PurchaseDescription>I buy this untracked thing</PurchaseDescription>
+       <UpdatedDateUTC>2015-09-22T22:37:55.527</UpdatedDateUTC>
+       <PurchaseDetails>
+         <UnitPrice>20.0000</UnitPrice>
+         <AccountCode>400</AccountCode>
+         <TaxType>NONE</TaxType>
+       </PurchaseDetails>
+       <SalesDetails>
+         <UnitPrice>40.0000</UnitPrice>
+         <AccountCode>200</AccountCode>
+         <TaxType>OUTPUT2</TaxType>
+       </SalesDetails>
+       <Name>An Untracked Item</Name>
+       <IsTrackedAsInventory>false</IsTrackedAsInventory>
+       <IsSold>true</IsSold>
+       <IsPurchased>true</IsPurchased>
+     </Item>
+     <Item>
+       <ItemID>90a72d44-43e4-410d-a68b-1139ef0c0c07</ItemID>
+       <Code>TrackedThing</Code>
+       <Description>I sell this tracked thing</Description>
+       <PurchaseDescription>I purchase this tracked thing</PurchaseDescription>
+       <UpdatedDateUTC>2015-09-22T22:42:30.547</UpdatedDateUTC>
+       <PurchaseDetails>
+         <UnitPrice>20.0000</UnitPrice>
+         <COGSAccountCode>430</COGSAccountCode>
+         <TaxType>NONE</TaxType>
+       </PurchaseDetails>
+       <SalesDetails>
+         <UnitPrice>40.0000</UnitPrice>
+         <AccountCode>200</AccountCode>
+         <TaxType>OUTPUT2</TaxType>
+       </SalesDetails>
+       <Name>Tracked Thing</Name>
+       <IsTrackedAsInventory>true</IsTrackedAsInventory>
+       <InventoryAssetAccountCode>630</InventoryAssetAccountCode>
+       <TotalCostPool>200.00</TotalCostPool>
+       <QuantityOnHand>10.0000</QuantityOnHand>
+       <IsSold>true</IsSold>
+       <IsPurchased>true</IsPurchased>
+     </Item>
+   </Items>
+</Response>
