@@ -238,8 +238,8 @@ module XeroGateway
         response = @gateway.get_invoice(invoice_id)
         raise InvoiceNotFoundError, "Invoice with ID #{invoice_id} not found in Xero." unless response.success? && response.invoice.is_a?(XeroGateway::Invoice)
 
-        @line_items = response.invoice.line_items
         @line_items_downloaded = true
+        @line_items = response.invoice.line_items
       end
   end
 end
