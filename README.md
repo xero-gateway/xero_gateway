@@ -26,119 +26,123 @@ The Xero Gateway uses [OAuth 1.0a](https://oauth.net/core/1.0a/) for authenticat
 implements OAuth in a very similar manner to the [Twitter gem by John Nunemaker](http://github.com/jnunemaker/twitter)
 , so if you've used that before this will all seem familiar.
 
+#### Public/Partner Applications
+
   1. **Get a Consumer Key & Secret**
 
-    First off, you'll need to get a Consumer Key/Secret pair for your
-    application from Xero.
-    Head to <https://api.xero.com>, log in and then click My Applications
-    &gt; Add Application.
+  First off, you'll need to get a Consumer Key/Secret pair for your application from Xero.
 
-    If you want to create a private application (that accesses your own Xero
-    account rather than your users), you'll need to generate an RSA keypair
-    and an X509 certificate. This can be done with OpenSSL as below:
+  Head to <https://api.xero.com>, log in and then click My Applications &gt; Add Application.
 
-    ```
-      openssl genrsa –out privatekey.pem 1024
-      openssl req –newkey rsa:1024 –x509 –key privatekey.pem –out publickey.cer –days 365
-      openssl pkcs12 –export –out public_privatekey.pfx –inkey privatekey.pem –in publickey.cer
-    ```
+  Part of the process for this will ask you for an "OAuth Redirect URL". This is where customers will be redirected once they complete logging in with Xero.
 
-    On the right-hand-side of your application's page there's a box titled
-    "OAuth Credentials". Use the Key and Secret from this box in order to
-    set up a new Gateway instance.
-
-    (If you're unsure about the Callback URL, specify nothing - it will
-    become clear a bit later)
+  On the right-hand-side of your application's page there's a box titled "OAuth Credentials". Use the Key and Secret from this box in order to set up a new Gateway instance.
 
   2. **Create a Xero Gateway in your App**
 
-    ```ruby
-      gateway = XeroGateway::Gateway.new(YOUR_OAUTH_CONSUMER_KEY, YOUR_OAUTH_CONSUMER_SECRET)
-    ```
-
-    or for Private applications
-
-    ```ruby
-      require 'xero_gateway'
-      gateway = XeroGateway::PrivateApp.new(YOUR_OAUTH_CONSUMER_KEY, YOUR_OAUTH_CONSUMER_SECRET, PATH_TO_YOUR_PRIVATE_KEY)
-    ```
+  ```ruby
+    gateway = XeroGateway::Gateway.new(YOUR_OAUTH_CONSUMER_KEY, YOUR_OAUTH_CONSUMER_SECRET)
+  ```
 
   3. **Creating a Request Token**
 
-    You'll then need to get a Request Token from Xero.
+  You'll then need to get a Request Token from Xero.
 
-    ```ruby
-      request_token = gateway.request_token
-    ```
+  ```ruby
+    request_token = gateway.request_token
+  ```
 
-    You should keep this around - you'll need it to exchange for an Access
-    Token later. (If you're using Rails, this means storing it in the
-    session or something similar)
+  You should keep this around - you'll need it to exchange for an Access Token later. (If you're using Rails, this means storing it in the session or something similar)
 
-    Next, you need to redirect your user to the authorization url for this
-    request token. In Rails, that looks something like this:
+  Next, you need to redirect your user to the authorization url for this request token. In Rails, that looks something like this:
 
-    ```ruby
-      redirect_to request_token.authorize_url
-    ```
+  ```ruby
+    redirect_to request_token.authorize_url
+  ```
 
-    You may also provide a callback parameter, which is the URL within your
-    app the user will be redirected to. See next section for more
-    information on what parameters Xero sends with this request.
+  You may also provide a callback parameter, which is the URL within your app the user will be redirected to. You need to ensure that the domain and port match the callback URL you specified in the Xero Developer Center!
 
-    ```ruby
-      request_token = request_token(oauth_callback: "https://yourapp.com/xero/callback")
-      redirect_to request_token.authorize_url
-    ```
+  ```ruby
+    request_token = request_token(oauth_callback: "https://yourapp.com/xero/callback")
+    redirect_to request_token.authorize_url
+  ```
 
   4. **Retrieving an Access Token**
 
-    If you've specified a Callback URL when setting up your application or
-    provided an oauth\_callback parameter on your request token, your user
-    will be redirected to that URL with an OAuth Verifier as a GET
-    parameter. You can then exchange your Request Token for an Access Token
-    like this (assuming Rails, once again):
+  If you've specified a Callback URL when setting up your application or provided an oauth\_callback parameter on your request token, your user will be redirected to that URL with an OAuth Verifier as a GET parameter. You can then exchange your Request Token for an Access Token like this (assuming Rails, once again):
 
-    ```ruby
-      gateway.authorize_from_request(request_token.token, request_token.secret, oauth_verifier: params[:oauth_verifier])
-    ```
+  ```ruby
+    gateway.authorize_from_request(request_token.token, request_token.secret, oauth_verifier: params[:oauth_verifier])
+  ```
 
-    (If you haven't specified a Callback URL, the user will be presented
-    with a numeric verifier which they must copy+paste into your
-    application; see examples/oauth.rb for an example)
+  (If you haven't specified a Callback URL, the user will be presented with a numeric verifier which they must copy+paste into your application; see examples/oauth.rb for an example)
 
-    Now you can access Xero API methods:
+  Now you can access Xero API methods:
 
-    ```ruby
-      gateway.get_contacts
-      # => #<XeroGateway::Response:0x007fd367181388 ...
-    ```
+  ```ruby
+    gateway.get_contacts
+    # => #<XeroGateway::Response:0x007fd367181388 ...
+  ```
 
-### Storing Access Tokens
+  ##### Storing Access Tokens
 
-You can also store the Access Token/Secret pair so that you can access
-the API without user intervention. Currently, these access tokens are
-only valid for 30 minutes, and will raise a
-`XeroGateway::OAuth::TokenExpired` exception if you attempt to access the
-API beyond the token's expiry time.
+  You can also store the Access Token/Secret pair so that you can access
+  the API without user intervention. Currently, these access tokens are
+  only valid for 30 minutes, and will raise a
+  `XeroGateway::OAuth::TokenExpired` exception if you attempt to access the
+  API beyond the token's expiry time.
 
-```ruby
-  access_token, access_secret = gateway.access_token
-```
+  ```ruby
+    access_token, access_secret = gateway.access_token
+  ```
 
-You can authorize a `Gateway` instance later on using the
-`authorize_from_access` method:
+  You can authorize a `Gateway` instance later on using the
+  `authorize_from_access` method:
 
-```ruby
-  gateway = XeroGateway::Gateway.new(XERO_CONSUMER_KEY, XERO_CONSUMER_SECRET)
-  gateway.authorize_from_access(your_stored_token.access_token, your_stored_token.access_secret)
-```
+  ```ruby
+    gateway = XeroGateway::Gateway.new(XERO_CONSUMER_KEY, XERO_CONSUMER_SECRET)
+    gateway.authorize_from_access(your_stored_token.access_token, your_stored_token.access_secret)
+  ```
+
+ #### Private Applications
+
+Private applications are used to access a single Xero account.
+
+1. **Get a Consumer Key & Secret**
+
+  Head to <https://api.xero.com>, log in and then click My Applications &gt; Add Application.
+
+  You'll need to generate an RSA keypair and an X509 certificate. This can be done with OpenSSL as below:
+
+  ```bash
+    openssl genrsa -out privatekey.pem
+    openssl req -newkey rsa:1024 -x509 -days 365 -in privatekey.pem -out publickey.cer
+  ```
+
+  You can then copy `publickey.cer` and paste it into the certificate box (`cat publickey.cer | pbcopy` on a Mac :apple:)
+
+  Make sure you keep `privatekey.pem` about, as you'll need it to connect to Xero in your app.
+
+2. **Create a Xero Gateway in your App**
+
+  It's as easy as:
+
+  ```ruby
+    require 'xero_gateway'
+    gateway = XeroGateway::PrivateApp.new(YOUR_OAUTH_CONSUMER_KEY, YOUR_OAUTH_CONSUMER_SECRET, PATH_TO_YOUR_PRIVATE_KEY)
+
+    pp gateway.get_contacts
+  ```
+
+  Note that for private apps, your consumer key and secret do double duty as your access token and secret pair :)
 
 ## Examples
 
-Open examples/oauth.rb and change CONSUMER\_KEY and CONSUMER\_SECRET to
-the values for a Test OAuth Application in order to see an example of
+Open `examples/oauth.rb` and change `CONSUMER_KEY` and `CONSUMER_SECRET` to
+the values for a Test OAuth Public Application in order to see an example of
 OAuth at work.
+
+There's also `examples/private_app.rb` if you'd like to see an example private app.
 
 If you're working with Rails, a controller similar to this might come in
 handy:
@@ -179,8 +183,7 @@ handy:
   end
 ```
 
-Note that I'm just storing the Access Token + Secret in the session here
-- you could equally store them in the database if you felt like
+Note that I'm just storing the Access Token + Secret in the session here - you could equally store them in the database if you felt like
 refreshing them every 30 minutes ;)
 
 ## API Methods
