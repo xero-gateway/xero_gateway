@@ -1,7 +1,6 @@
 Gemfile.lock
 /.bundle/
 /.yardoc
-/Gemfile.lock
 /_yardoc/
 /coverage/
 /doc/
@@ -18,3 +17,5 @@ mkmf.log
 .ruby-gemset
 .rbenv-version
 .ruby-version
+
+.idea

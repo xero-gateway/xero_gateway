@@ -284,9 +284,14 @@ class InvoiceTest < Test::Unit::TestCase
   end
 
   def test_optional_params
-    invoice = create_test_invoice(:url => 'http://example.com', :branding_theme_id => 'a94a78db-5cc6-4e26-a52b-045237e56e6e')
+    eur_code = "EUR"
+    eur_rate = 1.80
+    
+    invoice = create_test_invoice(:url => 'http://example.com', :branding_theme_id => 'a94a78db-5cc6-4e26-a52b-045237e56e6e', :currency_code => eur_code, :currency_rate => eur_rate)
     assert_equal 'http://example.com', invoice.url
     assert_equal 'a94a78db-5cc6-4e26-a52b-045237e56e6e', invoice.branding_theme_id
+    assert_equal eur_code, invoice.currency_code
+    assert_equal eur_rate, invoice.currency_rate
   end
 
   def test_updated_date_utc
