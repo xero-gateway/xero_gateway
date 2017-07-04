@@ -19,13 +19,14 @@ class AccountTest < Test::Unit::TestCase
   end
 
   def test_build_and_parse_xml_for_bank_accounts
-    account = create_test_account(:type => 'BANK', :account_class => 'ASSET', :currency_code => 'NZD')
+    account = create_test_account(:type => 'BANK', :status => 'ACTIVE', :account_class => 'ASSET', :currency_code => 'NZD')
     account_as_xml = account.to_xml
     assert_match 'CurrencyCode', account_as_xml.to_s
 
     account_element = REXML::XPath.first(REXML::Document.new(account_as_xml), "/Account")
     result_account = XeroGateway::Account.from_xml(account_element)
     assert_equal 'BANK', result_account.type
+    assert_equal 'ACTIVE', result_account.status
     assert_equal 'ASSET', result_account.account_class
     assert_equal 'NZD', result_account.currency_code
     assert_equal account, result_account
@@ -38,6 +39,7 @@ class AccountTest < Test::Unit::TestCase
     account.code = "200"
     account.name = "Sales"
     account.type = options[:type] || "REVENUE"
+    account.status = options[:status] || "ACTIVE"
     account.account_class = options[:account_class] || "REVENUE"
     account.tax_type = "OUTPUT"
     account.description = "Income from any normal business activity"

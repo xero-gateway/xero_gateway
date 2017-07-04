@@ -26,6 +26,11 @@ module XeroGateway
       'REVENUE'   => '',
     } unless defined?(ACCOUNT_CLASS)
 
+    STATUSES = {
+      'ACTIVE'   => '',
+      'ARCHIVED' => '',
+    } unless defined?(STATUSES)
+
     TAX_TYPE = {
       'NONE' =>             'No GST',
       'EXEMPTINPUT' =>      'VAT on expenses exempt from VAT (UK only)',
@@ -43,7 +48,7 @@ module XeroGateway
       'ZERORATED' =>        'Zero-rated supplies/sales from overseas (NZ Only)'
     } unless defined?(TAX_TYPE)
 
-    attr_accessor :account_id, :code, :name, :type, :account_class, :tax_type, :description, :system_account, :enable_payments_to_account, :currency_code
+    attr_accessor :account_id, :code, :name, :type, :status, :account_class, :tax_type, :description, :system_account, :enable_payments_to_account, :currency_code
 
     def initialize(params = {})
       params.each do |k,v|
@@ -52,7 +57,7 @@ module XeroGateway
     end
 
     def ==(other)
-      [:account_id, :code, :name, :type, :account_class, :tax_type, :description, :system_account, :enable_payments_to_account].each do |field|
+      [:account_id, :code, :name, :type, :status, :account_class, :tax_type, :description, :system_account, :enable_payments_to_account].each do |field|
         return false if send(field) != other.send(field)
       end
       return true
@@ -64,6 +69,7 @@ module XeroGateway
         b.Code self.code
         b.Name self.name
         b.Type self.type
+        b.Status self.status
         b.Class self.account_class
         b.TaxType self.tax_type
         b.Description self.description
@@ -81,6 +87,7 @@ module XeroGateway
           when "Code" then account.code = element.text
           when "Name" then account.name = element.text
           when "Type" then account.type = element.text
+          when "Status" then account.status = element.text
           when "Class" then account.account_class = element.text
           when "TaxType" then account.tax_type = element.text
           when "Description" then account.description = element.text
