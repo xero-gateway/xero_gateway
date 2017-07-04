@@ -26,7 +26,9 @@ The Xero Gateway uses [OAuth 1.0a](https://oauth.net/core/1.0a/) for authenticat
 implements OAuth in a very similar manner to the [Twitter gem by John Nunemaker](http://github.com/jnunemaker/twitter)
 , so if you've used that before this will all seem familiar.
 
-#### Public/Partner Applications
+### Authenticating: Public/Partner Applications
+
+Public (or Partner, if you've been through the process to be approved) are traditional three-legged OAuth apps that can be used to access many different Xero accounts.
 
   1. **Get a Consumer Key & Secret**
 
@@ -84,7 +86,7 @@ implements OAuth in a very similar manner to the [Twitter gem by John Nunemaker]
     # => #<XeroGateway::Response:0x007fd367181388 ...
   ```
 
-  ##### Storing Access Tokens
+  #### Storing Access Tokens
 
   You can also store the Access Token/Secret pair so that you can access
   the API without user intervention. Currently, these access tokens are
@@ -104,7 +106,7 @@ implements OAuth in a very similar manner to the [Twitter gem by John Nunemaker]
     gateway.authorize_from_access(your_stored_token.access_token, your_stored_token.access_secret)
   ```
 
- #### Private Applications
+ ### Authenticating: Private Applications
 
 Private applications are used to access a single Xero account.
 
