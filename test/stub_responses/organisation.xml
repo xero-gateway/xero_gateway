@@ -4,6 +4,7 @@
   <DateTimeUTC>2009-10-04T03:26:26.6994434Z</DateTimeUTC>
   <Organisations>
     <Organisation>
+      <OrganisationID>c3d5e782-2153-4cda-bdb4-cec791ceb90d</OrganisationID>
       <Name>Demo Company (NZ)</Name>
       <LegalName>Demo Company (NZ)</LegalName>
       <PaysTax>true</PaysTax>
