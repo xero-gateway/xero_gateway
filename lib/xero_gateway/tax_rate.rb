@@ -3,6 +3,7 @@ module XeroGateway
     attributes({
       "Name"                  => :string,
       "TaxType"               => :string,
+      "Status"                => :string,
       "CanApplyToAssets"      => :boolean,
       "CanApplyToEquity"      => :boolean,
       "CanApplyToExpenses"    => :boolean,
