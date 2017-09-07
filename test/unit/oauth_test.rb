@@ -75,7 +75,7 @@ class OAuthTest < Test::Unit::TestCase
     xero.stubs(:consumer).returns(consumer)
   
     request_token = mock('request token')
-    consumer.expects(:get_request_token).with(:oauth_callback => "http://callback.com").returns(request_token)
+    consumer.expects(:get_request_token).with({:oauth_callback => "http://callback.com"}, nil, nil).returns(request_token)
   
     xero.request_token(:oauth_callback => "http://callback.com")
   end
@@ -91,7 +91,7 @@ class OAuthTest < Test::Unit::TestCase
     access_token.stubs(:params).returns({})
 
     request_token = mock('request token')
-    request_token.expects(:get_access_token).with(:oauth_verifier => "verifier").returns(access_token)
+    request_token.expects(:get_access_token).with({:oauth_verifier => "verifier"}, nil, nil).returns(access_token)
 
     OAuth::RequestToken.expects(:new).with(consumer, 'rtoken', 'rsecret').returns(request_token)
     
