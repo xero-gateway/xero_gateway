@@ -25,11 +25,11 @@ module XeroGateway
     extend Forwardable
     def_delegators :access_token, :get, :post, :put, :delete
 
-    attr_reader   :ctoken, :csecret, :consumer_options, :authorization_expires_at
+    attr_reader   :ctoken, :csecret, :user_agent_base, :consumer_options, :authorization_expires_at
     attr_accessor :session_handle
 
-    def initialize(ctoken, csecret, options = {})
-      @ctoken, @csecret = ctoken, csecret
+    def initialize(ctoken, csecret, user_agent_base, options = {})
+      @ctoken, @csecret, @user_agent_base = ctoken, csecret, user_agent_base      
       @consumer_options = XERO_CONSUMER_OPTIONS.merge(options)
     end
 
@@ -38,12 +38,12 @@ module XeroGateway
     end
 
     def request_token(params = {})
-      @request_token ||= consumer.get_request_token(params)
+      @request_token ||= consumer.get_request_token(params, nil, 'User-Agent' => user_agent_base)
     end
 
     def authorize_from_request(rtoken, rsecret, params = {})
       request_token     = ::OAuth::RequestToken.new(consumer, rtoken, rsecret)
-      access_token      = request_token.get_access_token(params)
+      access_token      = request_token.get_access_token(params, nil, 'User-Agent' => user_agent_base)
       @atoken, @asecret = access_token.token, access_token.secret
 
       update_attributes_from_token(access_token)
@@ -68,7 +68,7 @@ module XeroGateway
       access_token = old_token.get_access_token({
         :oauth_session_handle => session_handle,
         :token                => old_token
-      })
+      }, nil, 'User-Agent' => user_agent_base)
 
       update_attributes_from_token(access_token)
     rescue ::OAuth::Unauthorized => e
