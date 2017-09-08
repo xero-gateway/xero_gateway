@@ -89,7 +89,7 @@ module XeroGateway
     end
       
     def put(path, body = '', headers = {})
-      access_token.put(path, body, headers.merge(@base_headerss))
+      access_token.put(path, body, headers.merge(@base_headers))
     end
     
     def delete(path, headers = {})
