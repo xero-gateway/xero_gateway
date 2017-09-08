@@ -75,7 +75,20 @@ class OAuthTest < Test::Unit::TestCase
     xero.stubs(:consumer).returns(consumer)
   
     request_token = mock('request token')
-    consumer.expects(:get_request_token).with({:oauth_callback => "http://callback.com"}, nil, nil).returns(request_token)
+    consumer.expects(:get_request_token).with({:oauth_callback => "http://callback.com"}, nil, {}).returns(request_token)
+  
+    xero.request_token(:oauth_callback => "http://callback.com")
+  end
+
+  should "be able to create request token with specified base user agent" do
+    xero = XeroGateway::OAuth.new('token', 'secret', {user_agent: 'uagt'})
+    consumer = OAuth::Consumer.new('token', 'secret')
+    xero.stubs(:consumer).returns(consumer)
+  
+    request_token = mock('request token')
+    consumer.expects(:get_request_token)
+            .with({:oauth_callback => "http://callback.com"}, nil, {"User-Agent" => 'uagt'})
+            .returns(request_token)
   
     xero.request_token(:oauth_callback => "http://callback.com")
   end
@@ -91,12 +104,32 @@ class OAuthTest < Test::Unit::TestCase
     access_token.stubs(:params).returns({})
 
     request_token = mock('request token')
-    request_token.expects(:get_access_token).with({:oauth_verifier => "verifier"}, nil, nil).returns(access_token)
+    request_token.expects(:get_access_token).with({:oauth_verifier => "verifier"}, nil, {}).returns(access_token)
 
     OAuth::RequestToken.expects(:new).with(consumer, 'rtoken', 'rsecret').returns(request_token)
     
     xero.authorize_from_request('rtoken', 'rsecret', :oauth_verifier => "verifier")
   end
+  
+  should "be able to create access token with specified base user agent" do
+    xero = XeroGateway::OAuth.new('token', 'secret', {user_agent: 'uagt'})
+    consumer = OAuth::Consumer.new('token', 'secret')
+    xero.stubs(:consumer).returns(consumer)
+    
+    access_token = mock('access token')
+    access_token.expects(:token).twice.returns('atoken')
+    access_token.expects(:secret).twice.returns('asecret')
+    access_token.stubs(:params).returns({})
+
+    request_token = mock('request token')
+    request_token.expects(:get_access_token)
+                  .with({:oauth_verifier => "verifier"}, nil, {"User-Agent" => 'uagt'})
+                  .returns(access_token)
+
+    OAuth::RequestToken.expects(:new).with(consumer, 'rtoken', 'rsecret').returns(request_token)
+    
+    xero.authorize_from_request('rtoken', 'rsecret', :oauth_verifier => "verifier")
+  end  
   
   should "delegate get to access token" do
     access_token = mock('access token')
@@ -113,4 +146,24 @@ class OAuthTest < Test::Unit::TestCase
     access_token.expects(:post).returns(nil)
     xero.post('/foo')
   end
+  
+  should "be able to specify base user-agent header for calls" do
+    xero = XeroGateway::OAuth.new('token', 'secret', user_agent: 'testagt')
+    consumer = OAuth::Consumer.new('token', 'secret')
+    xero.stubs(:consumer).returns(consumer)
+
+    access_token = mock('access token')
+    access_token.expects(:token).twice.returns('atoken')
+    access_token.expects(:secret).twice.returns('asecret')
+    access_token.stubs(:params).returns({})
+
+    request_token = mock('request token')
+    request_token.expects(:get_access_token).returns(access_token)
+    OAuth::RequestToken.expects(:new).with(consumer, 'rtoken', 'rsecret').returns(request_token)
+
+    xero.authorize_from_request('rtoken', 'rsecret')
+    assert xero.access_token.is_a? OAuth::AccessToken
+    assert_equal "atoken",  xero.access_token.token
+    assert_equal "asecret", xero.access_token.secret
+  end  
 end
