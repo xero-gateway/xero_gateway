@@ -22,17 +22,17 @@ module XeroGateway
       }.freeze
     end
 
-    extend Forwardable
-    def_delegators :access_token, :get, :post, :put, :delete
-
     attr_reader   :ctoken, :csecret, :consumer_options, :authorization_expires_at
     attr_accessor :session_handle
 
     def initialize(ctoken, csecret, options = {})
       @ctoken, @csecret = ctoken, csecret
-      @consumer_options = XERO_CONSUMER_OPTIONS.merge(options)
+      
       #allow user-agent base val for certification procedure (enforce for PartnerApp)
-      @user_agent_base_header = @consumer_options.has_key?(:user_agent) ? {"User-Agent" => @consumer_options[:user_agent]} : nil
+      @base_headers = {}
+      @base_headers["User-Agent"] = options.delete(:user_agent) if options.has_key?(:user_agent)
+
+      @consumer_options = XERO_CONSUMER_OPTIONS.merge(options)
     end
 
     def consumer
@@ -40,12 +40,12 @@ module XeroGateway
     end
 
     def request_token(params = {})
-      @request_token ||= consumer.get_request_token(params, nil, user_agent_base_header)
+      @request_token ||= consumer.get_request_token(params, nil, @base_headers)
     end
 
     def authorize_from_request(rtoken, rsecret, params = {})
       request_token     = ::OAuth::RequestToken.new(consumer, rtoken, rsecret)
-      access_token      = request_token.get_access_token(params, nil, user_agent_base_header)
+      access_token      = request_token.get_access_token(params, nil, @base_headers)
       @atoken, @asecret = access_token.token, access_token.secret
 
       update_attributes_from_token(access_token)
@@ -70,7 +70,7 @@ module XeroGateway
       access_token = old_token.get_access_token({
         :oauth_session_handle => session_handle,
         :token                => old_token
-      }, nil, user_agent_base_header)
+      }, nil, @base_headers)
 
       update_attributes_from_token(access_token)
     rescue ::OAuth::Unauthorized => e
@@ -80,10 +80,21 @@ module XeroGateway
       raise XeroGateway::OAuth::TokenInvalid.new(e.message)
     end
 
-    protected
-      def user_agent_base_header
-        @user_agent_base_header
-      end
+    def get(path, headers = {})
+      access_token.get(path, headers.merge(@base_headers))
+    end
+      
+    def post(path, body = '', headers = {})
+      access_token.post(path, body, headers.merge(@base_headers))
+    end
+      
+    def put(path, body = '', headers = {})
+      access_token.put(path, body, headers.merge(@base_headerss))
+    end
+    
+    def delete(path, headers = {})
+      access_token.delete(path, headers.merge(@base_headers))
+    end
 
     private
 
