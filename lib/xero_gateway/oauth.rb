@@ -28,7 +28,7 @@ module XeroGateway
     def initialize(ctoken, csecret, options = {})
       @ctoken, @csecret = ctoken, csecret
       
-      #allow user-agent base val for certification procedure (enforce for PartnerApp)
+      # Allow user-agent base val for certification procedure (enforce for PartnerApp)
       @base_headers = {}
       @base_headers["User-Agent"] = options.delete(:user_agent) if options.has_key?(:user_agent)
 
@@ -40,11 +40,15 @@ module XeroGateway
     end
 
     def request_token(params = {})
+      # Underlying oauth consumer accepts body params and headers for request via positional params - explicit nilling of 
+      #  body parameters allows for correct position for headers
       @request_token ||= consumer.get_request_token(params, nil, @base_headers)
     end
 
     def authorize_from_request(rtoken, rsecret, params = {})
       request_token     = ::OAuth::RequestToken.new(consumer, rtoken, rsecret)
+      # Underlying oauth consumer accepts body params and headers for request via positional params - explicit nilling of 
+      #  body parameters allows for correct position for headers
       access_token      = request_token.get_access_token(params, nil, @base_headers)
       @atoken, @asecret = access_token.token, access_token.secret
 
@@ -67,6 +71,8 @@ module XeroGateway
 
       old_token = ::OAuth::RequestToken.new(consumer, access_token, access_secret)
 
+      # Underlying oauth consumer accepts body params and headers for request via positional params - explicit nilling of 
+      #  body parameters allows for correct position for headers
       access_token = old_token.get_access_token({
         :oauth_session_handle => session_handle,
         :token                => old_token
