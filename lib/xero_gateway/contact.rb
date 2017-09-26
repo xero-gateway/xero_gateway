@@ -162,7 +162,7 @@ module XeroGateway
         } if self.phones.any?
         b.ContactPersons {
           contact_persons.each { |contact_person| contact_person.to_xml(b) }
-        }
+        } unless contact_persons.nil?
       }
     end
 
