@@ -22,7 +22,7 @@ module XeroGateway
       }.freeze
     end
 
-    attr_reader   :ctoken, :csecret, :consumer_options, :authorization_expires_at
+    attr_reader   :ctoken, :csecret, :consumer_options, :authorization_expires_at, :expires_at
     attr_accessor :session_handle
 
     def initialize(ctoken, csecret, options = {})
