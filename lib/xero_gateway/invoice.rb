@@ -195,6 +195,7 @@ module XeroGateway
           end
         }
         b.Url url if url
+        b.SentToContact sent_to_contact unless sent_to_contact.nil?
       }
     end
 
