@@ -176,7 +176,7 @@ class GatewayTest < Test::Unit::TestCase
     should "handle invalid consumer key" do
      XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("invalid_consumer_key"), :code => "401"))
 
-      assert_raises XeroGateway::OAuth::TokenInvalid do
+      assert_raises XeroGateway::OAuth::ConsumerConfigError do
         @gateway.get_accounts
       end
     end
