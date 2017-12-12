@@ -2,14 +2,19 @@ version: 2
 jobs:
   publish:
     docker:
-      - image: ehdevops/ruby240:1.0.4
+      - image: ehdevops/ruby240:latest
     working_directory: ~/xero_gateway
     steps:
       - checkout
+      - run: cp *.gemspec gemspec
       - restore_cache:
           keys:
-            - bundle-caches{{ checksum "Gemfile.lock" }}
+            - bundle-caches{{ checksum "gemspec" }}
       - run: bundle check || bundle install --path=vendor/bundle --jobs=4 --retry=3
+      - save_cache:
+          key: bundle-caches{{ checksum "gemspec" }}
+          paths:
+            - ~/xero_gateway/vendor/bundle
       - run: bundle exec ruby scripts/publish.rb
 
 workflows:
@@ -20,4 +25,6 @@ workflows:
           context: org-global
           filters:
             branches:
-              only: master
+              only:
+                - master
+                - chore/upload_to_gemfury

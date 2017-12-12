@@ -1,7 +1,6 @@
 # coding: utf-8
+# update to force circle cache works
 require 'json'
-lib = File.expand_path("../lib", __FILE__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 app_path = File.expand_path('../app.json', __FILE__)
 app = JSON.parse(File.read(app_path))
