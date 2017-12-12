@@ -1,0 +1,23 @@
+version: 2
+jobs:
+  publish:
+    docker:
+      - image: ehdevops/ruby240:1.0.4
+    working_directory: ~/xero_gateway
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - bundle-caches{{ checksum "Gemfile.lock" }}
+      - run: bundle check || bundle install --path=vendor/bundle --jobs=4 --retry=3
+      - run: bundle exec ruby scripts/publish.rb
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - publish:
+          context: org-global
+          filters:
+            branches:
+              only: master
