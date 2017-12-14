@@ -4,7 +4,7 @@ module XeroGateway
     include Http
     include Dates
 
-    attr_accessor :client, :xero_url, :logger
+    attr_accessor :client, :xero_url, :payroll_url, :logger
 
     extend Forwardable
     def_delegators :client, :request_token, :access_token, :authorize_from_request, :authorize_from_access, :expires_at, :authorization_expires_at
@@ -14,6 +14,7 @@ module XeroGateway
     # to you by Xero inside the API Previewer.
     def initialize(consumer_key, consumer_secret, options = {})
       @xero_url = options[:xero_url] || "https://api.xero.com/api.xro/2.0"
+      @payroll_url = options[:payroll_url] || "https://api.xero.com/payroll.xro/1.0"
       @client   = OAuth.new(consumer_key, consumer_secret, options)
     end
 
