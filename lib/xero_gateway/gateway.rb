@@ -167,6 +167,7 @@ module XeroGateway
       request_params[:InvoiceID]     = options[:invoice_id] if options[:invoice_id]
       request_params[:InvoiceNumber] = options[:invoice_number] if options[:invoice_number]
       request_params[:order]         = options[:order] if options[:order]
+      request_params[:Statuses]      = [*options[:status]].join(',') if options[:status]
       request_params[:ModifiedAfter] = options[:modified_since] if options[:modified_since]
       request_params[:ContactIDs]    = Array(options[:contact_ids]).join(",") if options[:contact_ids]
       request_params[:page]          = options[:page]  if options[:page]
