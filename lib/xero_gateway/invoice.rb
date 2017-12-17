@@ -212,7 +212,7 @@ module XeroGateway
           when "Contact" then invoice.contact = Contact.from_xml(element)
           when "Date" then invoice.date = parse_date(element.text)
           when "DueDate" then invoice.due_date = parse_date(element.text)
-          when "UpdatedDateUTC" then invoice.updated_date_utc = parse_date(element.text)
+          when "UpdatedDateUTC" then invoice.updated_date_utc = parse_date_time(element.text)
           when "Status" then invoice.invoice_status = element.text
           when "Reference" then invoice.reference = element.text
           when "BrandingThemeID" then invoice.branding_theme_id = element.text
