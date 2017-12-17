@@ -1,5 +1,6 @@
 module XeroGateway
   class Account
+    include Dates
 
     TYPE = {
       'CURRENT' =>        '',
@@ -48,7 +49,7 @@ module XeroGateway
       'ZERORATED' =>        'Zero-rated supplies/sales from overseas (NZ Only)'
     } unless defined?(TAX_TYPE)
 
-    attr_accessor :account_id, :code, :name, :type, :status, :account_class, :tax_type, :description, :system_account, :enable_payments_to_account, :currency_code
+    attr_accessor :account_id, :code, :name, :type, :status, :account_class, :tax_type, :description, :system_account, :enable_payments_to_account, :currency_code, :updated_at
 
     def initialize(params = {})
       params.each do |k,v|
@@ -94,6 +95,7 @@ module XeroGateway
           when "SystemAccount" then account.system_account = element.text
           when "EnablePaymentsToAccount" then account.enable_payments_to_account = (element.text == 'true')
           when "CurrencyCode" then account.currency_code = element.text
+          when "UpdatedDateUTC" then account.updated_at = parse_date_time(element.text)
         end
       end
       account
