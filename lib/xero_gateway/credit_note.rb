@@ -36,7 +36,7 @@ module XeroGateway
     attr_accessor :line_items_downloaded
 
     # All accessible fields
-    attr_accessor :credit_note_id, :credit_note_number, :type, :status, :date, :reference, :line_amount_types, :currency_code, :payments, :fully_paid_on, :amount_credited, :updated_date_utc
+    attr_accessor :credit_note_id, :credit_note_number, :type, :status, :date, :reference, :line_amount_types, :currency_code, :payments, :fully_paid_on, :amount_credited, :updated_at
     attr_writer :line_items, :contact
 
     def initialize(params = {})
@@ -193,7 +193,7 @@ module XeroGateway
           when "CurrencyCode" then credit_note.currency_code = element.text
           when "Contact" then credit_note.contact = Contact.from_xml(element)
           when "Date" then credit_note.date = parse_date(element.text)
-          when "UpdatedDateUTC" then credit_note.updated_date_utc = parse_date_time(element.text)
+          when "UpdatedDateUTC" then credit_note.updated_at = parse_date_time(element.text)
           when "Status" then credit_note.status = element.text
           when "Reference" then credit_note.reference = element.text
           when "LineAmountTypes" then credit_note.line_amount_types = element.text
