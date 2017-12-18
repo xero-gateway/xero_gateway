@@ -298,6 +298,7 @@ module XeroGateway
       request_params[:ModifiedAfter]    = options[:modified_since] if options[:modified_since]
 
       request_params[:where]            = options[:where] if options[:where]
+      request_params[:page]             = options[:page] if options[:page]
 
       response_xml = http_get(@client, "#{@xero_url}/CreditNotes", request_params)
 
