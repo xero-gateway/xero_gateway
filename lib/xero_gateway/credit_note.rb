@@ -36,7 +36,7 @@ module XeroGateway
     attr_accessor :line_items_downloaded
 
     # All accessible fields
-    attr_accessor :credit_note_id, :credit_note_number, :type, :status, :date, :reference, :line_amount_types, :currency_code, :payments, :fully_paid_on, :amount_credited, :updated_at
+    attr_accessor :credit_note_id, :credit_note_number, :type, :status, :date, :reference, :line_amount_types, :currency_code, :payments, :fully_paid_on, :amount_credited, :updated_at, :allocations
     attr_writer :line_items, :contact
 
     def initialize(params = {})
@@ -55,6 +55,7 @@ module XeroGateway
       end
 
       @line_items ||= []
+      @allocations ||= []
     end
 
     # Validate the Address record according to what will be valid by the gateway.
@@ -205,6 +206,7 @@ module XeroGateway
           when "AmountDue" then credit_note.amount_due = BigDecimal.new(element.text)
           when "AmountPaid" then credit_note.amount_paid = BigDecimal.new(element.text)
           when "AmountCredited" then credit_note.amount_credited = BigDecimal.new(element.text)
+          when "Allocations" then element.children.each { |allocation| credit_note.allocations << Allocation.from_xml(allocation) }
         end
       end
       credit_note
