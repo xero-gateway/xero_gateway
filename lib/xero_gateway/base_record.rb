@@ -13,14 +13,14 @@ module XeroGateway
         end
       end
 
-      def attribute(name, value)
+      def attribute(name, value, nested = false)
         self.attribute_definitions ||= {}
-        self.attribute_definitions[name] = value
+        self.attribute_definitions[name] = value unless nested
 
         case value
         when Hash
           value.each do |k, v|
-            attribute("#{name}#{k}", v)
+            attribute("#{name}#{k}", v, true)
           end
         else
           attr_accessor name.underscore
@@ -75,13 +75,24 @@ module XeroGateway
         return
       end
 
-      value = case attr_definition
-        when :boolean  then  element.text == "true"
-        when :float    then  element.text.to_f
-        when :integer  then  element.text.to_i
-        when Array     then  array_from_xml(element, attr_definition)
-        else                 element.text
-      end if element.text.present? || element.children.present?
+      if element.text.present? || element.children.present?
+        value = case attr_definition
+                when :boolean
+                  element.text == "true"
+                when :float
+                  element.text.to_f
+                when :integer
+                  element.text.to_i
+                when :date
+                  Date.parse(element.text)
+                when :datetime
+                  Time.parse(element.text)
+                when Array
+                  array_from_xml(element, attr_definition)
+                else
+                  element.text
+                end
+      end
 
       send("#{attribute.underscore}=", value)
     end

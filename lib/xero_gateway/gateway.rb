@@ -369,6 +369,15 @@ module XeroGateway
       response
     end
 
+    def allocate_credit_note(credit_note_id, invoice_id, allocated_amount)
+      allocation = XeroGateway::Allocation.new(invoice_id: invoice_id,
+                                               applied_amount: allocated_amount)
+      request_xml = allocation.to_xml
+      response_xml = http_put(@client, "#{@xero_url}/CreditNotes/#{credit_note_id}/Allocations", request_xml)
+      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/credit_note'})
+      
+    end
+
     #
     # Creates an array of credit_notes with a single API request.
     #
@@ -773,6 +782,9 @@ module XeroGateway
               response.response_item << ManualJournal.from_xml(child, self, {:journal_lines_downloaded => options[:request_signature] != "GET/ManualJournals"})
             end
           when "CreditNotes" then element.children.each {|child| response.response_item << CreditNote.from_xml(child, self, {:line_items_downloaded => options[:request_signature] != "GET/CreditNotes"}) }
+          when "Allocations" then element.children.each do |child|
+            response.response_item << Allocation.from_xml(child)
+          end
           when "Accounts" then element.children.each {|child| response.response_item << Account.from_xml(child) }
           when "TaxRates" then element.children.each {|child| response.response_item << TaxRate.from_xml(child) }
           when "Items" then element.children.each {|child| response.response_item << Item.from_xml(child) }
