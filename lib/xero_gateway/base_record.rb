@@ -13,14 +13,14 @@ module XeroGateway
         end
       end
 
-      def attribute(name, value)
+      def attribute(name, value, nested = false)
         self.attribute_definitions ||= {}
-        self.attribute_definitions[name] = value
+        self.attribute_definitions[name] = value unless nested
 
         case value
         when Hash
           value.each do |k, v|
-            attribute("#{name}#{k}", v)
+            attribute("#{name}#{k}", v, true)
           end
         else
           attr_accessor name.underscore
