@@ -10,7 +10,7 @@ class GetCreditNoteTest < Test::Unit::TestCase
       @gateway.xero_url = "DUMMY_URL"
       
       @gateway.stubs(:http_get).with {|client, url, params| url =~ /CreditNotes(\/[0-9a-z\-]+)?$/i }.returns(get_file_as_string("credit_note.xml"))              
-      @gateway.stubs(:http_put).with {|client, url, body, params| url =~ /CreditNotes$/ }.returns(get_file_as_string("create_credit_note.xml"))          
+      @gateway.stubs(:http_post).with {|client, url, body, params| url =~ /CreditNotes$/ }.returns(get_file_as_string("create_credit_note.xml"))          
     end
   end
   
