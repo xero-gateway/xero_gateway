@@ -355,8 +355,8 @@ module XeroGateway
     #    create_credit_note(credit_note)
     def create_credit_note(credit_note)
       request_xml = credit_note.to_xml
-      response_xml = http_put(@client, "#{@xero_url}/CreditNotes", request_xml)
-      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/credit_note'})
+      response_xml = http_post(@client, "#{@xero_url}/CreditNotes", request_xml)
+      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'POST/credit_note'})
 
       # Xero returns credit_notes inside an <CreditNotes> tag, even though there's only ever
       # one for this request
@@ -374,8 +374,7 @@ module XeroGateway
                                                applied_amount: allocated_amount)
       request_xml = allocation.to_xml
       response_xml = http_put(@client, "#{@xero_url}/CreditNotes/#{credit_note_id}/Allocations", request_xml)
-      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/credit_note'})
-      
+      parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/credit_note'})
     end
 
     #
@@ -393,9 +392,9 @@ module XeroGateway
         end
       }
 
-      response_xml = http_put(@client, "#{@xero_url}/CreditNotes", request_xml, {})
+      response_xml = http_post(@client, "#{@xero_url}/CreditNotes", request_xml, {})
 
-      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/credit_notes'})
+      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'POST/credit_notes'})
       response.credit_notes.each_with_index do | response_credit_note, index |
         credit_notes[index].credit_note_id = response_credit_note.credit_note_id if response_credit_note && response_credit_note.credit_note_id
       end
