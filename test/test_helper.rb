@@ -51,7 +51,11 @@ module TestHelper
      invoice
   end
 
-  def dummy_credit_note(with_line_items = true)
+  def dummy_allocation(invoice_id = 'ALLOCATED_INVOICE_ID', amount = 100.0)
+    XeroGateway::Allocation.new(applied_amount: amount, invoice_id: invoice_id)
+  end
+
+  def dummy_credit_note(with_line_items = true, with_allocations = true)
      credit_note = XeroGateway::CreditNote.new({
        :type => "ACCRECCREDIT",
        :date => Time.now,
@@ -70,6 +74,11 @@ module TestHelper
             XeroGateway::TrackingCategory.new(:name => "THE SECOND TRACKING CATEGORY FOR THE LINE ITEM", :options => "c")
          ]
        )
+     end
+     if with_allocations
+      credit_note.allocations << XeroGateway::Allocation.new(
+        :invoice_id => 'ALLOCATED_INVOICE_ID'
+      )
      end
      credit_note
   end

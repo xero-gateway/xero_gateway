@@ -21,28 +21,30 @@ class GetCreditNoteTest < Test::Unit::TestCase
     result = @gateway.get_credit_note(credit_note.credit_note_id)
     assert result.success?
     assert !result.request_params.nil?
-    assert !result.response_xml.nil?    
+    assert !result.response_xml.nil?
     assert_equal result.credit_note.credit_note_number, credit_note.credit_note_number
+    assert_equal result.credit_note.allocations.first.invoice_id, 'ALLOCATED_INVOICE_ID'
 
     result = @gateway.get_credit_note(credit_note.credit_note_number)
     assert result.success?
     assert !result.request_params.nil?
-    assert !result.response_xml.nil?    
+    assert !result.response_xml.nil?
     assert_equal result.credit_note.credit_note_id, credit_note.credit_note_id
   end
-  
+
   def test_line_items_downloaded_set_correctly
     # Make sure there is an credit_note in Xero to retrieve.
     example_credit_note = @gateway.create_credit_note(dummy_credit_note).credit_note
-    
+
     # No line items.
     response = @gateway.get_credit_note(example_credit_note.credit_note_id)
     assert_equal(true, response.success?)
-    
+
     credit_note = response.credit_note
     assert_kind_of(XeroGateway::LineItem, credit_note.line_items.first)
     assert_kind_of(XeroGateway::CreditNote, credit_note)
+    assert_kind_of(XeroGateway::Allocation, credit_note.allocations.first)
     assert_equal(true, credit_note.line_items_downloaded?)
   end
-  
+
 end
