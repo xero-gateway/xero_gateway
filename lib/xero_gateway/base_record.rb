@@ -118,7 +118,8 @@ module XeroGateway
             end
           end
         else
-          builder.__send__(attr, send("#{path}#{attr}".underscore))
+          attr_value = send("#{path}#{attr}".underscore)
+          builder.__send__(attr, attr_value) if attr_value
         end
       end
     end
