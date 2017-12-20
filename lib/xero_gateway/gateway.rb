@@ -617,6 +617,9 @@ module XeroGateway
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/payroll_calendars'})
     end
 
+    #
+    # Get the Pay Runs for a specific organization in Xero
+    #
     def get_pay_runs(options = {})
       request_params = {}
       response_xml = http_get(client, "#{@payroll_url}/PayRuns", request_params)
