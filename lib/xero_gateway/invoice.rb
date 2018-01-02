@@ -222,7 +222,9 @@ module XeroGateway
           when "SubTotal" then invoice.sub_total = BigDecimal.new(element.text)
           when "TotalTax" then invoice.total_tax = BigDecimal.new(element.text)
           when "Total" then invoice.total = BigDecimal.new(element.text)
-          when "Payments" then element.children.each { | payment | invoice.payments << Payment.from_xml(payment) }
+          when "Payments" then element.children.each do |payment|
+            invoice.payments << Payment.from_xml(payment).tap { |p| p.currency_code = invoice.currency_code }
+          end
           when "AmountDue" then invoice.amount_due = BigDecimal.new(element.text)
           when "AmountPaid" then invoice.amount_paid = BigDecimal.new(element.text)
           when "AmountCredited" then invoice.amount_credited = BigDecimal.new(element.text)

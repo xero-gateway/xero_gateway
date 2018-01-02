@@ -7,7 +7,9 @@ module XeroGateway
     attr_reader :errors
 
     # All accessible fields
-    attr_accessor :invoice_id, :invoice_number, :account_id, :code, :payment_id, :payment_type, :date, :amount, :reference, :currency_rate, :updated_at, :reconciled
+    attr_accessor :invoice_id, :invoice_number, :account_id, :code, :payment_id,
+                  :payment_type, :date, :amount, :reference, :currency_rate,
+                  :currency_code, :updated_at, :reconciled
     alias_method :reconciled?, :reconciled
 
     def initialize(params = {})
