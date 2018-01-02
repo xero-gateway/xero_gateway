@@ -176,7 +176,9 @@ module XeroGateway
 
       response_xml = http_get(@client, "#{@xero_url}/Invoices", request_params)
 
-      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/Invoices'})
+      parse_response(response_xml,
+                     { request_params: request_params },
+                     request_signature: "GET/Invoices#{'p' if options[:page]}")
     end
 
     # Retrieves a single invoice
