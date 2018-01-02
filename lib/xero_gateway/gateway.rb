@@ -804,7 +804,7 @@ module XeroGateway
       end if response_element
 
       # If a single result is returned don't put it in an array
-      if response.response_item.is_a?(Array) && response.response_item.size == 1
+      if response.response_item.is_a?(Array) && response.response_item.size == 1 && !parse_options[:dont_flatten]
         response.response_item = response.response_item.first
       end
 
