@@ -3,6 +3,8 @@ module XeroGateway
     attributes(
       'AppliedAmount' => :float,
       'Date' => :date,
+      'CreditNoteID' => :string,
+      'CreditNoteNumber' => :string,
       'Invoice' => {
         'InvoiceID' => :string,
         'InvoiceNumber' => :string

@@ -39,7 +39,7 @@ module XeroGateway
     # All accessible fields
     attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :branding_theme_id,
                   :line_amount_types, :currency_code, :currency_rate, :payments, :fully_paid_on, :amount_due, :amount_paid, :amount_credited,
-                  :sent_to_contact, :url, :updated_at
+                  :sent_to_contact, :url, :updated_at, :credit_note_allocations
     attr_writer   :contact, :line_items
 
     def initialize(params = {})
@@ -58,6 +58,7 @@ module XeroGateway
       end
 
       @line_items ||= []
+      @credit_note_allocations ||= []
     end
 
     # Validate the Address record according to what will be valid by the gateway.
@@ -228,6 +229,9 @@ module XeroGateway
           when "SentToContact" then invoice.sent_to_contact = (element.text.strip.downcase == "true")
           when "Url" then invoice.url = element.text
           when "ValidationErrors" then invoice.errors = element.children.map { |error| Error.parse(error) }
+          when "CreditNotes" then element.children.each do |credit_note|
+            invoice.credit_note_allocations << Allocation.from_xml(credit_note)
+          end
         end
       end
       invoice
