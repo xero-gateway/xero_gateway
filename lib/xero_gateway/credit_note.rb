@@ -36,7 +36,11 @@ module XeroGateway
     attr_accessor :line_items_downloaded
 
     # All accessible fields
-    attr_accessor :credit_note_id, :credit_note_number, :type, :status, :date, :reference, :line_amount_types, :currency_code, :payments, :fully_paid_on, :amount_credited, :updated_at, :allocations
+    attr_accessor :credit_note_id, :credit_note_number, :type, :status, :date,
+                  :reference, :line_amount_types, :currency_code, :payments,
+                  :fully_paid_on, :amount_credited, :updated_at, :allocations,
+                  :amount_paid
+
     attr_writer :line_items, :contact
 
     def initialize(params = {})
