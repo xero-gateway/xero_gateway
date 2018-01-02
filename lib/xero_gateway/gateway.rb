@@ -291,20 +291,21 @@ module XeroGateway
     #
     # Note  : modified_since is in UTC format (i.e. Brisbane is UTC+10)
     def get_credit_notes(options = {})
-
+      
+      parse_options = options.delete(:parse_options) || {}
       request_params = {}
 
       request_params[:CreditNoteID]     = options[:credit_note_id] if options[:credit_note_id]
       request_params[:CreditNoteNumber] = options[:credit_note_number] if options[:credit_note_number]
       request_params[:order]            = options[:order] if options[:order]
       request_params[:ModifiedAfter]    = options[:modified_since] if options[:modified_since]
-
+      request_params[:Statuses]         = [*options[:status]].join(',') if options[:status]
       request_params[:where]            = options[:where] if options[:where]
       request_params[:page]             = options[:page] if options[:page]
 
       response_xml = http_get(@client, "#{@xero_url}/CreditNotes", request_params)
 
-      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/CreditNotes'})
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/CreditNotes', :parse_options => parse_options})
     end
 
     # Retrieves a single credit_note
@@ -750,6 +751,7 @@ module XeroGateway
 
     def parse_response(raw_response, request = {}, options = {})
 
+      parse_options = options.delete(:parse_options) || {}
       response = XeroGateway::Response.new
 
       doc = REXML::Document.new(raw_response, :ignore_whitespace_nodes => :all)
