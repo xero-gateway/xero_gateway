@@ -352,7 +352,7 @@ class InvoiceTest < Test::Unit::TestCase
         :account_code => "200",
         :unit_amount => BigDecimal.new("100"),
         :tax_amount => BigDecimal.new("12.5"),
-        :tracking => XeroGateway::TrackingCategory.new(:name => "blah", :options => "hello")
+        :tracking => [XeroGateway::TrackingOption.new(:name => "blah", :option => "hello")]
       }.merge(line_item_params[0])
 
       # Create invoice.line_items from line_item_params

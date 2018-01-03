@@ -22,7 +22,7 @@ class TrackingCategoryTest < Test::Unit::TestCase
     tracking_category = create_test_line_item_tracking_category
 
     # Generate the XML message
-    tracking_category_as_xml = tracking_category.to_xml_for_invoice_messages
+    tracking_category_as_xml = tracking_category.to_xml
 
     # Parse the XML message and retrieve the tracking category element
     tracking_category_element = REXML::XPath.first(REXML::Document.new(tracking_category_as_xml), "/TrackingCategory")

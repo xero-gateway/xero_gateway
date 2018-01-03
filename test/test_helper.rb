@@ -43,8 +43,8 @@ module TestHelper
          :unit_amount => 1000,
          :tax_amount => 125,
          :tracking => [
-            XeroGateway::TrackingCategory.new(:name => "THE FIRST  TRACKING CATEGORY FOR THE LINE ITEM", :options => ["a", "b"]),
-            XeroGateway::TrackingCategory.new(:name => "THE SECOND TRACKING CATEGORY FOR THE LINE ITEM", :options => "c")
+            XeroGateway::TrackingOption.new(:name => "THE FIRST  TRACKING CATEGORY FOR THE LINE ITEM", :option => "a"),
+            XeroGateway::TrackingOption.new(:name => "THE SECOND TRACKING CATEGORY FOR THE LINE ITEM", :option => "b")
          ]
        )
      end
@@ -70,8 +70,8 @@ module TestHelper
          :unit_amount => 1000,
          :tax_amount => 125,
          :tracking => [
-            XeroGateway::TrackingCategory.new(:name => "THE FIRST  TRACKING CATEGORY FOR THE LINE ITEM", :options => ["a", "b"]),
-            XeroGateway::TrackingCategory.new(:name => "THE SECOND TRACKING CATEGORY FOR THE LINE ITEM", :options => "c")
+            XeroGateway::TrackingOption.new(:name => "THE FIRST  TRACKING CATEGORY FOR THE LINE ITEM", :option => "a"),
+            XeroGateway::TrackingOption.new(:name => "THE SECOND TRACKING CATEGORY FOR THE LINE ITEM", :option => "c")
          ]
        )
      end
@@ -172,7 +172,7 @@ module TestHelper
         :account_code => "200",
         :unit_amount  => BigDecimal.new("100"),
         :tax_amount   => BigDecimal.new("12.5"),
-        :tracking     => XeroGateway::TrackingCategory.new(:name => "blah", :options => "hello")
+        :tracking     => [XeroGateway::TrackingOption.new(:name => "blah", :option => "hello")]
       }.merge(line_item_params[0])
 
       # Create line_items from line_item_params
@@ -240,14 +240,14 @@ module TestHelper
         :description  => "FIRST LINE",
         :account_code => "200",
         :line_amount  => BigDecimal.new("100"),
-        :tracking     => XeroGateway::TrackingCategory.new(:name => "blah", :options => "hello")
+        :tracking     => [XeroGateway::TrackingOption.new(:name => "blah", :option => "hello")]
       }.merge(journal_line_params[0])
       params_line_1 = journal_line_params[1] || {}
       journal_line_params[1] = {
         :description  => "SECOND LINE",
         :account_code => "200",
         :line_amount  => BigDecimal.new("-100"),
-        :tracking     => XeroGateway::TrackingCategory.new(:name => "blah2", :options => "hello2")
+        :tracking     => [XeroGateway::TrackingOption.new(:name => "blah2", :option => "hello2")]
       }.merge(params_line_1)
 
       # Create line_items from line_item_params

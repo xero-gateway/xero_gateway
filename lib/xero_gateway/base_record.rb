@@ -46,8 +46,7 @@ module XeroGateway
       to_xml == other.to_xml
     end
 
-    def to_xml
-      builder = Builder::XmlMarkup.new
+    def to_xml(builder = Builder::XmlMarkup.new)
       builder.__send__(self.class.xml_element) do
         to_xml_attributes(builder)
       end

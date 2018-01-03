@@ -48,13 +48,7 @@ module XeroGateway
     end
     
     def has_tracking?
-      return false if tracking.nil?
-      
-      if tracking.is_a?(Array)
-        return tracking.any?
-      else
-        return tracking.is_a?(TrackingCategory)
-      end
+      tracking.all? { |t| t.is_a?(TrackingOption) }
     end
     
     # Deprecated (but API for setter remains).
@@ -71,7 +65,7 @@ module XeroGateway
     end
     
     def to_xml(b = Builder::XmlMarkup.new)
-      b.LineItem {
+      b.LineItem do
         b.Description description
         b.Quantity quantity if quantity
         b.UnitAmount LineItem.format_money(unit_amount)
@@ -81,16 +75,13 @@ module XeroGateway
         b.LineAmount line_amount if line_amount
         b.AccountCode account_code if account_code
         if has_tracking?
-          b.Tracking {
-            # Due to strange retardness in the Xero API, the XML structure for a tracking category within
-            # an invoice is different to a standalone tracking category.
-            # This means rather than going category.to_xml we need to call the special category.to_xml_for_invoice_messages
-            (tracking.is_a?(TrackingCategory) ? [tracking] : tracking).each do |category|
-              category.to_xml_for_invoice_messages(b)
+          b.Tracking do
+            tracking.each do |tracking_option|
+              tracking_option.to_xml(b)
             end
-          }
+          end
         end
-      }
+      end
     end
     
     def self.from_xml(line_item_element)
@@ -108,7 +99,7 @@ module XeroGateway
           when "AccountCode" then line_item.account_code = element.text
           when "Tracking" then
             element.children.each do | tracking_element |
-              line_item.tracking << TrackingCategory.from_xml(tracking_element)
+              line_item.tracking << TrackingOption.from_xml(tracking_element)
             end
         end
       end
