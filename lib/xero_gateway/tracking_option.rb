@@ -1,4 +1,5 @@
 module XeroGateway
+  # Tracking Option added to a line item etc
   class TrackingOption < BaseRecord
     attributes(
       'Name' => :string,
@@ -6,8 +7,6 @@ module XeroGateway
       'TrackingCategoryID' => :string,
       'TrackingOptionID' => :string
     )
-    def element_name
-      'TrackingCategory'
-    end
+    self.element_name = 'TrackingCategory'
   end
 end
