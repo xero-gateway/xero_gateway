@@ -114,12 +114,7 @@ Private applications are used to access a single Xero account.
 
   Head to <https://api.xero.com>, log in and then click My Applications &gt; Add Application.
 
-  You'll need to generate an RSA keypair and an X509 certificate. This can be done with OpenSSL as below:
-
-  ```bash
-    openssl genrsa -out privatekey.pem
-    openssl req -newkey rsa:1024 -x509 -days 365 -in privatekey.pem -out publickey.cer
-  ```
+  You'll need to generate an RSA keypair and an X509 certificate. Follow the instructions [here](https://developer.xero.com/documentation/api-guides/create-publicprivate-key).
 
   You can then copy `publickey.cer` and paste it into the certificate box (`cat publickey.cer | pbcopy` on a Mac :apple:)
 
