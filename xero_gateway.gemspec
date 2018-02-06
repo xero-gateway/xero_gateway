@@ -1,6 +1,13 @@
+# coding: utf-8
+# update to force circle cache works
+require 'json'
+
+app_path = File.expand_path('../app.json', __FILE__)
+app = JSON.parse(File.read(app_path))
+
 Gem::Specification.new do |s|
-  s.name     = "xero_gateway"
-  s.version  = "3.2.22"
+  s.name     = app['name']
+  s.version  = app['version']
   s.date     = "2014-06-23"
   s.summary  = "Enables ruby based applications to communicate with the Xero API"
   s.email    = "dave@thinkei.com"
@@ -12,5 +19,6 @@ Gem::Specification.new do |s|
   s.add_dependency('oauth', '~> 0.4.0')
   s.add_dependency('activesupport')
   s.add_dependency('activemodel')
-  s.add_dependency('retriable')
+  s.add_dependency('retriable', '3.0.1')
+  s.add_dependency('builder')
 end

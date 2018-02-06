@@ -170,8 +170,6 @@ module XeroGateway
           when "ContactNumber" then contact.contact_number = element.text
           when "ContactStatus" then contact.status = element.text
           when "Name" then contact.name = element.text
-          when "FirstName" then contact.first_name = element.text
-          when "LastName" then contact.last_name = element.text
           when "EmailAddress" then contact.email = element.text
           when "Addresses" then element.children.each {|address_element| contact.addresses << Address.from_xml(address_element)}
           when "Phones" then element.children.each {|phone_element| contact.phones << Phone.from_xml(phone_element)}
@@ -189,15 +187,13 @@ module XeroGateway
       end
       contact
     end
-    
+
     def ==(other)
       [ :contact_id, :contact_number, :status, :name, :first_name, :last_name, :email, :addresses, :phones, :updated_at,
         :bank_account_details, :tax_number, :accounts_receivable_tax_type, :accounts_payable_tax_type, :is_customer, :is_supplier,
-        :default_currency, :contact_groups ].each do |field|
-        return false if send(field) != other.send(field)
+        :default_currency, :contact_groups ].none? do |field|
+        send(field) != other.send(field)
       end
-      return true
-    end    
-        
+    end
   end
 end
