@@ -50,7 +50,7 @@ class InvoiceTest < Test::Unit::TestCase
   end
   
   # Tests the total_tax calculation and that setting it manually doesn't modify the data.
-  def test_invoice_sub_total_calculation
+  def test_invoice_total_tax_calculation
     invoice = create_test_invoice
     line_item = invoice.line_items.first
     
@@ -71,7 +71,7 @@ class InvoiceTest < Test::Unit::TestCase
   end
 
   # Tests the total calculation and that setting it manually doesn't modify the data.
-  def test_invoice_sub_total_calculation
+  def test_invoice_total_calculation
     invoice = create_test_invoice
     line_item = invoice.line_items.first
     

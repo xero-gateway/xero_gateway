@@ -19,5 +19,6 @@ Gem::Specification.new do |s|
   s.add_dependency('oauth', '~> 0.4.0')
   s.add_dependency('activesupport')
   s.add_dependency('activemodel')
-  s.add_dependency('retriable')
+  s.add_dependency('retriable', '3.0.1')
+  s.add_dependency('builder')
 end
