@@ -79,6 +79,11 @@ module XeroGateway
       self.phones << Phone.new(phone_params)
     end
 
+    def add_contact_person(contact_person_params = {})
+      self.contact_persons ||= []
+      self.contact_persons << ContactPerson.new(contact_person_params)
+    end
+
     # Validate the Contact record according to what will be valid by the gateway.
     #
     # Usage:
