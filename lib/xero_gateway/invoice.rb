@@ -39,7 +39,7 @@ module XeroGateway
     # All accessible fields
     attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :branding_theme_id,
                   :line_amount_types, :currency_code, :currency_rate, :payments, :fully_paid_on, :amount_due, :amount_paid, :amount_credited,
-                  :sent_to_contact, :url, :updated_date_utc
+                  :sent_to_contact, :expected_payment_date, :planned_payment_date, :url, :updated_date_utc
     attr_writer   :contact, :line_items
 
     def initialize(params = {})
@@ -226,6 +226,8 @@ module XeroGateway
           when "AmountPaid" then invoice.amount_paid = BigDecimal.new(element.text)
           when "AmountCredited" then invoice.amount_credited = BigDecimal.new(element.text)
           when "SentToContact" then invoice.sent_to_contact = (element.text.strip.downcase == "true")
+          when "ExpectedPaymentDate" then invoice.expected_payment_date = parse_date(element.text)
+          when "PlannedPaymentDate" then invoice.planned_payment_date = parse_date(element.text)
           when "Url" then invoice.url = element.text
           when "ValidationErrors" then invoice.errors = element.children.map { |error| Error.parse(error) }
         end
