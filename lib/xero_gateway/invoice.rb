@@ -196,6 +196,8 @@ module XeroGateway
         }
         b.Url url if url
         b.SentToContact sent_to_contact unless sent_to_contact.nil?
+        b.ExpectedPaymentDate expected_payment_date unless expected_payment_date.nil?
+        b.PlannedPaymentDate planned_payment_date unless planned_payment_date.nil?
       }
     end
 
