@@ -17,7 +17,7 @@ module XeroGateway
 
     attr_accessor :contact_id, :contact_number, :account_number, :status, :name, :first_name, :last_name, :email, :addresses, :phones, :updated_at,
                   :bank_account_details, :tax_number, :accounts_receivable_tax_type, :accounts_payable_tax_type, :is_customer, :is_supplier,
-                  :default_currency, :contact_groups
+                  :default_currency, :contact_groups, :payment_terms
 
 
     def initialize(params = {})
@@ -154,6 +154,7 @@ module XeroGateway
         b.IsCustomer true if self.is_customer
         b.IsSupplier true if self.is_supplier
         b.DefaultCurrency if self.default_currency
+        b.PaymentTerms if self.payment_terms
         b.Addresses {
           addresses.each { |address| address.to_xml(b) }
         } unless addresses.nil?
@@ -187,6 +188,7 @@ module XeroGateway
           when "IsSupplier" then contact.is_supplier = (element.text == "true")
           when "DefaultCurrency" then contact.default_currency = element.text
           when "UpdatedDateUTC" then contact.updated_at = parse_date_time(element.text)
+          when "PaymentTerms" then contact.payment_terms = element.text
         end
       end
       contact
