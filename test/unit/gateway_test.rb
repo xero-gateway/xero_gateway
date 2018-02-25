@@ -75,6 +75,18 @@ class GatewayTest < Test::Unit::TestCase
       assert result.response_item.first.is_a? XeroGateway::Payment
     end
 
+    should :get_payroll_calendars do
+      XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("payroll_calendars.xml"), :code => "200"))
+      result = @gateway.get_payroll_calendars
+      assert result.response_item.first.is_a? XeroGateway::PayrollCalendar
+    end
+
+    should :get_pay_runs do
+      XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("pay_runs.xml"), :code => "200"))
+       result = @gateway.get_pay_runs
+      assert result.response_item.is_a? XeroGateway::PayRun
+    end
+
     should :get_contacts do
       XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("contacts.xml"), :code => "200"))
       result = @gateway.get_contacts
