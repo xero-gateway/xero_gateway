@@ -34,11 +34,11 @@ Public (or Partner, if you've been through the process to be approved) are tradi
 
   First off, you'll need to get a Consumer Key/Secret pair for your application from Xero.
 
-  Head to <https://api.xero.com>, log in and then click My Applications &gt; Add Application.
+  Head to <https://developer.xero.com/myapps>, log in and then click New Application.
 
-  Part of the process for this will ask you for an "OAuth Redirect URL". This is where customers will be redirected once they complete logging in with Xero.
+  Part of the process for this will ask you for an "OAuth Callback Domain". This is the domain where customers will be redirected once they complete logging in with Xero.
 
-  On the right-hand-side of your application's page there's a box titled "OAuth Credentials". Use the Key and Secret from this box in order to set up a new Gateway instance.
+  Further down in your application's page there's a box titled "App Credentials". Use the Key and Secret from this box in order to set up a new Gateway instance.
 
   2. **Create a Xero Gateway in your App**
 
