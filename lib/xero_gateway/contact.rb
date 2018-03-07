@@ -17,7 +17,7 @@ module XeroGateway
 
     attr_accessor :contact_id, :contact_number, :account_number, :status, :name, :first_name, :last_name, :email, :addresses, :phones, :updated_at,
                   :bank_account_details, :tax_number, :accounts_receivable_tax_type, :accounts_payable_tax_type, :is_customer, :is_supplier,
-                  :default_currency, :contact_groups
+                  :default_currency, :contact_groups, :contact_persons
 
 
     def initialize(params = {})
@@ -77,6 +77,11 @@ module XeroGateway
     #  })
     def add_phone(phone_params = {})
       self.phones << Phone.new(phone_params)
+    end
+
+    def add_contact_person(contact_person_params = {})
+      self.contact_persons ||= []
+      self.contact_persons << ContactPerson.new(contact_person_params)
     end
 
     # Validate the Contact record according to what will be valid by the gateway.
@@ -160,6 +165,9 @@ module XeroGateway
         b.Phones {
           phones.each { |phone| phone.to_xml(b) }
         } if self.phones.any?
+        b.ContactPersons {
+          contact_persons.each { |contact_person| contact_person.to_xml(b) }
+        } unless contact_persons.nil?
       }
     end
 
@@ -187,6 +195,7 @@ module XeroGateway
           when "IsSupplier" then contact.is_supplier = (element.text == "true")
           when "DefaultCurrency" then contact.default_currency = element.text
           when "UpdatedDateUTC" then contact.updated_at = parse_date_time(element.text)
+          when "ContactPersons" then element.children.each { |contact_person_element| contact.contact_persons ||= []; contact.contact_persons << ContactPerson.from_xml(contact_person_element) }
         end
       end
       contact

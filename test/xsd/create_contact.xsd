@@ -55,6 +55,22 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+        <xs:element name="ContactPersons">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="ContactPerson">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element minOccurs="0" name="FirstName" type="xs:string" />
+                    <xs:element minOccurs="0" name="LastName" type="xs:string" />
+                    <xs:element minOccurs="0" name="EmailAddress" type="xs:string" />
+                    <xs:element minOccurs="0" name="IncludeInEmails" type="xs:boolean" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
