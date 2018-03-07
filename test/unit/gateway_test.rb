@@ -1,4 +1,5 @@
 require File.join(File.dirname(__FILE__), '../test_helper.rb')
+require 'json'
 
 class GatewayTest < Test::Unit::TestCase
   include TestHelper
@@ -8,6 +9,24 @@ class GatewayTest < Test::Unit::TestCase
   end
 
   context "GET methods" do
+
+    should "raise a runtime error with 301 response from the Xero TLS 1.2 endpoint" do
+      @gatewayXeroTLS = XeroGateway::Gateway.new(CONSUMER_KEY, CONSUMER_SECRET, { :xero_url => "https://api-tls.xero.com", :site => "https://api-tls.xero.com" })
+      error = assert_raise RuntimeError do
+        @gatewayXeroTLS.get_tls_12_test('https://api-tls.xero.com/')
+      end
+
+      assert_match "Unknown response code: 301", error.message
+    end
+
+    should "contain tls_version 1.2 in response" do
+      @gatewayExtTLS = XeroGateway::Gateway.new(CONSUMER_KEY, CONSUMER_SECRET, { :xero_url => "https://www.howsmyssl.com", :site => "https://www.howsmyssl.com" })
+      response = @gatewayExtTLS.get_tls_12_test('https://www.howsmyssl.com/a/check')
+      jsonResponse = JSON.parse(response)
+
+      assert jsonResponse['tls_version'] == "TLS 1.2", "Unexpected Response: Check TLS 1.2 is set"
+    end
+
     should :get_invoices do
       XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("invoices.xml"), :code => "200"))
       result = @gateway.get_invoices

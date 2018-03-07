@@ -19,6 +19,13 @@ module XeroGateway
     end
 
     #
+    # A call against the test endpoint setup for enforcing TLS 1.2
+    # Used in gateway_test.rb
+    def get_tls_12_test(test_endpoint)
+      http_get(@client, test_endpoint, {})
+    end
+
+    #
     # Retrieve all contacts from Xero
     #
     # Usage : get_contacts(:order => :name)
