@@ -26,9 +26,9 @@ The Xero Gateway uses [OAuth 1.0a](https://oauth.net/core/1.0a/) for authenticat
 implements OAuth in a very similar manner to the [Twitter gem by John Nunemaker](http://github.com/jnunemaker/twitter)
 , so if you've used that before this will all seem familiar.
 
-### Authenticating: Public/Partner Applications
+### Authenticating: Public Applications
 
-Public (or Partner, if you've been through the process to be approved) are traditional three-legged OAuth apps that can be used to access many different Xero accounts.
+Public are traditional three-legged OAuth apps that can be used to access many different Xero accounts.
 
   1. **Get a Consumer Key & Secret**
 
@@ -106,7 +106,7 @@ Public (or Partner, if you've been through the process to be approved) are tradi
     gateway.authorize_from_access(your_stored_token.access_token, your_stored_token.access_secret)
   ```
 
- ### Authenticating: Private Applications
+### Authenticating: Private Applications
 
 Private applications are used to access a single Xero account.
 
@@ -138,13 +138,28 @@ Private applications are used to access a single Xero account.
 
   Note that for private apps, your consumer key and secret do double duty as your access token and secret pair :)
 
+### Authenticating: Partner Applications
+  
+Partner applications are public applications that have been upgraded to support long-term access tokens.
+
+Use the same three-legged authentication process as for public applications, but with an RSA keypair and an X509 certificate as for private applications:
+
+  ```ruby
+    require 'xero_gateway'
+    gateway = XeroGateway::PartnerApp.new(YOUR_OAUTH_CONSUMER_KEY, YOUR_OAUTH_CONSUMER_SECRET, PATH_TO_YOUR_PRIVATE_KEY)
+
+    pp gateway.get_contacts
+  ```
+
+For more information on partner applications see the Xero documentation: <https://developer.xero.com/documentation/auth-and-limits/partner-applications>  
+  
 ## Examples
 
 Open `examples/oauth.rb` and change `CONSUMER_KEY` and `CONSUMER_SECRET` to
 the values for a Test OAuth Public Application in order to see an example of
 OAuth at work.
 
-There's also `examples/private_app.rb` if you'd like to see an example private app.
+See also `examples/private_app.rb` for an example private app or `examples/partner_app.rb` for an example partner app.
 
 If you're working with Rails, a controller similar to this might come in
 handy:
