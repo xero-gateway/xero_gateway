@@ -117,8 +117,8 @@ Private applications are used to access a single Xero account.
   You'll need to generate an RSA keypair and an X509 certificate. This can be done with OpenSSL as below:
 
   ```bash
-    openssl genrsa -out privatekey.pem
-    openssl req -newkey rsa:1024 -x509 -days 365 -in privatekey.pem -out publickey.cer
+    openssl genrsa -out privatekey.pem 1024
+    openssl req -new -x509 -key privatekey.pem -out publickey.cer -days 1825
   ```
 
   You can then copy `publickey.cer` and paste it into the certificate box (`cat publickey.cer | pbcopy` on a Mac :apple:)
