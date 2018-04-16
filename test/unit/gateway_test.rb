@@ -117,6 +117,12 @@ class GatewayTest < Test::Unit::TestCase
       assert result.response_item.is_a? XeroGateway::ContactGroup
     end
 
+    should :get_branding_themes do
+      XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("branding_themes.xml"), :code => "200"))
+      result = @gateway.get_branding_themes
+      assert result.response_item.first.is_a? XeroGateway::BrandingTheme
+    end
+
     context :get_report do
       should "get a BankStatements report" do
         XeroGateway::OAuth.any_instance.stubs(:get).returns(stub(:plain_body => get_file_as_string("reports/bank_statement.xml"), :code => "200"))

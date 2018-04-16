@@ -643,6 +643,15 @@ module XeroGateway
       parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/reports'})
     end
 
+    #
+    # Get the Branding Themes for a specific organization in Xero
+    #
+    def get_branding_themes(options = {})
+      request_params = {}
+      response_xml = http_get(client, "#{@xero_url}/BrandingThemes", request_params)
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/branding_themes'})
+    end
+
     private
 
     def get_contact(contact_id = nil, contact_number = nil)
@@ -806,6 +815,7 @@ module XeroGateway
             end
           when "PayrollCalendars" then element.children.each {|child| response.response_item << PayrollCalendar.from_xml(child) }
           when "PayRuns" then element.children.each {|child| response.response_item << PayRun.from_xml(child) }
+          when "BrandingThemes" then element.children.each {|child| response.response_item << BrandingTheme.from_xml(child) }
           when "Reports"
             element.children.each do |child|
               response.response_item << Report.from_xml(child)

@@ -1,0 +1,26 @@
+<Response xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Id>169fbd21-95f3-461d-968a-0047f928f999</Id>
+  <Status>OK</Status>
+  <ProviderName>Lil Regie (Staging)</ProviderName>
+  <DateTimeUTC>2018-04-16T21:19:17.2170698Z</DateTimeUTC>
+  <BrandingThemes>
+    <BrandingTheme>
+      <BrandingThemeID>7889a0ac-262a-40e3-8a63-9a769b1a18af</BrandingThemeID>
+      <Name>Standard</Name>
+      <SortOrder>0</SortOrder>
+      <CreatedDateUTC>2000-01-01T00:00:00</CreatedDateUTC>
+    </BrandingTheme>
+    <BrandingTheme>
+      <BrandingThemeID>ec97a880-4b4f-4abb-be11-5e1d75b81b57</BrandingThemeID>
+      <Name>Special Projects</Name>
+      <SortOrder>1</SortOrder>
+      <CreatedDateUTC>2000-01-01T00:00:00</CreatedDateUTC>
+    </BrandingTheme>
+    <BrandingTheme>
+      <BrandingThemeID>4c82c365-35cb-467f-bb11-dce1f2f2f67c</BrandingThemeID>
+      <Name>Very orange invoice!</Name>
+      <SortOrder>2</SortOrder>
+      <CreatedDateUTC>2010-12-17T00:35:59.853</CreatedDateUTC>
+    </BrandingTheme>
+  </BrandingThemes>
+</Response>
