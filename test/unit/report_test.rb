@@ -19,60 +19,81 @@ class ReportTest < Test::Unit::TestCase
   end
 
   context :from_xml do
-    setup do
-      xml_response = get_file("reports/bank_statement.xml")
-      xml_response.gsub!(/\n +/,'')
-      xml_doc = REXML::Document.new(xml_response)
-      xpath_report = XPath.first(xml_doc, "//Report")
-      @report = XeroGateway::Report.from_xml(xpath_report)
+    context "with a bank statement report" do
+      setup do
+        @report = make_report_from_xml("bank_statement")
+      end
+
+      should "create a bank statement report" do
+        assert @report.is_a?(XeroGateway::Report)
+        assert_equal [], @report.errors
+        assert_equal Date.parse("27 May 2014"), @report.report_date
+        assert_equal "BankStatement", @report.report_id
+        assert_equal "Bank Statement", @report.report_name
+        expected_titles = ["Bank Statement", "Business Bank Account", "Demo Company (NZ)", "From 1 May 2014 to 27 May 2014"]
+        assert_equal expected_titles, @report.report_titles
+        assert_equal "BankStatement", @report.report_type
+        assert_equal Time.parse("2014-05-26 22:36:07 +0000").to_i, @report.updated_at.to_i
+        expected_names = { :column_1=>"Date", :column_2=>"Description", :column_3=>"Reference", :column_4=>"Reconciled", :column_5=>"Source", :column_6=>"Amount", :column_7=>"Balance" }
+        assert_equal expected_names, @report.column_names
+
+        ###
+        # REPORT BODY
+        assert @report.body.is_a?(Array)
+
+        # First = Opening Balance
+        first_statement = @report.body.first
+        assert_equal "2014-05-01T00:00:00", first_statement.column_1
+        assert_equal "Opening Balance", first_statement.column_2
+        assert_equal nil, first_statement.column_3
+        assert_equal nil, first_statement.column_4
+        assert_equal nil, first_statement.column_5
+        assert_equal nil, first_statement.column_6
+        assert_equal "15461.97", first_statement.column_7
+
+        # Second = Bank Transaction/Statement
+        second_statement = @report.body.second
+        assert_equal "2014-05-01T00:00:00", second_statement.column_1
+        assert_equal "Ridgeway Banking Corporation", second_statement.column_2
+        assert_equal "Fee", second_statement.column_3
+        assert_equal "No", second_statement.column_4
+        assert_equal "Import", second_statement.column_5
+        assert_equal "-15.00", second_statement.column_6
+        assert_equal "15446.97", second_statement.column_7
+
+        # Third
+        third_statement = @report.body.third
+        assert_equal nil, third_statement.column_2.value # no description, but other attributes
+        assert_equal "Eft", third_statement.column_3
+        assert_equal "No", third_statement.column_4
+        assert_equal "Import", third_statement.column_5
+        assert_equal "-15.75", third_statement.column_6
+        assert_equal "15431.22", third_statement.column_7
+      end
     end
 
-    should "create a bank statement report" do
-      assert @report.is_a?(XeroGateway::Report)
-      assert_equal [], @report.errors
-      assert_equal Date.parse("27 May 2014"), @report.report_date
-      assert_equal "BankStatement", @report.report_id
-      assert_equal "Bank Statement", @report.report_name
-      expected_titles = ["Bank Statement", "Business Bank Account", "Demo Company (NZ)", "From 1 May 2014 to 27 May 2014"]
-      assert_equal expected_titles, @report.report_titles
-      assert_equal "BankStatement", @report.report_type
-      assert_equal Time.parse("2014-05-26 22:36:07 +0000").to_i, @report.updated_at.to_i
-      expected_names = { :column_1=>"Date", :column_2=>"Description", :column_3=>"Reference", :column_4=>"Reconciled", :column_5=>"Source", :column_6=>"Amount", :column_7=>"Balance" }
-      assert_equal expected_names, @report.column_names
+    context "with a trial balance report" do
+      setup do
+        @report = make_report_from_xml("trial_balance")
+      end
 
-      ###
-      # REPORT BODY
-      assert @report.body.is_a?(Array)
-
-      # First = Opening Balance
-      first_statement = @report.body.first
-      assert_equal "2014-05-01T00:00:00", first_statement.column_1
-      assert_equal "Opening Balance", first_statement.column_2
-      assert_equal nil, first_statement.column_3
-      assert_equal nil, first_statement.column_4
-      assert_equal nil, first_statement.column_5
-      assert_equal nil, first_statement.column_6
-      assert_equal "15461.97", first_statement.column_7
-
-      # Second = Bank Transaction/Statement
-      second_statement = @report.body.second
-      assert_equal "2014-05-01T00:00:00", second_statement.column_1
-      assert_equal "Ridgeway Banking Corporation", second_statement.column_2
-      assert_equal "Fee", second_statement.column_3
-      assert_equal "No", second_statement.column_4
-      assert_equal "Import", second_statement.column_5
-      assert_equal "-15.00", second_statement.column_6
-      assert_equal "15446.97", second_statement.column_7
-
-      # Third
-      third_statement = @report.body.third
-      assert_equal nil, third_statement.column_2 # no description, but other attributes
-      assert_equal "Eft", third_statement.column_3
-      assert_equal "No", third_statement.column_4
-      assert_equal "Import", third_statement.column_5
-      assert_equal "-15.75", third_statement.column_6
-      assert_equal "15431.22", third_statement.column_7
+      should "set attributes on individual cells" do
+        first_statement = @report.body.first
+        assert_equal "Sales (200)", first_statement.column_1.value
+        assert_equal({ account: "7d05a53d-613d-4eb2-a2fc-dcb6adb80b80" }, first_statement.column_1.attributes)
+      end
     end
+
+  end
+
+  private
+
+  def make_report_from_xml(report_name = "bank_statement")
+    xml_response = get_file("reports/#{report_name}.xml")
+    xml_response.gsub!(/\n +/,'')
+    xml_doc = REXML::Document.new(xml_response)
+    xpath_report = XPath.first(xml_doc, "//Report")
+    XeroGateway::Report.from_xml(xpath_report)
   end
 
 end
