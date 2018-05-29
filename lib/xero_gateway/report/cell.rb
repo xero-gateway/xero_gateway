@@ -18,8 +18,8 @@ module XeroGateway
       attr_reader :attributes, :value
 
       def initialize(value, new_attributes = {})
-        @value      = value
-        @attributes = new_attributes
+        @value        = value
+        @attributes   = new_attributes
         super(value)
       end
     end

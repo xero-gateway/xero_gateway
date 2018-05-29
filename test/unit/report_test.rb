@@ -43,32 +43,32 @@ class ReportTest < Test::Unit::TestCase
 
         # First = Opening Balance
         first_statement = @report.body.first
-        assert_equal "2014-05-01T00:00:00", first_statement.column_1
-        assert_equal "Opening Balance", first_statement.column_2
-        assert_equal nil, first_statement.column_3
-        assert_equal nil, first_statement.column_4
-        assert_equal nil, first_statement.column_5
-        assert_equal nil, first_statement.column_6
-        assert_equal "15461.97", first_statement.column_7
+        assert_equal "2014-05-01T00:00:00", first_statement.date
+        assert_equal "Opening Balance", first_statement.description
+        assert_equal nil, first_statement.reference
+        assert_equal nil, first_statement.reconciled
+        assert_equal nil, first_statement.source
+        assert_equal nil, first_statement.amount
+        assert_equal "15461.97", first_statement.balance
 
         # Second = Bank Transaction/Statement
         second_statement = @report.body.second
-        assert_equal "2014-05-01T00:00:00", second_statement.column_1
-        assert_equal "Ridgeway Banking Corporation", second_statement.column_2
-        assert_equal "Fee", second_statement.column_3
-        assert_equal "No", second_statement.column_4
-        assert_equal "Import", second_statement.column_5
-        assert_equal "-15.00", second_statement.column_6
-        assert_equal "15446.97", second_statement.column_7
+        assert_equal "2014-05-01T00:00:00", second_statement.date
+        assert_equal "Ridgeway Banking Corporation", second_statement.description
+        assert_equal "Fee", second_statement.reference
+        assert_equal "No", second_statement.reconciled
+        assert_equal "Import", second_statement.source
+        assert_equal "-15.00", second_statement.amount
+        assert_equal "15446.97", second_statement.balance
 
         # Third
         third_statement = @report.body.third
-        assert_equal nil, third_statement.column_2.value # no description, but other attributes
-        assert_equal "Eft", third_statement.column_3
-        assert_equal "No", third_statement.column_4
-        assert_equal "Import", third_statement.column_5
-        assert_equal "-15.75", third_statement.column_6
-        assert_equal "15431.22", third_statement.column_7
+        assert_equal nil, third_statement.description.value # no description, but other attributes
+        assert_equal "Eft", third_statement.reference
+        assert_equal "No", third_statement.reconciled
+        assert_equal "Import", third_statement.source
+        assert_equal "-15.75", third_statement.amount
+        assert_equal "15431.22", third_statement.balance
       end
     end
 
@@ -79,8 +79,13 @@ class ReportTest < Test::Unit::TestCase
 
       should "set attributes on individual cells" do
         first_statement = @report.body.first
-        assert_equal "Sales (200)", first_statement.column_1.value
-        assert_equal({ account: "7d05a53d-613d-4eb2-a2fc-dcb6adb80b80" }, first_statement.column_1.attributes)
+        assert_equal "Sales (200)", first_statement.account.value
+        assert_equal({ account: "7d05a53d-613d-4eb2-a2fc-dcb6adb80b80" }, first_statement.account.attributes)
+      end
+
+      should "have all rows and section titles" do
+        assert_equal 15, @report.rows.length
+        assert_equal %w(Revenue Expenses Assets Liabilities Equity), @report.rows.map(&:section_name).uniq.compact
       end
     end
 
