@@ -32,5 +32,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "mocha"
   s.add_development_dependency "shoulda"
   s.add_development_dependency "libxml-ruby", "2.7.0"
+  s.add_development_dependency "byebug"
 
 end

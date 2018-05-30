@@ -1,4 +1,5 @@
 require_relative './report/cell'
+require_relative './report/row'
 
 module XeroGateway
   class Report
@@ -9,6 +10,8 @@ module XeroGateway
     attr_reader   :errors
     attr_accessor :report_id, :report_name, :report_type, :report_titles, :report_date, :updated_at,
                   :body, :column_names
+
+    alias :rows :body
 
     def initialize(params={})
       @errors         ||= []
@@ -36,9 +39,9 @@ module XeroGateway
             when 'ReportDate'       then report.report_date = Date.parse(element.text)
             when 'UpdatedDateUTC'   then report.updated_at = parse_date_time_utc(element.text)
             when 'Rows'
-              report.column_names   ||= find_body_column_names(element)
-              each_row_content(element) do |content_hash|
-                report.body << OpenStruct.new(content_hash)
+              report.column_names ||= find_body_column_names(element)
+              each_row_content(element) do |row|
+                report.body << row
               end
           end
         end
@@ -48,16 +51,16 @@ module XeroGateway
       private
 
         def each_row_content(xml_element, &block)
-          column_names   = find_body_column_names(xml_element).keys
-          xpath_body     = REXML::XPath.first(xml_element, "//RowType[text()='Section']").parent
-          rows_contents  = []
-          xpath_body.elements.each("Rows/Row") do |xpath_cells|
-            values        = find_body_cell_values(xpath_cells)
-            content_hash  = Hash[column_names.zip values]
-            rows_contents << content_hash
-            yield content_hash if block_given?
+          column_names    = find_body_column_names(xml_element).values
+          report_sections = REXML::XPath.each(xml_element, "//RowType[text()='Section']/parent::Row")
+
+          report_sections.each do |section_row|
+            section_name = section_row.get_elements("Title").first.try(:text)
+            section_row.elements.each("Rows/Row") do |xpath_cells|
+              values = find_body_cell_values(xpath_cells)
+              yield Row.new(column_names, values, section_name)
+            end
           end
-          rows_contents
         end
 
         def each_title(xml_element, &block)
