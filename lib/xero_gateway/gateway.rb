@@ -644,18 +644,9 @@ module XeroGateway
     #
     # Send an approved invoice from Xero
     #
-    def email_invoice(id, options = {})
-      request_params = {}
-      request_body = ""
-
-      raw_response = http_post(@client, "#{@xero_url}/Invoices/#{id}/Email", request_body, request_params)
-
-      response = XeroGateway::Response.new
-      response.status         = "OK"
-      response.request_params = request_params
-      response.request_xml    = request_body
-      response.response_xml   = raw_response
-      response
+    def email_invoice(id)
+      raw_response = http_post(@client, "#{@xero_url}/Invoices/#{id}/Email", "", {})
+      return raw_response == ""
     end
 
     private
