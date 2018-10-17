@@ -74,7 +74,7 @@ module XeroGateway
               response.plain_body
             end
           when 204
-            nil
+            ""
           when 400
             handle_error!(body, response)
           when 401
