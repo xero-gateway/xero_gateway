@@ -8,15 +8,12 @@ class EmailInvoiceTest < Test::Unit::TestCase
 
     if STUB_XERO_CALLS
       @gateway.xero_url = "DUMMY_URL"
-
-      @gateway.stubs(:http_post).with {|client, url, params| url =~ /Email$/ }.returns(nil)
+      @gateway.stubs(:http_post).with {|client, url, params| url =~ /Email$/ }.returns("")
     end
   end
 
   def test_email_invoice
     result = @gateway.email_invoice(dummy_invoice.invoice_id)
-
-    assert_kind_of XeroGateway::Response, result
-    assert result.success?
+    assert_equal true, result
   end
 end
