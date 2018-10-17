@@ -80,6 +80,15 @@ class InvoiceTest < Test::Unit::TestCase
       assert_equal(invoice, result_invoice)
       assert_equal 27, result_invoice.line_items.first.discount_rate
     end
+
+    should "handle paid-on date" do
+      invoice = create_test_invoice(:fully_paid_on => Date.yesterday)
+      invoice_element = REXML::XPath.first(REXML::Document.new(invoice.to_xml), "/Invoice")
+      result_invoice = XeroGateway::Invoice.from_xml(invoice_element)
+
+      assert_equal(invoice, result_invoice)
+      assert_equal Date.yesterday, result_invoice.fully_paid_on
+    end
   end
 
   # Tests the sub_total calculation and that setting it manually doesn't modify the data.

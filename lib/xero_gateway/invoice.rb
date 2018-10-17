@@ -185,6 +185,7 @@ module XeroGateway
         contact.to_xml(b)
         b.Date Invoice.format_date(self.date || Date.today)
         b.DueDate Invoice.format_date(self.due_date) if self.due_date
+        b.FullyPaidOnDate Invoice.format_date(self.fully_paid_on) if self.fully_paid_on
         b.Status self.invoice_status if self.invoice_status
         b.Reference self.reference if self.reference
         b.BrandingThemeID self.branding_theme_id if self.branding_theme_id
@@ -212,6 +213,7 @@ module XeroGateway
           when "Contact" then invoice.contact = Contact.from_xml(element)
           when "Date" then invoice.date = parse_date(element.text)
           when "DueDate" then invoice.due_date = parse_date(element.text)
+          when "FullyPaidOnDate" then invoice.fully_paid_on = parse_date(element.text)
           when "UpdatedDateUTC" then invoice.updated_date_utc = parse_date(element.text)
           when "Status" then invoice.invoice_status = element.text
           when "Reference" then invoice.reference = element.text
