@@ -26,19 +26,19 @@ The Xero Gateway uses [OAuth 1.0a](https://oauth.net/core/1.0a/) for authenticat
 implements OAuth in a very similar manner to the [Twitter gem by John Nunemaker](http://github.com/jnunemaker/twitter)
 , so if you've used that before this will all seem familiar.
 
-### Authenticating: Public/Partner Applications
+### Authenticating: Public Applications
 
-Public (or Partner, if you've been through the process to be approved) are traditional three-legged OAuth apps that can be used to access many different Xero accounts.
+Public are traditional three-legged OAuth apps that can be used to access many different Xero accounts.
 
   1. **Get a Consumer Key & Secret**
 
   First off, you'll need to get a Consumer Key/Secret pair for your application from Xero.
 
-  Head to <https://api.xero.com>, log in and then click My Applications &gt; Add Application.
+  Head to <https://developer.xero.com/myapps>, log in and then click New Application.
 
-  Part of the process for this will ask you for an "OAuth Redirect URL". This is where customers will be redirected once they complete logging in with Xero.
+  Part of the process for this will ask you for an "OAuth Callback Domain". This is the domain where customers will be redirected once they complete logging in with Xero.
 
-  On the right-hand-side of your application's page there's a box titled "OAuth Credentials". Use the Key and Secret from this box in order to set up a new Gateway instance.
+  Further down in your application's page there's a box titled "App Credentials". Use the Key and Secret from this box in order to set up a new Gateway instance.
 
   2. **Create a Xero Gateway in your App**
 
@@ -106,7 +106,7 @@ Public (or Partner, if you've been through the process to be approved) are tradi
     gateway.authorize_from_access(your_stored_token.access_token, your_stored_token.access_secret)
   ```
 
- ### Authenticating: Private Applications
+### Authenticating: Private Applications
 
 Private applications are used to access a single Xero account.
 
@@ -117,8 +117,8 @@ Private applications are used to access a single Xero account.
   You'll need to generate an RSA keypair and an X509 certificate. This can be done with OpenSSL as below:
 
   ```bash
-    openssl genrsa -out privatekey.pem
-    openssl req -newkey rsa:1024 -x509 -days 365 -in privatekey.pem -out publickey.cer
+    openssl genrsa -out privatekey.pem 1024
+    openssl req -new -x509 -key privatekey.pem -out publickey.cer -days 1825
   ```
 
   You can then copy `publickey.cer` and paste it into the certificate box (`cat publickey.cer | pbcopy` on a Mac :apple:)
@@ -138,13 +138,28 @@ Private applications are used to access a single Xero account.
 
   Note that for private apps, your consumer key and secret do double duty as your access token and secret pair :)
 
+### Authenticating: Partner Applications
+  
+Partner applications are public applications that have been upgraded to support long-term access tokens.
+
+Use the same three-legged authentication process as for public applications, but with an RSA keypair and an X509 certificate as for private applications:
+
+  ```ruby
+    require 'xero_gateway'
+    gateway = XeroGateway::PartnerApp.new(YOUR_OAUTH_CONSUMER_KEY, YOUR_OAUTH_CONSUMER_SECRET, PATH_TO_YOUR_PRIVATE_KEY)
+
+    pp gateway.get_contacts
+  ```
+
+For more information on partner applications see the Xero documentation: <https://developer.xero.com/documentation/auth-and-limits/partner-applications>  
+  
 ## Examples
 
 Open `examples/oauth.rb` and change `CONSUMER_KEY` and `CONSUMER_SECRET` to
 the values for a Test OAuth Public Application in order to see an example of
 OAuth at work.
 
-There's also `examples/private_app.rb` if you'd like to see an example private app.
+See also `examples/private_app.rb` for an example private app or `examples/partner_app.rb` for an example partner app.
 
 If you're working with Rails, a controller similar to this might come in
 handy:

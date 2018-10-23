@@ -80,6 +80,14 @@ class ContactTest < Test::Unit::TestCase
           <PhoneType>MOBILE</PhoneType>
         </Phone>
       </Phones>
+      <ContactPersons>
+        <ContactPerson>
+          <FirstName>John</FirstName>
+          <LastName>Smith</LastName>
+          <EmailAddress>john@acme.com</EmailAddress>
+          <IncludeInEmails>true</IncludeInEmails>
+        </ContactPerson>
+      </ContactPersons>
       <UpdatedDateUTC>2016-08-31T04:55:39.217</UpdatedDateUTC>
       <IsSupplier>false</IsSupplier>
       <IsCustomer>false</IsCustomer>
@@ -172,6 +180,7 @@ class ContactTest < Test::Unit::TestCase
     contact.phone.number = "12345"
     contact.is_customer = true
     contact.is_supplier = true
+    contact.add_contact_person(first_name: 'John', last_name: 'Smith', email_address: 'john@acme.com', include_in_emails: true)
 
     contact
   end

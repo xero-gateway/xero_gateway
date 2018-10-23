@@ -68,6 +68,27 @@ class InvoiceTest < Test::Unit::TestCase
       parsed_invoice = XeroGateway::Invoice.from_xml(invoice_element)
       assert_equal 'http://example.com?with=params&and=more', parsed_invoice.url
     end
+
+    should "work with line_item discount rates" do
+      invoice = create_test_invoice
+      invoice.line_items.first.discount_rate = 27
+      invoice_as_xml = invoice.to_xml
+
+      invoice_element = REXML::XPath.first(REXML::Document.new(invoice_as_xml), "/Invoice")
+      result_invoice = XeroGateway::Invoice.from_xml(invoice_element)
+
+      assert_equal(invoice, result_invoice)
+      assert_equal 27, result_invoice.line_items.first.discount_rate
+    end
+
+    should "handle paid-on date" do
+      invoice = create_test_invoice(:fully_paid_on => Date.yesterday)
+      invoice_element = REXML::XPath.first(REXML::Document.new(invoice.to_xml), "/Invoice")
+      result_invoice = XeroGateway::Invoice.from_xml(invoice_element)
+
+      assert_equal(invoice, result_invoice)
+      assert_equal Date.yesterday, result_invoice.fully_paid_on
+    end
   end
 
   # Tests the sub_total calculation and that setting it manually doesn't modify the data.
@@ -152,6 +173,26 @@ class InvoiceTest < Test::Unit::TestCase
     line_item.quantity = quantity
     assert_not_equal(expected_amount, line_item.line_amount)
     assert_equal(quantity * line_item.unit_amount, line_item.line_amount)
+  end
+
+  def test_line_amount_discount_calculation
+    invoice = create_test_invoice
+    line_item = invoice.line_items.first
+    line_item.discount_rate = 12.5
+
+    # Make sure that everything adds up to begin with.
+    expected_amount = line_item.quantity * line_item.unit_amount * 0.875
+    assert_equal(expected_amount, line_item.line_amount)
+
+    # Change the line_amount and check that it doesn't modify anything.
+    line_item.line_amount = expected_amount * 10
+    assert_equal(expected_amount, line_item.line_amount)
+
+    # Change the quantity and check that the line_amount has been updated.
+    quantity = line_item.quantity + 2
+    line_item.quantity = quantity
+    assert_not_equal(expected_amount, line_item.line_amount)
+    assert_equal(quantity * line_item.unit_amount * 0.875, line_item.line_amount)
   end
 
   # Ensure that the totalling methods don't raise exceptions, even when
@@ -286,7 +327,7 @@ class InvoiceTest < Test::Unit::TestCase
   def test_optional_params
     eur_code = "EUR"
     eur_rate = 1.80
-    
+
     invoice = create_test_invoice(:url => 'http://example.com', :branding_theme_id => 'a94a78db-5cc6-4e26-a52b-045237e56e6e', :currency_code => eur_code, :currency_rate => eur_rate)
     assert_equal 'http://example.com', invoice.url
     assert_equal 'a94a78db-5cc6-4e26-a52b-045237e56e6e', invoice.branding_theme_id

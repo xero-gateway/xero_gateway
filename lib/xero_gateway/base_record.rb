@@ -74,24 +74,17 @@ module XeroGateway
         return
       end
 
-      if element.text.present? || element.children.present?
-        value = case attr_definition
-                when :boolean
-                  element.text == "true"
-                when :float
-                  element.text.to_f
-                when :integer
-                  element.text.to_i
-                when :date
-                  Date.parse(element.text)
-                when :datetime
-                  Time.parse(element.text)
-                when Array
-                  array_from_xml(element, attr_definition)
-                else
-                  element.text
-                end
-      end
+      value = case attr_definition
+        when :boolean      then  element.text == "true"
+        when :float        then  element.text.to_f
+        when :integer      then  element.text.to_i
+        when :currency     then  BigDecimal.new(element.text)
+        when :date         then  Date.strptime(element.text, "%Y-%m-%d")
+        when :datetime     then  Date.strptime(element.text, "%Y-%m-%dT%H:%M:%S")
+        when :datetime_utc then  Date.strptime(element.text + "Z", "%Y-%m-%dT%H:%M:%S%Z")
+        when Array     then  array_from_xml(element, attr_definition)
+        else                 element.text
+      end if element.text.present? || element.children.present?
 
       send("#{attribute.underscore}=", value)
     end

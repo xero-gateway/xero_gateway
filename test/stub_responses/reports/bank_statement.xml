@@ -97,10 +97,12 @@
                   <Value>2014-05-01T00:00:00</Value>
                 </Cell>
                 <Cell>
-                  <Attribute>
-                    <Value>asasdas-asdf-asdf-asdf-asdfasdfasdfas</Value>
-                    <Id>statementID</Id>
-                  </Attribute>
+                  <Attributes>
+                    <Attribute>
+                      <Value>asasdas-asdf-asdf-asdf-asdfasdfasdfas</Value>
+                      <Id>statementID</Id>
+                    </Attribute>
+                  </Attributes>
                 </Cell>
                 <Cell>
                   <Value>Eft  </Value>
