@@ -10,7 +10,6 @@ Gem::Specification.new do |s|
   s.email       = ["me@nikwakelin.com", "jared@minutedock.com"]
   s.homepage    = "http://github.com/xero-gateway/xero_gateway"
   s.description = "Enables Ruby based applications to communicate with the Xero API"
-  s.has_rdoc    = false
   s.authors     = ["Tim Connor", "Nik Wakelin", "Jared Armstrong"]
   s.license     = "MIT"
 
