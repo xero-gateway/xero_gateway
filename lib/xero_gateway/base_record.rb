@@ -95,6 +95,8 @@ module XeroGateway
         when :datetime     then  Dates::Helpers.parse_date_time(element.text)
         when :datetime_utc then  Dates::Helpers.parse_date_time_utc(element.text)
         when Array     then  array_from_xml(element, attr_definition)
+        when Class
+          attr_definition.from_xml(element) if attr_definition.respond_to?(:from_xml)
         else                 element.text
       end if element.text.present? || element.children.present?
 

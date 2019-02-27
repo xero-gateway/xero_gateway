@@ -29,10 +29,11 @@ module XeroGateway
       "IsSupplier" => :boolean,
       "DefaultCurrency" => :string,
       "UpdatedDateUTC" => :datetime_utc,
-      "ContactPersons" => [ContactPerson]
+      "ContactPersons" => [ContactPerson],
+      "BrandingTheme" => BrandingTheme
     })
 
-    readonly_attributes "IsCustomer", "IsSupplier"
+    readonly_attributes "IsCustomer", "IsSupplier", "BrandingTheme"
 
     { :updated_at => :updated_date_utc,
       :status => :contact_status,

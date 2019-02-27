@@ -165,6 +165,59 @@ class ContactTest < Test::Unit::TestCase
     assert(!phone.valid?)
   end
 
+  def test_loads_branding_theme_if_set
+    test_xml = <<-TESTING.strip_heredoc.chomp
+    <Contact>
+      <ContactID>f1d403d1-7d30-46c2-a2be-fc2bb29bd295</ContactID>
+      <ContactStatus>ACTIVE</ContactStatus>
+      <Name>24 Locks</Name>
+      <Addresses>
+        <Address>
+          <AddressType>POBOX</AddressType>
+        </Address>
+        <Address>
+          <AddressType>STREET</AddressType>
+        </Address>
+      </Addresses>
+      <Phones>
+        <Phone>
+          <PhoneType>DDI</PhoneType>
+        </Phone>
+        <Phone>
+          <PhoneType>DEFAULT</PhoneType>
+        </Phone>
+        <Phone>
+          <PhoneType>FAX</PhoneType>
+        </Phone>
+        <Phone>
+          <PhoneType>MOBILE</PhoneType>
+        </Phone>
+      </Phones>
+      <ContactPersons>
+        <ContactPerson>
+          <FirstName>John</FirstName>
+          <LastName>Smith</LastName>
+          <EmailAddress>john@acme.com</EmailAddress>
+          <IncludeInEmails>true</IncludeInEmails>
+        </ContactPerson>
+      </ContactPersons>
+      <UpdatedDateUTC>2016-08-31T04:55:39.217</UpdatedDateUTC>
+      <IsSupplier>false</IsSupplier>
+      <IsCustomer>false</IsCustomer>
+      <HasAttachments>false</HasAttachments>
+      <BrandingTheme>
+        <BrandingThemeID>3761deb4-209e-4197-80bb-2993aff35387</BrandingThemeID>
+        <Name>Test_Theme</Name>
+      </BrandingTheme>
+    </Contact>
+    TESTING
+
+    contact_element = REXML::XPath.first(REXML::Document.new(test_xml.gsub(/\s/, "")), "/Contact")
+    contact = XeroGateway::Contact.from_xml(contact_element)
+
+    assert_equal "Test_Theme", contact.branding_theme.name
+  end
+
   private
 
   def create_test_contact
