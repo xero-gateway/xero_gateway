@@ -98,7 +98,7 @@ class ContactTest < Test::Unit::TestCase
     contact_element = REXML::XPath.first(REXML::Document.new(test_xml.gsub(/\s/, "")), "/Contact")
     contact = XeroGateway::Contact.from_xml(contact_element)
 
-    assert_equal Time.new(2016, 8, 31, 04, 55, 39), contact.updated_at.utc
+    assert_equal Time.utc(2016, 8, 31, 04, 55, 39), contact.updated_at.utc
 
   end
 
