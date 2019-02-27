@@ -5,6 +5,10 @@ module XeroGateway
 
     class_attribute :element_name
     class_attribute :attribute_definitions
+    class_attribute :attribute_definitions_readonly
+
+    # The source XML record that initialized this instance.
+    attr_reader :source_xml
 
     class << self
       def attributes(hash)
@@ -27,8 +31,15 @@ module XeroGateway
         end
       end
 
-      def from_xml(base_element)
-        new.from_xml(base_element)
+      # Set list of attributes that should never be included in update/create responses.
+      def readonly_attributes(*attrs)
+        self.attribute_definitions_readonly ||= []
+        self.attribute_definitions_readonly += attrs.flatten
+      end
+
+      def from_xml(base_element, gateway = nil)
+        args = gateway ? [{ gateway: gateway }] : []
+        new(*args).from_xml(base_element)
       end
 
       def xml_element
@@ -46,14 +57,14 @@ module XeroGateway
       to_xml == other.to_xml
     end
 
-    def to_xml
-      builder = Builder::XmlMarkup.new
+    def to_xml(builder = Builder::XmlMarkup.new)
       builder.__send__(self.class.xml_element) do
         to_xml_attributes(builder)
       end
     end
 
     def from_xml(base_element)
+      @source_xml = base_element
       from_xml_attributes(base_element)
       self
     end
@@ -80,9 +91,9 @@ module XeroGateway
         when :float        then  element.text.to_f
         when :integer      then  element.text.to_i
         when :currency     then  BigDecimal(element.text)
-        when :date         then  Date.strptime(element.text, "%Y-%m-%d")
-        when :datetime     then  Date.strptime(element.text, "%Y-%m-%dT%H:%M:%S")
-        when :datetime_utc then  Date.strptime(element.text + "Z", "%Y-%m-%dT%H:%M:%S%Z")
+        when :date         then  Dates::Helpers.parse_date(element.text)
+        when :datetime     then  Dates::Helpers.parse_date_time(element.text)
+        when :datetime_utc then  Dates::Helpers.parse_date_time_utc(element.text)
         when Array     then  array_from_xml(element, attr_definition)
         else                 element.text
       end if element.text.present? || element.children.present?
@@ -97,6 +108,8 @@ module XeroGateway
 
     def to_xml_attributes(builder = Builder::XmlMarkup.new, path = nil, attr_definitions = self.class.attribute_definitions)
       attr_definitions.each do |attr, value|
+        next if self.class.attribute_definitions_readonly && self.class.attribute_definitions_readonly.include?(attr)
+
         case value
         when Hash
           builder.__send__(attr) do
@@ -104,14 +117,19 @@ module XeroGateway
           end
         when Array
           raise UnsupportedAttributeType.new("#{value} instances don't respond to #to_xml") unless value.first.method_defined?(:to_xml)
-          value = send("#{path}#{attr}".underscore) || []
+          options = value.length > 1 ? value.last : {}
+
+          value = send("#{path}#{attr}".underscore)
+          value ||= [] unless options[:omit_if_empty]
+
           builder.__send__(attr) do |array_wrapper|
             value.map do |k|
               k.to_xml(array_wrapper)
             end
-          end
+          end unless value.nil?
         else
-          builder.__send__(attr, send("#{path}#{attr}".underscore))
+          value = send("#{path}#{attr}".underscore)
+          builder.__send__(attr, value) unless value.nil?
         end
       end
     end
