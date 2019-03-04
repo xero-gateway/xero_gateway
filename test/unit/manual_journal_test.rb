@@ -16,7 +16,7 @@ class ManualJournalTest < Test::Unit::TestCase
       journal_line = manual_journal.journal_lines.first
       assert_equal('FIRST LINE', journal_line.description)
       assert_equal('200', journal_line.account_code)
-      assert_equal(BigDecimal.new('100'), journal_line.line_amount)
+      assert_equal(BigDecimal('100'), journal_line.line_amount)
     end
 
     should "allow overriding transaction defaults" do

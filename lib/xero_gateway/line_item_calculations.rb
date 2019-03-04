@@ -40,8 +40,8 @@ module XeroGateway
       end
 
       def sum_line_items(lines, sum_type = :line_amount)
-        lines.inject(BigDecimal.new('0')) do |sum, line|
-          sum + BigDecimal.new(line.send(sum_type).to_s)
+        lines.inject(BigDecimal('0')) do |sum, line|
+          sum + BigDecimal(line.send(sum_type).to_s)
         end
       end
 
