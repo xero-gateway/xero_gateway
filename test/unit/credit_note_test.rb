@@ -24,14 +24,14 @@ class CreditNoteTest < Test::Unit::TestCase
     line_item = credit_note.line_items.first
 
     # Make sure that everything adds up to begin with.
-    expected_sub_total = credit_note.line_items.inject(BigDecimal.new('0')) { | sum, l | l.line_amount }
+    expected_sub_total = credit_note.line_items.inject(BigDecimal('0')) { | sum, l | l.line_amount }
     assert_equal(expected_sub_total, credit_note.sub_total)
 
     # Change the amount of the first line item and make sure that
     # everything still continues to add up.
     line_item.unit_amount = line_item.unit_amount + 10
     assert_not_equal(expected_sub_total, credit_note.sub_total)
-    expected_sub_total = credit_note.line_items.inject(BigDecimal.new('0')) { | sum, l | l.line_amount }
+    expected_sub_total = credit_note.line_items.inject(BigDecimal('0')) { | sum, l | l.line_amount }
     assert_equal(expected_sub_total, credit_note.sub_total)
   end
 
@@ -41,14 +41,14 @@ class CreditNoteTest < Test::Unit::TestCase
     line_item = credit_note.line_items.first
 
     # Make sure that everything adds up to begin with.
-    expected_total_tax = credit_note.line_items.inject(BigDecimal.new('0')) { | sum, l | l.tax_amount }
+    expected_total_tax = credit_note.line_items.inject(BigDecimal('0')) { | sum, l | l.tax_amount }
     assert_equal(expected_total_tax, credit_note.total_tax)
 
     # Change the tax_amount of the first line item and make sure that
     # everything still continues to add up.
     line_item.tax_amount = line_item.tax_amount + 10
     assert_not_equal(expected_total_tax, credit_note.total_tax)
-    expected_total_tax = credit_note.line_items.inject(BigDecimal.new('0')) { | sum, l | l.tax_amount }
+    expected_total_tax = credit_note.line_items.inject(BigDecimal('0')) { | sum, l | l.tax_amount }
     assert_equal(expected_total_tax, credit_note.total_tax)
   end
 
@@ -96,9 +96,9 @@ class CreditNoteTest < Test::Unit::TestCase
     credit_note.line_items = []
 
     assert_nothing_raised(Exception) {
-      assert_equal(BigDecimal.new('0'), credit_note.sub_total)
-      assert_equal(BigDecimal.new('0'), credit_note.total_tax)
-      assert_equal(BigDecimal.new('0'), credit_note.total)
+      assert_equal(BigDecimal('0'), credit_note.sub_total)
+      assert_equal(BigDecimal('0'), credit_note.total_tax)
+      assert_equal(BigDecimal('0'), credit_note.total)
     }
   end
 
@@ -142,8 +142,8 @@ class CreditNoteTest < Test::Unit::TestCase
     # Test the line_item defaults.
     assert_equal('A LINE ITEM', credit_note.line_items.first.description)
     assert_equal('200', credit_note.line_items.first.account_code)
-    assert_equal(BigDecimal.new('100'), credit_note.line_items.first.unit_amount)
-    assert_equal(BigDecimal.new('12.5'), credit_note.line_items.first.tax_amount)
+    assert_equal(BigDecimal('100'), credit_note.line_items.first.unit_amount)
+    assert_equal(BigDecimal('12.5'), credit_note.line_items.first.tax_amount)
 
     # Test overriding an credit_note parameter (assume works for all).
     credit_note = create_test_credit_note({:type => 'ACCPAYCREDIT'})
@@ -159,18 +159,18 @@ class CreditNoteTest < Test::Unit::TestCase
     credit_note = create_test_credit_note({}, {}, {:description => 'OVERRIDDEN LINE ITEM'})
     assert_equal(1, credit_note.line_items.size)
     assert_equal('OVERRIDDEN LINE ITEM', credit_note.line_items.first.description)
-    assert_equal(BigDecimal.new('100'), credit_note.line_items.first.unit_amount)
+    assert_equal(BigDecimal('100'), credit_note.line_items.first.unit_amount)
 
     # Test overriding line_items with array of 2 line_items.
     credit_note = create_test_credit_note({}, {}, [
       {:description => 'OVERRIDDEN ITEM 1'},
-      {:description => 'OVERRIDDEN ITEM 2', :account_code => '200', :unit_amount => BigDecimal.new('200'), :tax_amount => '25.0'}
+      {:description => 'OVERRIDDEN ITEM 2', :account_code => '200', :unit_amount => BigDecimal('200'), :tax_amount => '25.0'}
     ])
     assert_equal(2, credit_note.line_items.size)
     assert_equal('OVERRIDDEN ITEM 1', credit_note.line_items[0].description)
-    assert_equal(BigDecimal.new('100'), credit_note.line_items[0].unit_amount)
+    assert_equal(BigDecimal('100'), credit_note.line_items[0].unit_amount)
     assert_equal('OVERRIDDEN ITEM 2', credit_note.line_items[1].description)
-    assert_equal(BigDecimal.new('200'), credit_note.line_items[1].unit_amount)
+    assert_equal(BigDecimal('200'), credit_note.line_items[1].unit_amount)
   end
 
   def test_auto_creation_of_associated_contact
@@ -256,8 +256,8 @@ class CreditNoteTest < Test::Unit::TestCase
       line_item_params[0] = {
         :description => "A LINE ITEM",
         :account_code => "200",
-        :unit_amount => BigDecimal.new("100"),
-        :tax_amount => BigDecimal.new("12.5"),
+        :unit_amount => BigDecimal("100"),
+        :tax_amount => BigDecimal("12.5"),
         :tracking => XeroGateway::TrackingCategory.new(:name => "blah", :options => "hello")
       }.merge(line_item_params[0])
 

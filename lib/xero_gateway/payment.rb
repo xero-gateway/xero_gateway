@@ -26,9 +26,9 @@ module XeroGateway
           when 'PaymentType'    then payment.payment_type = element.text
           when 'Date'           then payment.date = parse_date_time(element.text)
           when 'UpdatedDateUTC' then payment.updated_at = parse_date_time(element.text)
-          when 'Amount'         then payment.amount = BigDecimal.new(element.text)
+          when 'Amount'         then payment.amount = BigDecimal(element.text)
           when 'Reference'      then payment.reference = element.text
-          when 'CurrencyRate'   then payment.currency_rate = BigDecimal.new(element.text)
+          when 'CurrencyRate'   then payment.currency_rate = BigDecimal(element.text)
           when 'Invoice'
             payment.invoice_id = element.elements["//InvoiceID"].text
             payment.invoice_number = element.elements["//InvoiceNumber"].text

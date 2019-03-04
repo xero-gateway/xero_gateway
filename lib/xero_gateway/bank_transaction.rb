@@ -157,16 +157,16 @@ module XeroGateway
           when "UpdatedDateUTC" then bank_transaction.updated_at = parse_date_time(element.text)
           when "Type" then bank_transaction.type = element.text
           when "CurrencyCode" then bank_transaction.currency_code = element.text
-          when "CurrencyRate" then bank_transaction.currency_rate = BigDecimal.new(element.text)
+          when "CurrencyRate" then bank_transaction.currency_rate = BigDecimal(element.text)
           when "Contact" then bank_transaction.contact = Contact.from_xml(element)
           when "BankAccount" then bank_transaction.bank_account = Account.from_xml(element)
           when "Date" then bank_transaction.date = parse_date(element.text)
           when "Status" then bank_transaction.status = element.text
           when "Reference" then bank_transaction.reference = element.text
           when "LineItems" then element.children.each {|line_item| bank_transaction.line_items_downloaded = true; bank_transaction.line_items << LineItem.from_xml(line_item) }
-          when "Total" then bank_transaction.total = BigDecimal.new(element.text)
-          when "SubTotal" then bank_transaction.sub_total = BigDecimal.new(element.text)
-          when "TotalTax" then bank_transaction.total_tax = BigDecimal.new(element.text)
+          when "Total" then bank_transaction.total = BigDecimal(element.text)
+          when "SubTotal" then bank_transaction.sub_total = BigDecimal(element.text)
+          when "TotalTax" then bank_transaction.total_tax = BigDecimal(element.text)
           when "IsReconciled" then bank_transaction.is_reconciled = (element.text.strip.downcase == "true")
           when "Url" then bank_transaction.url = element.text
         end

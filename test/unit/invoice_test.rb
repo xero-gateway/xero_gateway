@@ -97,7 +97,7 @@ class InvoiceTest < Test::Unit::TestCase
     line_item = invoice.line_items.first
 
     # Make sure that everything adds up to begin with.
-    expected_sub_total = invoice.line_items.inject(BigDecimal.new('0')) { | sum, l | l.line_amount }
+    expected_sub_total = invoice.line_items.inject(BigDecimal('0')) { | sum, l | l.line_amount }
     assert_equal(expected_sub_total, invoice.sub_total)
 
     # Change the sub_total and check that it doesn't modify anything.
@@ -108,7 +108,7 @@ class InvoiceTest < Test::Unit::TestCase
     # everything still continues to add up.
     line_item.unit_amount = line_item.unit_amount + 10
     assert_not_equal(expected_sub_total, invoice.sub_total)
-    expected_sub_total = invoice.line_items.inject(BigDecimal.new('0')) { | sum, l | l.line_amount }
+    expected_sub_total = invoice.line_items.inject(BigDecimal('0')) { | sum, l | l.line_amount }
     assert_equal(expected_sub_total, invoice.sub_total)
   end
 
@@ -118,7 +118,7 @@ class InvoiceTest < Test::Unit::TestCase
     line_item = invoice.line_items.first
 
     # Make sure that everything adds up to begin with.
-    expected_total_tax = invoice.line_items.inject(BigDecimal.new('0')) { | sum, l | l.tax_amount }
+    expected_total_tax = invoice.line_items.inject(BigDecimal('0')) { | sum, l | l.tax_amount }
     assert_equal(expected_total_tax, invoice.total_tax)
 
     # Change the total_tax and check that it doesn't modify anything.
@@ -129,7 +129,7 @@ class InvoiceTest < Test::Unit::TestCase
     # everything still continues to add up.
     line_item.tax_amount = line_item.tax_amount + 10
     assert_not_equal(expected_total_tax, invoice.total_tax)
-    expected_total_tax = invoice.line_items.inject(BigDecimal.new('0')) { | sum, l | l.tax_amount }
+    expected_total_tax = invoice.line_items.inject(BigDecimal('0')) { | sum, l | l.tax_amount }
     assert_equal(expected_total_tax, invoice.total_tax)
   end
 
@@ -202,9 +202,9 @@ class InvoiceTest < Test::Unit::TestCase
     invoice.line_items = []
 
     assert_nothing_raised(Exception) {
-      assert_equal(BigDecimal.new('0'), invoice.sub_total)
-      assert_equal(BigDecimal.new('0'), invoice.total_tax)
-      assert_equal(BigDecimal.new('0'), invoice.total)
+      assert_equal(BigDecimal('0'), invoice.sub_total)
+      assert_equal(BigDecimal('0'), invoice.total_tax)
+      assert_equal(BigDecimal('0'), invoice.total)
     }
   end
 
@@ -250,8 +250,8 @@ class InvoiceTest < Test::Unit::TestCase
     # Test the line_item defaults.
     assert_equal('A LINE ITEM', invoice.line_items.first.description)
     assert_equal('200', invoice.line_items.first.account_code)
-    assert_equal(BigDecimal.new('100'), invoice.line_items.first.unit_amount)
-    assert_equal(BigDecimal.new('12.5'), invoice.line_items.first.tax_amount)
+    assert_equal(BigDecimal('100'), invoice.line_items.first.unit_amount)
+    assert_equal(BigDecimal('12.5'), invoice.line_items.first.tax_amount)
 
     # Test optional params
     assert_nil invoice.url
@@ -270,18 +270,18 @@ class InvoiceTest < Test::Unit::TestCase
     invoice = create_test_invoice({}, {}, {:description => 'OVERRIDDEN LINE ITEM'})
     assert_equal(1, invoice.line_items.size)
     assert_equal('OVERRIDDEN LINE ITEM', invoice.line_items.first.description)
-    assert_equal(BigDecimal.new('100'), invoice.line_items.first.unit_amount)
+    assert_equal(BigDecimal('100'), invoice.line_items.first.unit_amount)
 
     # Test overriding line_items with array of 2 line_items.
     invoice = create_test_invoice({}, {}, [
       {:description => 'OVERRIDDEN ITEM 1'},
-      {:description => 'OVERRIDDEN ITEM 2', :account_code => '200', :unit_amount => BigDecimal.new('200'), :tax_amount => '25.0'}
+      {:description => 'OVERRIDDEN ITEM 2', :account_code => '200', :unit_amount => BigDecimal('200'), :tax_amount => '25.0'}
     ])
     assert_equal(2, invoice.line_items.size)
     assert_equal('OVERRIDDEN ITEM 1', invoice.line_items[0].description)
-    assert_equal(BigDecimal.new('100'), invoice.line_items[0].unit_amount)
+    assert_equal(BigDecimal('100'), invoice.line_items[0].unit_amount)
     assert_equal('OVERRIDDEN ITEM 2', invoice.line_items[1].description)
-    assert_equal(BigDecimal.new('200'), invoice.line_items[1].unit_amount)
+    assert_equal(BigDecimal('200'), invoice.line_items[1].unit_amount)
   end
 
   def test_auto_creation_of_associated_contact
@@ -391,8 +391,8 @@ class InvoiceTest < Test::Unit::TestCase
       line_item_params[0] = {
         :description => "A LINE ITEM",
         :account_code => "200",
-        :unit_amount => BigDecimal.new("100"),
-        :tax_amount => BigDecimal.new("12.5"),
+        :unit_amount => BigDecimal("100"),
+        :tax_amount => BigDecimal("12.5"),
         :tracking => XeroGateway::TrackingCategory.new(:name => "blah", :options => "hello")
       }.merge(line_item_params[0])
 

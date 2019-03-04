@@ -16,7 +16,7 @@ module XeroGateway
       @errors ||= []
       @tracking ||= []
       @quantity = 1
-      @unit_amount = BigDecimal.new('0')
+      @unit_amount = BigDecimal('0')
 
       params.each do |k,v|
         self.send("#{k}=", v)
@@ -68,7 +68,7 @@ module XeroGateway
     # for the API call to succeed.
     def line_amount
       total = quantity * unit_amount
-      total = total * (1 - (discount_rate / BigDecimal.new(100))) if discount_rate
+      total = total * (1 - (discount_rate / BigDecimal(100))) if discount_rate
       total
     end
 
@@ -103,12 +103,12 @@ module XeroGateway
           when "LineItemID" then line_item.line_item_id = element.text
           when "Description" then line_item.description = element.text
           when "Quantity" then line_item.quantity = BigDecimal(element.text)
-          when "UnitAmount" then line_item.unit_amount = BigDecimal.new(element.text)
+          when "UnitAmount" then line_item.unit_amount = BigDecimal(element.text)
           when "ItemCode" then line_item.item_code = element.text
           when "TaxType" then line_item.tax_type = element.text
-          when "TaxAmount" then line_item.tax_amount = BigDecimal.new(element.text)
-          when "LineAmount" then line_item.line_amount = BigDecimal.new(element.text)
-          when "DiscountRate" then line_item.discount_rate = BigDecimal.new(element.text)
+          when "TaxAmount" then line_item.tax_amount = BigDecimal(element.text)
+          when "LineAmount" then line_item.line_amount = BigDecimal(element.text)
+          when "DiscountRate" then line_item.discount_rate = BigDecimal(element.text)
           when "AccountCode" then line_item.account_code = element.text
           when "Tracking" then
             element.children.each do | tracking_element |

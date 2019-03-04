@@ -79,7 +79,7 @@ module XeroGateway
         when :boolean      then  element.text == "true"
         when :float        then  element.text.to_f
         when :integer      then  element.text.to_i
-        when :currency     then  BigDecimal.new(element.text)
+        when :currency     then  BigDecimal(element.text)
         when :date         then  Date.strptime(element.text, "%Y-%m-%d")
         when :datetime     then  Date.strptime(element.text, "%Y-%m-%dT%H:%M:%S")
         when :datetime_utc then  Date.strptime(element.text + "Z", "%Y-%m-%dT%H:%M:%S%Z")

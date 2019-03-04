@@ -197,13 +197,13 @@ module XeroGateway
           when "Reference" then credit_note.reference = element.text
           when "LineAmountTypes" then credit_note.line_amount_types = element.text
           when "LineItems" then element.children.each {|line_item| credit_note.line_items_downloaded = true; credit_note.line_items << LineItem.from_xml(line_item) }
-          when "SubTotal" then credit_note.sub_total = BigDecimal.new(element.text)
-          when "TotalTax" then credit_note.total_tax = BigDecimal.new(element.text)
-          when "Total" then credit_note.total = BigDecimal.new(element.text)
+          when "SubTotal" then credit_note.sub_total = BigDecimal(element.text)
+          when "TotalTax" then credit_note.total_tax = BigDecimal(element.text)
+          when "Total" then credit_note.total = BigDecimal(element.text)
           when "Payments" then element.children.each { | payment | credit_note.payments << Payment.from_xml(payment) }
-          when "AmountDue" then credit_note.amount_due = BigDecimal.new(element.text)
-          when "AmountPaid" then credit_note.amount_paid = BigDecimal.new(element.text)
-          when "AmountCredited" then credit_note.amount_credited = BigDecimal.new(element.text)
+          when "AmountDue" then credit_note.amount_due = BigDecimal(element.text)
+          when "AmountPaid" then credit_note.amount_paid = BigDecimal(element.text)
+          when "AmountCredited" then credit_note.amount_credited = BigDecimal(element.text)
         end
       end
       credit_note
