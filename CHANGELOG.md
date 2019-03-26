@@ -1,5 +1,11 @@
 # (v.Next)
 
+# [2.7.0](https://github.com/xero-gateway/xero_gateway/compare/2.6.0...2.7.0)
+
+## Features/Improvements
+* Add BrandingTheme setting to Contact records
+* Add ability to request list of invoice_ids in get_invoices call (@jumzijie)
+* Fix deprecation warnings for BigDecimal use
 
 # [2.6.0](https://github.com/xero-gateway/xero_gateway/compare/2.5.0...2.6.0)
 
