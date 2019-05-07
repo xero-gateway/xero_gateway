@@ -341,6 +341,17 @@ class InvoiceTest < Test::Unit::TestCase
      assert_equal time, invoice.updated_date_utc
   end
 
+  def test_description_only_lines
+    invoice = create_test_invoice({}, {}, nil) # no line_items
+    invoice.add_line_item(
+      description: "Descriptoin only",
+      unit_amount: nil,
+      quantity: nil
+    )
+
+    assert_nil invoice.line_items[0].line_amount
+  end
+
   private
 
   def create_test_invoice(invoice_params = {}, contact_params = {}, line_item_params = [])

@@ -67,6 +67,8 @@ module XeroGateway
     # Calculate the line_amount as quantity * unit_amount as this value must be correct
     # for the API call to succeed.
     def line_amount
+      return nil unless quantity && unit_amount
+
       total = quantity * unit_amount
       total = total * (1 - (discount_rate / BigDecimal(100))) if discount_rate
       total
@@ -76,7 +78,7 @@ module XeroGateway
       b.LineItem {
         b.Description description
         b.Quantity quantity if quantity
-        b.UnitAmount LineItem.format_money(unit_amount)
+        b.UnitAmount LineItem.format_money(unit_amount) if unit_amount
         b.ItemCode item_code if item_code
         b.TaxType tax_type if tax_type
         b.TaxAmount tax_amount if tax_amount
