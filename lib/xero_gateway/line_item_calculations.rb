@@ -41,7 +41,7 @@ module XeroGateway
 
       def sum_line_items(lines, sum_type = :line_amount)
         lines.inject(BigDecimal('0')) do |sum, line|
-          sum + BigDecimal(line.send(sum_type).to_s)
+          sum + BigDecimal((line.send(sum_type) || 0).to_s)
         end
       end
 
