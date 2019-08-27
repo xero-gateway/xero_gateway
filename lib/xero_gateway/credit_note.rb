@@ -39,7 +39,7 @@ module XeroGateway
     attr_accessor :credit_note_id, :credit_note_number, :type, :status, :date,
                   :reference, :line_amount_types, :currency_code, :payments,
                   :fully_paid_on, :amount_credited, :updated_at, :allocations,
-                  :amount_paid
+                  :amount_paid, :currency_rate
 
     attr_writer :line_items, :contact
 
@@ -196,6 +196,7 @@ module XeroGateway
           when "CreditNoteNumber" then credit_note.credit_note_number = element.text
           when "Type" then credit_note.type = element.text
           when "CurrencyCode" then credit_note.currency_code = element.text
+          when "CurrencyRate" then credit_note.currency_rate = BigDecimal(element.text)
           when "Contact" then credit_note.contact = Contact.from_xml(element)
           when "Date" then credit_note.date = parse_date(element.text)
           when "UpdatedDateUTC" then credit_note.updated_at = parse_date_time(element.text)
