@@ -170,8 +170,8 @@ module TestHelper
       line_item_params[0] = {
         :description  => "A LINE ITEM",
         :account_code => "200",
-        :unit_amount  => BigDecimal.new("100"),
-        :tax_amount   => BigDecimal.new("12.5"),
+        :unit_amount  => BigDecimal("100"),
+        :tax_amount   => BigDecimal("12.5"),
         :tracking     => [XeroGateway::TrackingOption.new(:name => "blah", :option => "hello")]
       }.merge(line_item_params[0])
 
@@ -239,14 +239,14 @@ module TestHelper
       journal_line_params[0] = {
         :description  => "FIRST LINE",
         :account_code => "200",
-        :line_amount  => BigDecimal.new("100"),
+        :line_amount  => BigDecimal("100"),
         :tracking     => [XeroGateway::TrackingOption.new(:name => "blah", :option => "hello")]
       }.merge(journal_line_params[0])
       params_line_1 = journal_line_params[1] || {}
       journal_line_params[1] = {
         :description  => "SECOND LINE",
         :account_code => "200",
-        :line_amount  => BigDecimal.new("-100"),
+        :line_amount  => BigDecimal("-100"),
         :tracking     => [XeroGateway::TrackingOption.new(:name => "blah2", :option => "hello2")]
       }.merge(params_line_1)
 

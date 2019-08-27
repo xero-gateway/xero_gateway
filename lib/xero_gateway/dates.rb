@@ -25,5 +25,9 @@ module XeroGateway
         Time.utc(time[0..3].to_i, time[5..6].to_i, time[8..9].to_i, time[11..12].to_i, time[14..15].to_i, time[17..18].to_i)
       end
     end
+
+    module Helpers
+      extend ClassMethods
+    end
   end
 end

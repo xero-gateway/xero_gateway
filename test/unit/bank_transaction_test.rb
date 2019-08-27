@@ -30,8 +30,8 @@ class BankTransactionTest < Test::Unit::TestCase
       line_item = bank_transaction.line_items.first
       assert_equal('A LINE ITEM', line_item.description)
       assert_equal('200', line_item.account_code)
-      assert_equal(BigDecimal.new('100'), line_item.unit_amount)
-      assert_equal(BigDecimal.new('12.5'), line_item.tax_amount)
+      assert_equal(BigDecimal('100'), line_item.unit_amount)
+      assert_equal(BigDecimal('12.5'), line_item.tax_amount)
     end
 
     should "allow overriding transaction defaults" do
@@ -114,7 +114,7 @@ class BankTransactionTest < Test::Unit::TestCase
       XeroGateway::BankTransaction.any_instance.stubs(:line_items_downloaded?).returns(false)
       parsed_bank_transaction = XeroGateway::BankTransaction.from_xml(bank_transaction_element)
       assert_equal 'http://example.com?with=params&and=more', parsed_bank_transaction.url
-      assert_equal BigDecimal.new('1000'), parsed_bank_transaction.total
+      assert_equal BigDecimal('1000'), parsed_bank_transaction.total
     end
 
     should "ignore missing contact" do

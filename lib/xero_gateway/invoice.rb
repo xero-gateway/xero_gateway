@@ -186,6 +186,7 @@ module XeroGateway
         contact.to_xml(b)
         b.Date Invoice.format_date(self.date || Date.today)
         b.DueDate Invoice.format_date(self.due_date) if self.due_date
+        b.FullyPaidOnDate Invoice.format_date(self.fully_paid_on) if self.fully_paid_on
         b.Status self.invoice_status if self.invoice_status
         b.Reference self.reference if self.reference
         b.BrandingThemeID self.branding_theme_id if self.branding_theme_id
@@ -209,25 +210,26 @@ module XeroGateway
           when "InvoiceNumber" then invoice.invoice_number = element.text
           when "Type" then invoice.invoice_type = element.text
           when "CurrencyCode" then invoice.currency_code = element.text
-          when "CurrencyRate" then invoice.currency_rate = BigDecimal.new(element.text)
+          when "CurrencyRate" then invoice.currency_rate = BigDecimal(element.text)
           when "Contact" then invoice.contact = Contact.from_xml(element)
           when "Date" then invoice.date = parse_date(element.text)
           when "DueDate" then invoice.due_date = parse_date(element.text)
           when "UpdatedDateUTC" then invoice.updated_at = parse_date_time(element.text)
+          when "FullyPaidOnDate" then invoice.fully_paid_on = parse_date(element.text)
           when "Status" then invoice.invoice_status = element.text
           when "Reference" then invoice.reference = element.text
           when "BrandingThemeID" then invoice.branding_theme_id = element.text
           when "LineAmountTypes" then invoice.line_amount_types = element.text
           when "LineItems" then element.children.each {|line_item| invoice.line_items_downloaded = true; invoice.line_items << LineItem.from_xml(line_item) }
-          when "SubTotal" then invoice.sub_total = BigDecimal.new(element.text)
-          when "TotalTax" then invoice.total_tax = BigDecimal.new(element.text)
-          when "Total" then invoice.total = BigDecimal.new(element.text)
+          when "SubTotal" then invoice.sub_total = BigDecimal(element.text)
+          when "TotalTax" then invoice.total_tax = BigDecimal(element.text)
+          when "Total" then invoice.total = BigDecimal(element.text)
           when "Payments" then element.children.each do |payment|
             invoice.payments << Payment.from_xml(payment).tap { |p| p.currency_code = invoice.currency_code }
           end
-          when "AmountDue" then invoice.amount_due = BigDecimal.new(element.text)
-          when "AmountPaid" then invoice.amount_paid = BigDecimal.new(element.text)
-          when "AmountCredited" then invoice.amount_credited = BigDecimal.new(element.text)
+          when "AmountDue" then invoice.amount_due = BigDecimal(element.text)
+          when "AmountPaid" then invoice.amount_paid = BigDecimal(element.text)
+          when "AmountCredited" then invoice.amount_credited = BigDecimal(element.text)
           when "SentToContact" then invoice.sent_to_contact = (element.text.strip.downcase == "true")
           when "Url" then invoice.url = element.text
           when "ValidationErrors" then invoice.errors = element.children.map { |error| Error.parse(error) }

@@ -1,7 +1,5 @@
 module XeroGateway
-  class Contact
-    include Dates
-
+  class Contact < BaseRecord
     GUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ unless defined?(GUID_REGEX)
 
     CONTACT_STATUS = {
@@ -9,28 +7,49 @@ module XeroGateway
       'DELETED' =>    'Deleted'
     } unless defined?(CONTACT_STATUS)
 
-    # Xero::Gateway associated with this contact.
-    attr_accessor :gateway
+    attr_accessor :gateway, :errors
 
-    # Any errors that occurred when the #valid? method called.
-    attr_reader :errors
+    attributes({
+      "ContactID" => :string,
+      "ContactNumber" => :string,
+      "AccountNumber" => :string,
+      "ContactStatus" => :string,
+      "Name" => :string,
+      "FirstName" => :string,
+      "LastName" => :string,
+      "EmailAddress" => :string,
+      "Addresses" => [Address, { :omit_if_empty => true }],
+      "Phones" => [Phone],
+      "BankAccountDetails" => :string,
+      "TaxNumber" => :string,
+      "AccountsReceivableTaxType" => :string,
+      "AccountsPayableTaxType" => :string,
+      "ContactGroups"  => :string,
+      "IsCustomer" => :boolean,
+      "IsSupplier" => :boolean,
+      "DefaultCurrency" => :string,
+      "UpdatedDateUTC" => :datetime_utc,
+      "ContactPersons" => [ContactPerson],
+      "BrandingTheme" => BrandingTheme
+    })
 
-    attr_accessor :contact_id, :contact_number, :account_number, :status, :name, :first_name, :last_name, :email, :addresses, :phones, :updated_at,
-                  :bank_account_details, :tax_number, :accounts_receivable_tax_type, :accounts_payable_tax_type, :is_customer, :is_supplier,
-                  :default_currency, :contact_groups
+    readonly_attributes "IsCustomer", "IsSupplier", "BrandingTheme"
 
+    { :updated_at => :updated_date_utc,
+      :status => :contact_status,
+      :email => :email_address }.each do |alt, orig|
+      alias_method alt, orig 
+      alias_method "#{alt}=", "#{orig}="
+    end
 
     def initialize(params = {})
+      super
+
       @errors ||= []
-
-      params = {}.merge(params)
-      params.each do |k,v|
-        self.send("#{k}=", v)
-      end
-
       @phones ||= []
       @addresses ||= nil
     end
+
 
     def address=(address)
       self.addresses = [address]
@@ -78,6 +97,12 @@ module XeroGateway
     def add_phone(phone_params = {})
       self.phones << Phone.new(phone_params)
     end
+
+    def add_contact_person(contact_person_params = {})
+      self.contact_persons ||= []
+      self.contact_persons << ContactPerson.new(contact_person_params)
+    end
+
 
     # Validate the Contact record according to what will be valid by the gateway.
     #
@@ -135,70 +160,6 @@ module XeroGateway
     def update
       raise NoGatewayError unless gateway
       gateway.update_contact(self)
-    end
-
-    def to_xml(b = Builder::XmlMarkup.new)
-      b.Contact {
-        b.ContactID self.contact_id if self.contact_id
-        b.ContactNumber self.contact_number if self.contact_number
-        b.AccountNumber self.account_number if self.account_number
-        b.Name self.name if self.name
-        b.EmailAddress self.email if self.email
-        b.FirstName self.first_name if self.first_name
-        b.LastName self.last_name if self.last_name
-        b.BankAccountDetails self.bank_account_details if self.bank_account_details
-        b.TaxNumber self.tax_number if self.tax_number
-        b.AccountsReceivableTaxType self.accounts_receivable_tax_type if self.accounts_receivable_tax_type
-        b.AccountsPayableTaxType self.accounts_payable_tax_type if self.accounts_payable_tax_type
-        b.ContactGroups if self.contact_groups
-        b.IsCustomer true if self.is_customer
-        b.IsSupplier true if self.is_supplier
-        b.DefaultCurrency if self.default_currency
-        b.Addresses {
-          addresses.each { |address| address.to_xml(b) }
-        } unless addresses.nil?
-        b.Phones {
-          phones.each { |phone| phone.to_xml(b) }
-        } if self.phones.any?
-      }
-    end
-
-    # Take a Contact element and convert it into an Contact object
-    def self.from_xml(contact_element, gateway = nil)
-      contact = Contact.new(:gateway => gateway)
-      contact_element.children.each do |element|
-        case(element.name)
-          when "ContactID" then contact.contact_id = element.text
-          when "ContactNumber" then contact.contact_number = element.text
-          when "AccountNumber" then contact.account_number = element.text
-          when "ContactStatus" then contact.status = element.text
-          when "Name" then contact.name = element.text
-          when "FirstName" then contact.first_name = element.text
-          when "LastName" then contact.last_name = element.text
-          when "EmailAddress" then contact.email = element.text
-          when "Addresses" then element.children.each { |address_element| contact.addresses ||= []; contact.addresses << Address.from_xml(address_element) }
-          when "Phones" then element.children.each { |phone_element| contact.phones << Phone.from_xml(phone_element) }
-          when "BankAccountDetails" then contact.bank_account_details = element.text
-          when "TaxNumber" then contact.tax_number = element.text
-          when "AccountsReceivableTaxType" then contact.accounts_receivable_tax_type = element.text
-          when "AccountsPayableTaxType" then contact.accounts_payable_tax_type = element.text
-          when "ContactGroups" then contact.contact_groups = element.text
-          when "IsCustomer" then contact.is_customer = (element.text == "true")
-          when "IsSupplier" then contact.is_supplier = (element.text == "true")
-          when "DefaultCurrency" then contact.default_currency = element.text
-          when "UpdatedDateUTC" then contact.updated_at = parse_date_time(element.text)
-        end
-      end
-      contact
-    end
-
-    def ==(other)
-      [ :contact_id, :contact_number, :account_number, :status, :name, :first_name, :last_name, :email, :addresses, :phones, :updated_at,
-        :bank_account_details, :tax_number, :accounts_receivable_tax_type, :accounts_payable_tax_type, :is_customer, :is_supplier,
-        :default_currency, :contact_groups ].each do |field|
-        return false if send(field) != other.send(field)
-      end
-      return true
     end
 
   end
