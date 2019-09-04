@@ -1,14 +1,10 @@
 module XeroGateway
   class BaseRecord
-
     class UnsupportedAttributeType < StandardError; end
 
     class_attribute :element_name
     class_attribute :attribute_definitions
     class_attribute :attribute_definitions_readonly
-
-    # The source XML record that initialized this instance.
-    attr_reader :source_xml
 
     class << self
       def attributes(hash)
@@ -64,7 +60,6 @@ module XeroGateway
     end
 
     def from_xml(base_element)
-      @source_xml = base_element
       from_xml_attributes(base_element)
       self
     end
