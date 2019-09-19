@@ -4,6 +4,14 @@ module XeroGateway
     READ_TIMEOUT = 60 unless defined? READ_TIMEOUT
     ROOT_CA_FILE = File.join(File.dirname(__FILE__), 'ca-certificates.crt') unless defined? ROOT_CA_FILE
 
+    class UnknownResponseError < StandardError
+      attr_reader :response
+      def initialize(response)
+        @response = response
+        super("Unknown response: #{response.inspect}")
+      end
+    end
+
     def http_get(client, url, extra_params = {}, headers = {})
       http_request(client, :get, url, nil, extra_params, headers)
     end
@@ -83,7 +91,7 @@ module XeroGateway
             # Xero sends certain oauth errors back as 500 errors
             handle_oauth_error!(response)
           else
-            raise "Unknown response code: #{response.code.to_i}"
+            raise UnknownResponseError, response
         end
       end
 
