@@ -33,7 +33,7 @@ module XeroGateway
 
       # Set list of attributes that should never be included in update/create responses.
       def readonly_attributes(*attrs)
-        self.attribute_definitions_readonly ||= []
+        self.attribute_definitions_readonly ||= ['CreatedDateUTC', 'UpdatedDateUTC']
         self.attribute_definitions_readonly += attrs.flatten
       end
 
