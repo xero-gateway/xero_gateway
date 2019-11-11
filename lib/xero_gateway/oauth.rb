@@ -11,6 +11,7 @@ module XeroGateway
     class TokenExpired < StandardError; end
     class TokenInvalid < StandardError; end
     class RateLimitExceeded < StandardError; end
+    class ConsumerConfigError < StandardError; end
     class UnknownError < StandardError; end
 
     unless defined? XERO_CONSUMER_OPTIONS
@@ -80,10 +81,26 @@ module XeroGateway
 
       update_attributes_from_token(access_token)
     rescue ::OAuth::Unauthorized => e
-      # If the original access token is for some reason invalid an OAuth::Unauthorized could be raised.
-      # In this case raise a XeroGateway::OAuth::TokenInvalid which can be captured by the caller.  In this
-      # situation the end user will need to re-authorize the application via the request token authorization URL
-      raise XeroGateway::OAuth::TokenInvalid.new(e.message)
+      #note that e.request is a Net::HTTP _response_
+      error_details = CGI.parse(e.request.body.strip)
+
+      #Xero will respond with 401 in a variety of circumstances, which will surface as OAuth::Unauthorized errors,
+      # but may have different remedies (user needs to re-authorize, developer must fix configuration for client, etc.).
+      #Cases are distinguishable by `oauth_problem` response body parameter - message is oauth_problem_advice to be 
+      #   consistent with XeroGateway::Http#handle_oauth_error!
+      #https://developer.xero.com/documentation/auth-and-limits/oauth-issues
+      problem = error_details['oauth_problem'].first
+      description = error_details["oauth_problem_advice"].first 
+      description = "No description found: #{e.request.plain_body}" if description.blank?
+      
+      if problem == 'consumer_key_unknown'
+        raise XeroGateway::OAuth::ConsumerConfigError.new(description)
+      else
+        # If the original access token is for some reason invalid an OAuth::Unauthorized could be raised.
+        # In this case raise a XeroGateway::OAuth::TokenInvalid which can be captured by the caller.  In this
+        # situation the end user will need to re-authorize the application via the request token authorization URL
+        raise XeroGateway::OAuth::TokenInvalid.new(description)
+      end
     end
 
     def get(path, headers = {})
