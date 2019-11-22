@@ -69,7 +69,7 @@ module XeroGateway
     end
 
     def self.from_xml(contact_group_element, gateway, options = {})
-      contact_group = ContactGroup.new(gateway: gateway, contacts_downloaded: options[:contacts_downloaded])
+      contact_group = ContactGroup.new(:gateway => gateway, :contacts_downloaded => options[:contacts_downloaded])
       contact_group_element.children.each do |element|
         case(element.name)
           when "ContactGroupID" then contact_group.contact_group_id = element.text

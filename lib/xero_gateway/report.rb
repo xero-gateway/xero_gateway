@@ -1,5 +1,7 @@
-require_relative './report/cell'
-require_relative './report/row'
+require(File.expand_path('report/cell', File.dirname(__FILE__)))
+require(File.expand_path('report/row', File.dirname(__FILE__)))
+# require_relative './report/cell'
+# require_relative './report/row'
 
 module XeroGateway
   class Report

@@ -38,7 +38,7 @@ module XeroGateway
       end
 
       def from_xml(base_element, gateway = nil)
-        args = gateway ? [{ gateway: gateway }] : []
+        args = gateway ? [{ :gateway => gateway }] : []
         new(*args).from_xml(base_element)
       end
 
