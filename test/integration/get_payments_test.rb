@@ -27,6 +27,13 @@ class GetPaymentsTest < Test::Unit::TestCase
     assert_kind_of(XeroGateway::Payment, payment.first)
   end
 
+  def test_get_payments_gets_actual_invoice_ids
+    result = @gateway.get_payments
+    assert_not_equal result.payments[0].invoice_id, result.payments[1].invoice_id
+    # assert_equal result.payments[0].invoice_id, 'b0875d8b-ff26-4ce8-8aea-6955492ead48'
+    # assert_equal result.payments[1].invoice_id, '33c8d757-2db0-48a2-8daa-f54768fabeb1'
+  end
+
   def test_get_payments_modified_since_date
     # Create a test payment
     @gateway.create_payment(create_test_payment)
