@@ -31,7 +31,7 @@ module XeroGateway
           when 'CurrencyRate'   then payment.currency_rate = BigDecimal(element.text)
           when 'Invoice'
             payment.invoice_id = element.elements["InvoiceID"].text
-            payment.invoice_number = element.elements["InvoiceNumber"].text
+            payment.invoice_number = element.elements["InvoiceNumber"].try(:text)
           when 'IsReconciled'   then payment.reconciled = (element.text == "true")
           when 'Account'        then payment.account_id = element.elements["AccountID"].text
         end
