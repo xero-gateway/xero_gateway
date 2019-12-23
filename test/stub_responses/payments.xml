@@ -52,5 +52,27 @@
         <InvoiceNumber>RPT469-1</InvoiceNumber>
       </Invoice>
     </Payment>
+    <Payment>
+      <PaymentID>d3b72ed1-4269-40a4-b0de-4be6fb3586c5</PaymentID>
+      <Date>2019-12-29T00:00:00</Date>
+      <Amount>142.00</Amount>
+      <CurrencyRate>1.000000</CurrencyRate>
+      <PaymentType>ACCPAYPAYMENT</PaymentType>
+      <Status>AUTHORISED</Status>
+      <UpdatedDateUTC>2019-12-02T10:48:51.15</UpdatedDateUTC>
+      <Account>
+        <AccountID>ac993f75-035b-433c-82e0-7b7a2d40802c</AccountID>
+        <Code>090</Code>
+      </Account>
+      <Invoice>
+        <Contact>
+          <ContactID>16b4cdc2-b36a-4b25-b9c8-7a50c17b10ba</ContactID>
+          <Name>Truxton Property Management</Name>
+        </Contact>
+        <CurrencyCode>NZD</CurrencyCode>
+        <Type>ACCPAY</Type>
+        <InvoiceID>c475f4c3-2b8b-4d44-b4fc-cbe7ee6fa9dd</InvoiceID>
+      </Invoice>
+    </Payment>
   </Payments>
 </Response>
