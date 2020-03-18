@@ -588,8 +588,8 @@ module XeroGateway
 
     def build_payment(payment = {})
       case payment
-        when Payment then   payment.gateway = self
-        when Hash then      payment = Contact.new(payment.merge({:gateway => self}))
+        when Payment then payment.gateway = self
+        when Hash then payment = Payment.new(payment.merge({:gateway => self}))
       end
       payment
     end
