@@ -12,7 +12,7 @@ class GetCreditNotesTest < Test::Unit::TestCase
       @gateway.xero_url = "DUMMY_URL"
       
       @gateway.stubs(:http_get).with {|client, url, params| url =~ /CreditNotes/ }.returns(get_file_as_string("credit_notes.xml"))
-      @gateway.stubs(:http_put).with {|client, url, body, params| url =~ /CreditNotes$/ }.returns(get_file_as_string("create_credit_note.xml"))
+      @gateway.stubs(:http_post).with {|client, url, body, params| url =~ /CreditNotes$/ }.returns(get_file_as_string("create_credit_note.xml"))
 
       # Get an credit_note with an invalid ID number.
       @gateway.stubs(:http_get).with {|client, url, params| url =~ Regexp.new("CreditNotes/#{INVALID_CREDIT_NOTE_ID}") }.returns(get_file_as_string("credit_note_not_found_error.xml"))

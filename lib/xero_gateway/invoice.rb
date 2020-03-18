@@ -39,7 +39,7 @@ module XeroGateway
     # All accessible fields
     attr_accessor :invoice_id, :invoice_number, :invoice_type, :invoice_status, :date, :due_date, :reference, :branding_theme_id,
                   :line_amount_types, :currency_code, :currency_rate, :payments, :fully_paid_on, :amount_due, :amount_paid, :amount_credited,
-                  :sent_to_contact, :url, :updated_date_utc
+                  :sent_to_contact, :url, :updated_at, :credit_note_allocations
     attr_writer   :contact, :line_items
 
     def initialize(params = {})
@@ -58,6 +58,7 @@ module XeroGateway
       end
 
       @line_items ||= []
+      @credit_note_allocations ||= []
     end
 
     # Validate the Address record according to what will be valid by the gateway.
@@ -213,8 +214,8 @@ module XeroGateway
           when "Contact" then invoice.contact = Contact.from_xml(element)
           when "Date" then invoice.date = parse_date(element.text)
           when "DueDate" then invoice.due_date = parse_date(element.text)
+          when "UpdatedDateUTC" then invoice.updated_at = parse_date_time(element.text)
           when "FullyPaidOnDate" then invoice.fully_paid_on = parse_date(element.text)
-          when "UpdatedDateUTC" then invoice.updated_date_utc = parse_date(element.text)
           when "Status" then invoice.invoice_status = element.text
           when "Reference" then invoice.reference = element.text
           when "BrandingThemeID" then invoice.branding_theme_id = element.text
@@ -223,13 +224,18 @@ module XeroGateway
           when "SubTotal" then invoice.sub_total = BigDecimal(element.text)
           when "TotalTax" then invoice.total_tax = BigDecimal(element.text)
           when "Total" then invoice.total = BigDecimal(element.text)
-          when "Payments" then element.children.each { | payment | invoice.payments << Payment.from_xml(payment) }
+          when "Payments" then element.children.each do |payment|
+            invoice.payments << Payment.from_xml(payment).tap { |p| p.currency_code = invoice.currency_code }
+          end
           when "AmountDue" then invoice.amount_due = BigDecimal(element.text)
           when "AmountPaid" then invoice.amount_paid = BigDecimal(element.text)
           when "AmountCredited" then invoice.amount_credited = BigDecimal(element.text)
           when "SentToContact" then invoice.sent_to_contact = (element.text.strip.downcase == "true")
           when "Url" then invoice.url = element.text
           when "ValidationErrors" then invoice.errors = element.children.map { |error| Error.parse(error) }
+          when "CreditNotes" then element.children.each do |credit_note|
+            invoice.credit_note_allocations << Allocation.from_xml(credit_note)
+          end
         end
       end
       invoice

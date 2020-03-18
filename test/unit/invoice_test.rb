@@ -230,7 +230,7 @@ class InvoiceTest < Test::Unit::TestCase
     assert_equal('ACCREC', invoice.invoice_type)
     assert_kind_of(Date, invoice.date)
     assert_kind_of(Date, invoice.due_date)
-    assert_kind_of(Time, invoice.updated_date_utc)
+    assert_kind_of(Time, invoice.updated_at)
     assert_equal('12345', invoice.invoice_number)
     assert_equal('MY REFERENCE FOR THIS INVOICE', invoice.reference)
     assert_equal("Exclusive", invoice.line_amount_types)
@@ -335,10 +335,10 @@ class InvoiceTest < Test::Unit::TestCase
     assert_equal eur_rate, invoice.currency_rate
   end
 
-  def test_updated_date_utc
+  def test_updated_at
      time = Time.now.utc
-     invoice = create_test_invoice(:updated_date_utc => time)
-     assert_equal time, invoice.updated_date_utc
+     invoice = create_test_invoice(:updated_at => time)
+     assert_equal time, invoice.updated_at
   end
 
   def test_description_only_lines
@@ -363,7 +363,7 @@ class InvoiceTest < Test::Unit::TestCase
         :invoice_number => '12345',
         :reference => "MY REFERENCE FOR THIS INVOICE",
         :line_amount_types => "Exclusive",
-        :updated_date_utc => Time.now.utc
+        :updated_at => Time.now.utc
       }.merge(invoice_params)
     end
     invoice = XeroGateway::Invoice.new(invoice_params || {})
@@ -404,7 +404,7 @@ class InvoiceTest < Test::Unit::TestCase
         :account_code => "200",
         :unit_amount => BigDecimal("100"),
         :tax_amount => BigDecimal("12.5"),
-        :tracking => XeroGateway::TrackingCategory.new(:name => "blah", :options => "hello")
+        :tracking => [XeroGateway::TrackingOption.new(:name => "blah", :option => "hello")]
       }.merge(line_item_params[0])
 
       # Create invoice.line_items from line_item_params

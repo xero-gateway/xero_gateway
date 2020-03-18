@@ -7,8 +7,14 @@ module XeroGateway
     attr_reader :errors
 
     # All accessible fields
-    attr_accessor :invoice_id, :invoice_number, :account_id, :code, :payment_id, :payment_type, :date, :amount, :reference, :currency_rate, :updated_at, :reconciled
+    attr_accessor :invoice_id, :invoice_number, :account_id, :code, :payment_id,
+                  :payment_type, :date, :amount, :reference, :currency_rate,
+                  :currency_code, :updated_at, :reconciled,
+                  :credit_note_id, :credit_note_number
     alias_method :reconciled?, :reconciled
+
+    # Xero::Gateway associated with this invoice.
+    attr_accessor :gateway
 
     def initialize(params = {})
       @errors ||= []
@@ -32,6 +38,9 @@ module XeroGateway
           when 'Invoice'
             payment.invoice_id = element.elements["//InvoiceID"].text
             payment.invoice_number = element.elements["//InvoiceNumber"].text
+          when 'CreditNote'
+            payment.credit_note_id = element.elements["//CreditNoteID"].text
+            payment.credit_note_number = element.elements["//CreditNoteNumber"].text
           when 'IsReconciled'   then payment.reconciled = (element.text == "true")
           when 'Account'        then payment.account_id = element.elements["//AccountID"].text
         end
@@ -59,6 +68,13 @@ module XeroGateway
           end
         end
 
+        if self.credit_note_id || self.credit_note_number
+          b.CreditNote do |i|
+            i.CreditNoteID         self.credit_note_id     if self.credit_note_id
+            i.CreditNoteNumber     self.credit_note_number if self.credit_note_number
+          end
+        end
+
         if self.account_id || self.code
           b.Account do |a|
             a.AccountID         self.account_id     if self.account_id
@@ -78,6 +94,11 @@ module XeroGateway
       end
     end
 
-
+    # Creates this payment record with the associated gateway.
+    # If no gateway set, raise a NoGatewayError exception.
+    def create
+      raise NoGatewayError unless gateway
+      gateway.create_payment(self)
+    end
   end
 end

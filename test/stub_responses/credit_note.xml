@@ -74,6 +74,16 @@
       <FullyPaidOnDate>2011-06-08T00:00:00</FullyPaidOnDate>
       <CreditNoteID>80d246a5-f298-4708-aac2-e12cce4038fe</CreditNoteID>
       <CreditNoteNumber>CN-0153</CreditNoteNumber>
+      <Allocations>
+        <Allocation>
+          <AppliedAmount>562.50</AppliedAmount>
+          <Date>2017-12-01T00:00:00</Date>
+          <Invoice>
+            <InvoiceID>ALLOCATED_INVOICE_ID</InvoiceID>
+            <InvoiceNumber>ALLOCATED_INVOICE_NUMBER</InvoiceNumber>
+          </Invoice>
+        </Allocation>
+      </Allocations>
     </CreditNote>
   </CreditNotes>
 </Response>

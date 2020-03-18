@@ -1,14 +1,10 @@
 module XeroGateway
   class BaseRecord
-
     class UnsupportedAttributeType < StandardError; end
 
     class_attribute :element_name
     class_attribute :attribute_definitions
     class_attribute :attribute_definitions_readonly
-
-    # The source XML record that initialized this instance.
-    attr_reader :source_xml
 
     class << self
       def attributes(hash)
@@ -17,14 +13,14 @@ module XeroGateway
         end
       end
 
-      def attribute(name, value)
+      def attribute(name, value, nested = false)
         self.attribute_definitions ||= {}
-        self.attribute_definitions[name] = value
+        self.attribute_definitions[name] = value unless nested
 
         case value
         when Hash
           value.each do |k, v|
-            attribute("#{name}#{k}", v)
+            attribute("#{name}#{k}", v, true)
           end
         else
           attr_accessor name.underscore
@@ -64,7 +60,6 @@ module XeroGateway
     end
 
     def from_xml(base_element)
-      @source_xml = base_element
       from_xml_attributes(base_element)
       self
     end
@@ -86,19 +81,30 @@ module XeroGateway
         return
       end
 
-      value = case attr_definition
-        when :boolean      then  element.text == "true"
-        when :float        then  element.text.to_f
-        when :integer      then  element.text.to_i
-        when :currency     then  BigDecimal(element.text)
-        when :date         then  Dates::Helpers.parse_date(element.text)
-        when :datetime     then  Dates::Helpers.parse_date_time(element.text)
-        when :datetime_utc then  Dates::Helpers.parse_date_time_utc(element.text)
-        when Array     then  array_from_xml(element, attr_definition)
-        when Class
-          attr_definition.from_xml(element) if attr_definition.respond_to?(:from_xml)
-        else                 element.text
-      end if element.text.present? || element.children.present?
+      if element.text.present? || element.children.present?
+        value = case attr_definition
+                when :boolean
+                  element.text == "true"
+                when :float
+                  element.text.to_f
+                when :integer
+                  element.text.to_i
+                when :currency
+                  BigDecimal(element.text)
+                when :date
+                  Dates::Helpers.parse_date(element.text)
+                when :datetime
+                  Dates::Helpers.parse_date_time(element.text)
+                when :datetime_utc
+                  Dates::Helpers.parse_date_time_utc(element.text)
+                when Array
+                  array_from_xml(element, attr_definition)
+                when Class
+                  attr_definition.from_xml(element) if attr_definition.respond_to?(:from_xml)
+                else
+                  element.text
+                end
+      end
 
       send("#{attribute.underscore}=", value)
     end
@@ -130,8 +136,8 @@ module XeroGateway
             end
           end unless value.nil?
         else
-          value = send("#{path}#{attr}".underscore)
-          builder.__send__(attr, value) unless value.nil?
+          attr_value = send("#{path}#{attr}".underscore)
+          builder.__send__(attr, attr_value) unless attr_value.nil?
         end
       end
     end

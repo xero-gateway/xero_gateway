@@ -21,7 +21,8 @@ module XeroGateway
         "PurchaseDetails" => {
           "UnitPrice"     => :float,
           "AccountCode"   => :string
-        }
+        },
+        'UpdatedDateUTC' => :datetime
     })
   end
 end

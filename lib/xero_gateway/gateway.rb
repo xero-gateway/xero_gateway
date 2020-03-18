@@ -168,6 +168,7 @@ module XeroGateway
       request_params[:InvoiceID]      = options[:invoice_id] if options[:invoice_id]
       request_params[:InvoiceNumber]  = options[:invoice_number] if options[:invoice_number]
       request_params[:order]          = options[:order] if options[:order]
+      request_params[:Statuses]       = [*options[:status]].join(',') if options[:status]
       request_params[:ModifiedAfter]  = options[:modified_since] if options[:modified_since]
       request_params[:IDs]            = Array(options[:invoice_ids]).join(",") if options[:invoice_ids]
       request_params[:InvoiceNumbers] = Array(options[:invoice_numbers]).join(",") if options[:invoice_numbers]
@@ -178,7 +179,9 @@ module XeroGateway
 
       response_xml = http_get(@client, "#{@xero_url}/Invoices", request_params)
 
-      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/Invoices'})
+      parse_response(response_xml,
+                     { request_params: request_params },
+                     request_signature: "GET/Invoices#{'p' if options[:page]}")
     end
 
     # Retrieves a single invoice
@@ -291,19 +294,21 @@ module XeroGateway
     #
     # Note  : modified_since is in UTC format (i.e. Brisbane is UTC+10)
     def get_credit_notes(options = {})
-
+      
+      parse_options = options.delete(:parse_options) || {}
       request_params = {}
 
       request_params[:CreditNoteID]     = options[:credit_note_id] if options[:credit_note_id]
       request_params[:CreditNoteNumber] = options[:credit_note_number] if options[:credit_note_number]
       request_params[:order]            = options[:order] if options[:order]
       request_params[:ModifiedAfter]    = options[:modified_since] if options[:modified_since]
-
+      request_params[:Statuses]         = [*options[:status]].join(',') if options[:status]
       request_params[:where]            = options[:where] if options[:where]
+      request_params[:page]             = options[:page] if options[:page]
 
       response_xml = http_get(@client, "#{@xero_url}/CreditNotes", request_params)
 
-      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/CreditNotes'})
+      parse_response(response_xml, {:request_params => request_params}, {:request_signature => 'GET/CreditNotes', :parse_options => parse_options})
     end
 
     # Retrieves a single credit_note
@@ -356,8 +361,8 @@ module XeroGateway
     #    create_credit_note(credit_note)
     def create_credit_note(credit_note)
       request_xml = credit_note.to_xml
-      response_xml = http_put(@client, "#{@xero_url}/CreditNotes", request_xml)
-      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/credit_note'})
+      response_xml = http_post(@client, "#{@xero_url}/CreditNotes", request_xml)
+      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'POST/credit_note'})
 
       # Xero returns credit_notes inside an <CreditNotes> tag, even though there's only ever
       # one for this request
@@ -368,6 +373,14 @@ module XeroGateway
       end
 
       response
+    end
+
+    def allocate_credit_note(credit_note_id, invoice_id, allocated_amount)
+      allocation = XeroGateway::Allocation.new(invoice_id: invoice_id,
+                                               applied_amount: allocated_amount)
+      request_xml = allocation.to_xml
+      response_xml = http_put(@client, "#{@xero_url}/CreditNotes/#{credit_note_id}/Allocations", request_xml)
+      parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/credit_note'})
     end
 
     #
@@ -385,9 +398,9 @@ module XeroGateway
         end
       }
 
-      response_xml = http_put(@client, "#{@xero_url}/CreditNotes", request_xml, {})
+      response_xml = http_post(@client, "#{@xero_url}/CreditNotes", request_xml, {})
 
-      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'PUT/credit_notes'})
+      response = parse_response(response_xml, {:request_xml => request_xml}, {:request_signature => 'POST/credit_notes'})
       response.credit_notes.each_with_index do | response_credit_note, index |
         credit_notes[index].credit_note_id = response_credit_note.credit_note_id if response_credit_note && response_credit_note.credit_note_id
       end
@@ -571,6 +584,14 @@ module XeroGateway
     def get_items
       response_xml = http_get(@client, "#{xero_url}/Items")
       parse_response(response_xml, {}, {:request_signature => 'GET/items'})
+    end
+
+    def build_payment(payment = {})
+      case payment
+        when Payment then payment.gateway = self
+        when Hash then payment = Payment.new(payment.merge({:gateway => self}))
+      end
+      payment
     end
 
     #
@@ -760,6 +781,7 @@ module XeroGateway
 
     def parse_response(raw_response, request = {}, options = {})
 
+      parse_options = options.delete(:parse_options) || {}
       response = XeroGateway::Response.new
 
       doc = REXML::Document.new(raw_response, :ignore_whitespace_nodes => :all)
@@ -793,6 +815,9 @@ module XeroGateway
               response.response_item << ManualJournal.from_xml(child, self, {:journal_lines_downloaded => options[:request_signature] != "GET/ManualJournals"})
             end
           when "CreditNotes" then element.children.each {|child| response.response_item << CreditNote.from_xml(child, self, {:line_items_downloaded => options[:request_signature] != "GET/CreditNotes"}) }
+          when "Allocations" then element.children.each do |child|
+            response.response_item << Allocation.from_xml(child)
+          end
           when "Accounts" then element.children.each {|child| response.response_item << Account.from_xml(child) }
           when "TaxRates" then element.children.each {|child| response.response_item << TaxRate.from_xml(child) }
           when "Items" then element.children.each {|child| response.response_item << Item.from_xml(child) }
@@ -815,7 +840,7 @@ module XeroGateway
       end if response_element
 
       # If a single result is returned don't put it in an array
-      if response.response_item.is_a?(Array) && response.response_item.size == 1
+      if response.response_item.is_a?(Array) && response.response_item.size == 1 && !parse_options[:dont_flatten]
         response.response_item = response.response_item.first
       end
 

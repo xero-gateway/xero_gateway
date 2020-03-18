@@ -1,0 +1,15 @@
+ <?xml version="1.0"?>
+ <Response xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <Id>d62f3999-2d56-4f7d-9b3d-6c9a3b2e9325</Id>
+   <Status>OK</Status>
+   <ProviderName>Xero API Previewer</ProviderName>
+   <DateTimeUTC>2010-10-13T21:30:30.896341Z</DateTimeUTC>
+   <Allocations>
+    <Allocation>
+      <AppliedAmount>60.50</AppliedAmount>
+      <Invoice>
+        <InvoiceID>ALLOCATED_INVOICE_ID</InvoiceID>
+      </Invoice>
+    </Allocation>
+  </Allocations>
+</Response>

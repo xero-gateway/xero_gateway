@@ -49,29 +49,26 @@ module XeroGateway
       return false if tracking.nil?
 
       if tracking.is_a?(Array)
-        return tracking.any?
+        tracking.all? { |t| t.is_a?(TrackingOption) }
       else
-        return tracking.is_a?(TrackingCategory)
+        tracking.is_a?(TrackingCategory)
       end
     end
 
     def to_xml(b = Builder::XmlMarkup.new)
-      b.JournalLine {
+      b.JournalLine do
         b.LineAmount line_amount # mandatory
         b.AccountCode account_code # mandatory
         b.Description description if description # optional
         b.TaxType tax_type if tax_type # optional
         if has_tracking?
-          b.Tracking { # optional
-            # Due to strange retardness in the Xero API, the XML structure for a tracking category within
-            # an invoice is different to a standalone tracking category.
-            # This means rather than going category.to_xml we need to call the special category.to_xml_for_invoice_messages
-            (tracking.is_a?(TrackingCategory) ? [tracking] : tracking).each do |category|
-              category.to_xml_for_invoice_messages(b)
+          b.Tracking do
+            tracking.each do |tracking_option|
+              tracking_option.to_xml(b)
             end
-          }
+          end
         end
-      }
+      end
     end
 
     def self.from_xml(journal_line_element)

@@ -36,7 +36,11 @@ module XeroGateway
     attr_accessor :line_items_downloaded
 
     # All accessible fields
-    attr_accessor :credit_note_id, :credit_note_number, :type, :status, :date, :reference, :line_amount_types, :currency_code, :payments, :fully_paid_on, :amount_credited
+    attr_accessor :credit_note_id, :credit_note_number, :type, :status, :date,
+                  :reference, :line_amount_types, :currency_code, :payments,
+                  :fully_paid_on, :amount_credited, :updated_at, :allocations,
+                  :amount_paid, :currency_rate
+
     attr_writer :line_items, :contact
 
     def initialize(params = {})
@@ -55,6 +59,7 @@ module XeroGateway
       end
 
       @line_items ||= []
+      @allocations ||= []
     end
 
     # Validate the Address record according to what will be valid by the gateway.
@@ -191,8 +196,10 @@ module XeroGateway
           when "CreditNoteNumber" then credit_note.credit_note_number = element.text
           when "Type" then credit_note.type = element.text
           when "CurrencyCode" then credit_note.currency_code = element.text
+          when "CurrencyRate" then credit_note.currency_rate = BigDecimal(element.text)
           when "Contact" then credit_note.contact = Contact.from_xml(element)
           when "Date" then credit_note.date = parse_date(element.text)
+          when "UpdatedDateUTC" then credit_note.updated_at = parse_date_time(element.text)
           when "Status" then credit_note.status = element.text
           when "Reference" then credit_note.reference = element.text
           when "LineAmountTypes" then credit_note.line_amount_types = element.text
@@ -204,6 +211,7 @@ module XeroGateway
           when "AmountDue" then credit_note.amount_due = BigDecimal(element.text)
           when "AmountPaid" then credit_note.amount_paid = BigDecimal(element.text)
           when "AmountCredited" then credit_note.amount_credited = BigDecimal(element.text)
+          when "Allocations" then element.children.each { |allocation| credit_note.allocations << Allocation.from_xml(allocation) }
         end
       end
       credit_note
