@@ -13,6 +13,9 @@ module XeroGateway
                   :credit_note_id, :credit_note_number
     alias_method :reconciled?, :reconciled
 
+    # Xero::Gateway associated with this invoice.
+    attr_accessor :gateway
+
     def initialize(params = {})
       @errors ||= []
 
