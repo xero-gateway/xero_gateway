@@ -586,6 +586,14 @@ module XeroGateway
       parse_response(response_xml, {}, {:request_signature => 'GET/items'})
     end
 
+    def build_payment(payment = {})
+      case payment
+        when Payment then   payment.gateway = self
+        when Hash then      payment = Contact.new(payment.merge({:gateway => self}))
+      end
+      payment
+    end
+
     #
     # Create Payment record in Xero
     #
