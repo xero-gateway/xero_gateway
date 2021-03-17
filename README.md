@@ -20,6 +20,42 @@ Just add the `xero_gateway` gem to your Gemfile, like so:
   gateway = XeroGateway::Gateway.new(YOUR_OAUTH_CONSUMER_KEY, YOUR_OAUTH_CONSUMER_SECRET)
 ```
 
+### OAuth2 support
+
+Xero has deprecated use of OAuth 1.0a for authentication. In order to use XeroGateway with OAuth2, you will need to use an adapter to wrap a valid
+OAuth2 access token.
+
+```ruby
+# Ensure OAuth2 client is in your Gemfile
+require 'oauth2'
+
+oauth_client = OAuth2::Client.new(client_id, client_secret, {
+  site: 'https://api.xero.com',
+  authorize_url: 'https://login.xero.com/identity/connect/authorize',
+  token_url: 'https://identity.xero.com/connect/token'
+})
+
+access_token = OAuth2::AccessToken.from_hash(oauth_client, { 
+  'access_token' => ... # Stored OAuth2 access token
+})
+
+# Xero Organisation tenant ID from authentication flow
+tenant_id = "..."
+
+# Instantiate XeroGateway with no options.
+gateway = XeroGateway::Gateway.new(nil, nil)
+
+# Manually specify the client using the Adapter wrapper.
+# XeroGateway uses this to submit all API requests with
+# your OAuth2 authentication.
+gateway.client = XeroGateway::Oauth2ClientAdapter.new(
+  access_token, tenant_id
+)
+
+# You can now use XeroGateway as normal.
+# gateway.get_contact(...)
+```
+
 ### Authenticating with OAuth
 
 The Xero Gateway uses [OAuth 1.0a](https://oauth.net/core/1.0a/) for authentication. Xero Gateway
