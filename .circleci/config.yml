@@ -9,14 +9,10 @@ jobs:
       - restore_cache:
           name: Restore Gem Dependencies from Cache
           keys:
-            - gem-deps-{{ checksum "Gemfile" }}
-      - run:
-          name: Install bundler
-          command: |
-            gem install bundler -v 1.17.3
+            - bundle-caches{{ checksum "Gemfile" }}
       - run: bundle check || bundle install --jobs=4 --retry=3
       - save_cache:
-          key: gem-deps-{{ checksum "Gemfile" }}
+          key: bundle-caches{{ checksum "Gemfile" }}
           paths:
             - ~/xero_gateway/vendor/bundle
       - run: rake test
