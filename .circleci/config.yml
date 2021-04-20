@@ -37,7 +37,7 @@ jobs:
             - ~/xero_gateway/vendor/bundle
       - run: bundle exec ruby scripts/publish.rb
 
-  publish_development:
+  publish_staging:
     docker:
       - image: ehdevops/ruby240:latest
     working_directory: ~/xero_gateway
@@ -51,7 +51,7 @@ jobs:
           key: bundle-caches{{ checksum "app.json" }}
           paths:
             - vendor/bundle
-      - run: bundle exec ruby scripts/publish_development.rb
+      - run: bundle exec ruby scripts/publish_staging.rb
 
 workflows:
   version: 2
@@ -66,11 +66,11 @@ workflows:
                 - master
           requires:
             - test
-      - publish_development:
+      - publish_staging:
           context: org-global
           filters:
             branches:
               only:
-                - development
+                - staging
           requires:
             - test

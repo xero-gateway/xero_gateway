@@ -1,6 +1,6 @@
 {
   "name": "xero_gateway",
-  "version": "3.2.22.dev",
+  "version": "3.2.22.alpha",
   "documents": [
     {
       "name": "README",
