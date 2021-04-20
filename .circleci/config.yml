@@ -6,32 +6,52 @@ jobs:
     working_directory: ~/xero_gateway
     steps:
       - checkout
-      - run: cp *.gemspec gemspec
       - restore_cache:
+          name: Restore Gem Dependencies from Cache
           keys:
-            - bundle-caches{{ checksum "gemspec" }}
-      - run: bundle check || bundle install --path=vendor/bundle --jobs=4 --retry=3
+            - gem-deps-{{ checksum "Gemfile" }}
+      - run:
+          name: Install bundler
+          command: |
+            gem install bundler -v 1.17.3
+      - run: bundle check || bundle install --jobs=4 --retry=3
       - save_cache:
-          key: bundle-caches{{ checksum "gemspec" }}
+          key: gem-deps-{{ checksum "Gemfile" }}
           paths:
             - ~/xero_gateway/vendor/bundle
       - run: rake test
+
   publish:
     docker:
       - image: ehdevops/ruby240:latest
     working_directory: ~/xero_gateway
     steps:
       - checkout
-      - run: cp *.gemspec gemspec
       - restore_cache:
           keys:
-            - bundle-caches{{ checksum "gemspec" }}
-      - run: bundle check || bundle install --path=vendor/bundle --jobs=4 --retry=3
+            - bundle-caches{{ checksum "app.json" }}
+      - run: bundle check || bundle install --jobs=4 --retry=3
       - save_cache:
-          key: bundle-caches{{ checksum "gemspec" }}
+          key: bundle-caches{{ checksum "app.json" }}
           paths:
             - ~/xero_gateway/vendor/bundle
       - run: bundle exec ruby scripts/publish.rb
+
+  publish_development:
+    docker:
+      - image: ehdevops/ruby240:latest
+    working_directory: ~/xero_gateway
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - bundle-caches{{ checksum "app.json" }}
+      - run: bundle check || bundle install --path=vendor/bundle --jobs=4 --retry=3
+      - save_cache:
+          key: bundle-caches{{ checksum "app.json" }}
+          paths:
+            - vendor/bundle
+      - run: bundle exec ruby scripts/publish_development.rb
 
 workflows:
   version: 2
@@ -44,5 +64,13 @@ workflows:
             branches:
               only:
                 - master
+          requires:
+            - test
+      - publish_development:
+          context: org-global
+          filters:
+            branches:
+              only:
+                - development
           requires:
             - test
