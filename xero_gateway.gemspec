@@ -13,7 +13,6 @@ Gem::Specification.new do |s|
   s.email    = "dave@thinkei.com"
   s.homepage = "http://github.com/Thinkei/xero_gateway"
   s.description = "Includes the ability to update Xero payroll data"
-  s.has_rdoc = false
   s.authors  = ["Tim Connor", "Nik Wakelin", "ThinkEI"]
   s.files = ["Gemfile", "LICENSE", "Rakefile", "README.textile", "xero_gateway.gemspec"] + Dir['**/*.rb'] + Dir['**/*.crt']
   s.add_dependency('oauth', '~> 0.4.0')
