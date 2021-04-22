@@ -31,23 +31,15 @@ jobs:
           key: bundle-caches{{ checksum "app.json" }}
           paths:
             - ~/xero_gateway/vendor/bundle
-      - run: bundle exec ruby scripts/publish.rb
-
-  publish_staging:
-    docker:
-      - image: ehdevops/ruby240:latest
-    working_directory: ~/xero_gateway
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - bundle-caches{{ checksum "app.json" }}
-      - run: bundle check || bundle install --path=vendor/bundle --jobs=4 --retry=3
-      - save_cache:
-          key: bundle-caches{{ checksum "app.json" }}
-          paths:
-            - vendor/bundle
-      - run: bundle exec ruby scripts/publish_staging.rb
+      - run:
+        name: Deploy to gemfury
+        command: |
+          if [ $CIRCLE_BRANCH == 'master' ]
+          then
+            bundle exec ruby scripts/publish.rb
+          else
+            bundle exec ruby scripts/publish_staging.rb $CIRCLE_SHA1
+          fi
 
 workflows:
   version: 2
@@ -60,13 +52,6 @@ workflows:
             branches:
               only:
                 - master
-          requires:
-            - test
-      - publish_staging:
-          context: org-global
-          filters:
-            branches:
-              only:
                 - staging
           requires:
             - test
